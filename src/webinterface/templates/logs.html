@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Log journal" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Log journal" %}</h1>
+    {% if msgs %}
+        <pre>
+{% for msg in msgs %}{{ msg }}
+{% endfor %}
+        </pre>
+    {% endif %}
+{% endblock %}

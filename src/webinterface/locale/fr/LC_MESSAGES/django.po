@@ -1,0 +1,401 @@
+# SLAM's french translation file.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-12-12 14:51+0100\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: views.py:35
+msgid "Not found"
+msgstr "Page introuvable"
+
+#: views.py:36
+#, python-format
+msgid "Could not found the resource %(res)s."
+msgstr "La ressource %(res)s est introuvable."
+
+#: views.py:41
+msgid "Forbidden"
+msgstr "Accès interdit"
+
+#: views.py:42
+#, python-format
+msgid "You are not allowed to acces to the resource %(res)s."
+msgstr "Vous n'avez pas le droit d'accéder à la ressource %(res)s."
+
+#: views.py:48
+msgid "Internal Error"
+msgstr "Erreur interne"
+
+#: views.py:49
+#, python-format
+msgid "An internal error occured while generating the page for %(res)s."
+msgstr ""
+"Une erreur interne s'est produite pendant la génération de la page pour "
+"%(res)s."
+
+#: views.py:67
+msgid "Disconnected"
+msgstr "Déconnecté"
+
+#: views.py:68
+msgid "You have successfully been disconnected from SLAM."
+msgstr "Vous avez bien été déconnecté de SLAM."
+
+#: views.py:77
+msgid "Logged in"
+msgstr "Connecté"
+
+#: views.py:78
+msgid "You can now manage your addresses!"
+msgstr "Vous pouvez maintenant gérer vos adresses !"
+
+#: views.py:81
+msgid "Invalid login or password."
+msgstr "Nom d'utilisateur ou mot de passe incorrecte."
+
+#: views.py:100
+msgid "Pool already exists"
+msgstr "Le pool existe déjà"
+
+#: views.py:101
+msgid ""
+"A pool with the same name or the same category already exists in the "
+"database."
+msgstr ""
+"Un pool du même nom ou de même catégorie existe déjà dans la base de données"
+
+#: views.py:104 views.py:190 views.py:239 views.py:306
+msgid "Missing information"
+msgstr "Information manquante"
+
+#: views.py:105
+msgid "You must specify at least a name and a definition to create a new pool."
+msgstr ""
+"Vous devez au moins préciser un nom et une définition pour créer un nouveau "
+"pool"
+
+#: views.py:108
+#, python-format
+msgid "Created pool %(pool)s"
+msgstr "Pool %(pool)s créé"
+
+#: views.py:109
+#, python-format
+msgid "The pool \"%(pool)s\" have been created: %(poolstr)s."
+msgstr "Le pool \"%(pool)s\" a été créé : %(poolstr)s."
+
+#: views.py:136
+msgid "Bad Request"
+msgstr "Requête invalide"
+
+#: views.py:137
+#, python-format
+msgid ""
+"Your request is invalid, please verify it is correct. Internal reason: "
+"%(exc)s"
+msgstr ""
+"Votre requête est invalide, veuillez vérifier les informations fournies."
+"Raison interne : %(exc)s."
+
+#: views.py:143
+#, python-format
+msgid "Pool \"%(pool)s\" has been modified"
+msgstr "Pool \"%(pool)s\" a été modifié"
+
+#: views.py:144
+#, python-format
+msgid "The pool \"%(pool)s\" has been correctly modified."
+msgstr "Le pool \"%(pool)s\" a correctement été modifié."
+
+#: views.py:154
+#, python-format
+msgid "%(name)s has been removed"
+msgstr "%(name)s a été supprimé"
+
+#: views.py:155
+#, python-format
+msgid "The pool \"%(name)s\" (%(def)s) has been removed."
+msgstr "Le pool \"%(name)s\" (%(def)s) a été supprimé."
+
+#: views.py:191
+msgid "You must at least specify a name to create a new host."
+msgstr "Vous devez au moins spécifier le nom du nouvel hôte à créer."
+
+#: views.py:193
+msgid "Host already exists"
+msgstr "L'hôte existe déjà"
+
+#: views.py:194
+#, python-format
+msgid "Could not create host %(host)s because it already exists."
+msgstr "Impossible de créer l'hôte %(host)s car il existe déjà."
+
+#: views.py:196
+#, python-format
+msgid "The host \"%(host)s\" have been created"
+msgstr "L’hôte \"%(host)s\" a été créé"
+
+#: views.py:198
+msgid " and was assigned to address: "
+msgstr " et a reçu l’adresse : "
+
+#: views.py:200
+#, python-format
+msgid "Created host %(host)s"
+msgstr "L’hôte %(host)s a été créé"
+
+#: views.py:240
+msgid "You must specify the new values to modify an object."
+msgstr "Vous devez indiquer de nouvelles information pour modifier cet objet."
+
+#: views.py:245
+#, python-format
+msgid "Host \"%(host)s\" has been modified"
+msgstr "L’hôte \"%(host)s\" a bien été modifié"
+
+#: views.py:246
+#, python-format
+msgid "The host \"%(host)s\" has been correctly modified."
+msgstr "L’hôte \"%(host)s\" a bien été modifié."
+
+#: views.py:254
+msgid " has been removed"
+msgstr " a été supprimé"
+
+#: views.py:255
+#, python-format
+msgid "The host \"%(host)s\" has correctly been removed."
+msgstr "L’hôte \"%(host)s\" a bien été supprimé."
+
+#: views.py:273
+msgid "Address deleted"
+msgstr "Adresse supprimée"
+
+#: views.py:274
+#, python-format
+msgid "The address \"%(addr)s\" has been correctly removed."
+msgstr "L’address \"%(addr)s\" a bien été supprimée."
+
+#: views.py:307
+msgid ""
+"You must at least specify a pool or a host and the name of property to "
+"create, edit or delete a property."
+msgstr ""
+"Vous devez au moins spécifier le nom d'un pool ou d'un host et le nom de "
+"l'information que vous souhaitez créer, modifier ou supprimer."
+
+#: views.py:310
+msgid "Property modified"
+msgstr "Information modifiée"
+
+#: views.py:311
+#, python-format
+msgid "The property %(prop)s has been correctly added or edited."
+msgstr "L'information \"%(prop)s\" a correctement été ajoutée ou modifiée."
+
+#: views.py:314
+msgid "Property deleted"
+msgstr "Information supprimée"
+
+#: views.py:315
+#, python-format
+msgid "The property %(prop)s has been correctly deleted."
+msgstr "L'information \"%(prop)s\" a correctement été supprimée."
+
+#: templates/address.html:4 templates/address.html.py:9
+msgid "Address: "
+msgstr "Adresse : "
+
+#: templates/address.html:7
+msgid "Disallocate"
+msgstr "Désallouer"
+
+#: templates/address.html:13
+msgid "Pool: "
+msgstr "Pool : "
+
+#: templates/address.html:18
+msgid "Host: "
+msgstr "Hôte : "
+
+#: templates/base.html:10
+msgid "Pools"
+msgstr "Pools"
+
+#: templates/base.html:11
+msgid "Hosts"
+msgstr "Hôtes"
+
+#: templates/base.html:13
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: templates/base.html:15 templates/login.html:4 templates/login.html.py:7
+#: templates/login.html:17
+msgid "Login"
+msgstr "Connexion"
+
+#: templates/base.html:17 templates/lang.html:10
+msgid "Language"
+msgstr "Langue"
+
+#: templates/base.html:18 templates/logs.html:4 templates/logs.html.py:7
+msgid "Log journal"
+msgstr "Journal"
+
+#: templates/error.html:4 templates/error.html.py:7 templates/error.txt:3
+msgid "Error: "
+msgstr "Erreur : "
+
+#: templates/host.html:4 templates/host.html.py:10
+msgid "Host"
+msgstr "Hôte"
+
+#: templates/host.html:7 templates/pool.html:7
+msgid "Modify"
+msgstr "Modifier"
+
+#: templates/host.html:8 templates/pool.html:8
+msgid "Delete"
+msgstr "Supprimer"
+
+#: templates/host.html:13
+#, python-format
+msgid ""
+"\n"
+"            Addresses allocated to %(hname)s"
+msgstr ""
+"\n"
+"            Adresses allouées à %(hname)s"
+
+#: templates/host.html:19
+msgid " (pool: "
+msgstr " (pool: "
+
+#: templates/host.html:23
+msgid ", mac: "
+msgstr ", adresse MAC : "
+
+#: templates/host.html:32 templates/host_list.html:24 templates/pool.html:51
+#: templates/pool.html.py:58 templates/pool_list.html:19
+msgid "Name"
+msgstr "Nom"
+
+#: templates/host.html:33 templates/host_list.html:37
+msgid "Mac address"
+msgstr "Adresses MAC"
+
+#: templates/host_list.html:4 templates/host_list.html.py:7
+msgid "Host list"
+msgstr "Liste des hôtes"
+
+#: templates/host_list.html:22
+msgid "Create a new host"
+msgstr "Créer un nouvel hôte"
+
+#: templates/host_list.html:25
+msgid "Pool name"
+msgstr "Nom du pool"
+
+#: templates/host_list.html:30
+msgid "or category"
+msgstr "ou catégorie"
+
+#: templates/host_list.html:36
+msgid "Address"
+msgstr "Adresse"
+
+#: templates/host_list.html:38
+msgid "Random allocation"
+msgstr "Allocation aléatoire"
+
+#: templates/host_list.html:40 templates/pool_list.html:22
+msgid "Create"
+msgstr "Créer"
+
+#: templates/lang.html:4 templates/lang.html.py:7
+msgid "Change language"
+msgstr "Changer la langue"
+
+#: templates/lang.html:18
+msgid "Change"
+msgstr "Changer"
+
+#: templates/login.html:10
+msgid "Could not authenticate: "
+msgstr "Impossible de s'authentifier : "
+
+#: templates/login.html:14
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: templates/login.html:16
+msgid "Password"
+msgstr "Mot de passe"
+
+#: templates/message.html:12
+msgid "Previous"
+msgstr "Précédent"
+
+#: templates/pool.html:4 templates/pool.html.py:10
+msgid "Pool"
+msgstr "Pool"
+
+#: templates/pool.html:13 templates/pool.html.py:59
+msgid "Category"
+msgstr "Catégorie"
+
+#: templates/pool.html:15
+msgid "Range"
+msgstr "Plage"
+
+#: templates/pool.html:16
+msgid "Usage"
+msgstr "Occupation"
+
+#: templates/pool.html:19
+#, python-format
+msgid ""
+"Addresses in %(pname)s\n"
+"        "
+msgstr ""
+"Adresses dans %(pname)s\n"
+"        "
+
+#: templates/pool.html:32
+msgid "Additional information"
+msgstr "Informations supplémentaires"
+
+#: templates/pool.html:47
+msgid "Add new information"
+msgstr "Ajouter une nouvelle information"
+
+#: templates/pool.html:52
+msgid "Value"
+msgstr "Valeur"
+
+#: templates/pool.html:53
+msgid "Add"
+msgstr "Ajouter"
+
+#: templates/pool_list.html:4 templates/pool_list.html.py:7
+msgid "Pool list"
+msgstr "Liste des pools"
+
+#: templates/pool_list.html:12
+msgid "range"
+msgstr "plage"
+
+#: templates/pool_list.html:17
+msgid "Create a new pool"
+msgstr "Créer un nouveau pool"
+
+#: templates/pool_list.html:20
+msgid "Range definition"
+msgstr "Définition de la plage"

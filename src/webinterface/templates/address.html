@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Address: " %}{{ addr.addr }}{% endblock %}
+
+{% block content %}
+    {% trans "Disallocate" as delete_trans %}
+
+    <h1>{% trans "Address: " %}{{ addr.addr }}</h1>
+
+    <ul>
+        {% if addr.pool %}
+            <li>{% trans "Pool: " %}
+                <a href="/pool/{{ addr.pool.name}}">{{ addr.pool.name }}</a>
+            </li>
+        {% endif %}
+        {% if addr.host %}
+            <li>{% trans "Host: " %}
+                <a href="/host/{{ addr.host.name }}">{{ addr.host.name }}</a>
+            </li>
+        {% endif %}
+    </ul>
+
+    <h2>{{ delete_trans }}</h2>
+    <form method="DELETE">
+        <input type="submit" value="{{ delete_trans }}">
+    </form>
+{% endblock %}

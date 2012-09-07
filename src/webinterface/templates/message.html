@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+
+    <p>{{ msg }}</p>
+
+    {% if referer %}
+        <p><a href="{{ referer }}">{% trans "Previous" %}</a></p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,24 @@
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %} {% endblock %}</title>
+    </head>
+    <body>
+        <ul>
+            <li><a href="/pool/">{% trans "Pools" %}</a></li>
+            <li><a href="/host/">{% trans "Hosts" %}</a></li>
+            {% if request and request.user and request.user.is_authenticated %}
+                <li><a href="/logout">{% trans "Logout" %}</a></li>
+            {% else %}
+                <li><a href="/login">{% trans "Login" %}</a></li>
+            {% endif %}
+            <li><a href="/lang/">{% trans "Language" %}</a></li>
+            <li><a href="/logs/">{% trans "Log journal" %}</a></li>
+        </ul>
+        <hr>
+
+        {% block content %}{% endblock %}
+    </body>
+</html>

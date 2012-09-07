@@ -1,0 +1,8 @@
+SLAM's todo-list
+================
+
+* authentication : User management + permissions
+    * groupes
+* user tutorial for the LAL
+* Web/REST interface (with Django)
+    * design: django-boost ?

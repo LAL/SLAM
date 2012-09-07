@@ -1,0 +1,12 @@
+[{% for name, addrs in host_list %}
+    {
+        "name": "{{ name }}",
+        "addresses":
+            [{% for addr, pool in addrs %}
+                {
+                    "address": "{{ addr }}",
+                    "pool": "{{ pool }}"
+                }{% if not forloop.last %},{% endif %}
+            {% endfor %}]
+    }{% if not forloop.last %},{% endif %}
+{% endfor %}]

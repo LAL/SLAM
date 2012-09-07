@@ -1,0 +1,13 @@
+{
+    "name": "{{ host.name }}",
+    "addresses":
+        [{% for addr in addrs %}
+            {
+                "address": "{{ addr.addr }}",
+                "pool": {% if addr.pool %}"{{ addr.pool.name }}"
+                    {% else %}null{% endif %},
+                "mac": {% if addr.macaddr %}"{{ addr.macaddr }}"
+                    {% else %}null{% endif %}
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}]
+}

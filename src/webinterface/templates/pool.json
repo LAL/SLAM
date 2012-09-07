@@ -1,0 +1,23 @@
+{
+    "name": "{{ pool.name }}",
+    "definition": "{{ pool.addr_range_str }}",
+    "address_used": {{ addr_used }},
+    "address_available": {{ addr_avail }},
+    "category": {% if pool.category %}"{{ pool.category }}"
+        {% else %}null{% endif %},
+    "addresses":
+        [{% for addr in addrs %}
+            {
+                "address": "{{ addr.addr }}",
+                "host": {% if addr.host %}"{{ addr.host.name }}"
+                    {% else %}null{% endif %}
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}],
+    "properties":
+        [{% for prop in props %}
+            {
+                "name": "{{ prop.name }}",
+                "value": "{{ prop.value }}"
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}]
+}

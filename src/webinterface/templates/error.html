@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Error: " %}{{ title }}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Error: " %}{{ title }}</h1>
+
+    <p style="font-weight:bold; color:red;">{{ msg }}</p>
+
+    {% if referer %}
+        <p><a href="{{ referer }}"></a></p>
+    {% endif %}
+{% endblock %}

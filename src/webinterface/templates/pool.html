@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Pool" %} {{ pool.name }}{% endblock %}
+
+{% block content %}
+    {% trans "Modify" as modify_trans %}
+    {% trans "Delete" as delete_trans %}
+
+    <h1>{% trans "Pool" %} {{ pool.name }}</h1>
+    <ul>
+        {% if pool.category %}
+            <li>{% trans "Category" %}: {{ pool.category}}</li>
+        {% endif %}
+        <li>{% trans "Range" %}: {{ pool.addr_range_str }}</li>
+        <li>{% trans "Usage" %}: {{ addr_used }}/{{ addr_avail }}
+            ({{ addr_perc }}%)</li>
+    </ul>
+    <h2>{% blocktrans with pname=pool.name %}Addresses in {{ pname }}
+        {% endblocktrans %}</h2>
+    <ul>
+        {% for addr in addrs %}{% if addr.addr %}
+            <li><a href="/address/{{ addr.addr }}">{{ addr.addr }}</a>
+                {% if addr.host %}
+                    - <a href="/host/{{ addr.host.name }}">
+                        {{ addr.host.name }}</a>
+                {% endif %}
+            </li>
+        {% endif %}{% endfor %}
+    </ul>
+
+    <h2>{% trans "Additional information" %}</h2>
+
+    <ul>
+        {% for prop in props %}
+            <li>
+                <form method="DELETE" action="/property">
+                    {{ prop.name }}: {{ prop.value }}
+                    <input type="hidden" name="pool" value="{{ pool.name }}">
+                    <input type="hidden" name="name" value="{{ prop.name }}">
+                    <input type="submit" value="X">
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h3>{% trans "Add new information" %}</h3>
+
+    <form method="POST" action="/property">
+        <input type="hidden" name="pool" value="{{ pool.name }}"><br>
+        {% trans "Name" %}: <input type="text" name="name"><br>
+        {% trans "Value" %}: <input type="text" name="value"><br>
+        <input type="submit" value="{% trans "Add" %}">
+    </form>
+
+    <h2>{{ modify_trans }}</h2>
+    <form method="PUT">
+        {% trans "Name" %}: <input type="text" name="newname"><br>
+        {% trans "Category" %}: <input type="text" name="category"><br>
+        <input type="submit" value="{{ modify_trans }}">
+    </form>
+
+    <h2>{{ delete_trans }}</h2>
+    <form method="DELETE">
+        <input type="submit" value="{{ delete_trans }}">
+    </form>
+{% endblock %}

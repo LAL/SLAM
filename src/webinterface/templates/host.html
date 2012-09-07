@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Host" %} {{ host.name }}{% endblock %}
+
+{% block content %}
+    {% trans "Modify" as modify_trans %}
+    {% trans "Delete" as delete_trans %}
+
+    <h1>{% trans "Host" %} {{ host.name }}</h1>
+
+    {% if addrs %}
+        <h2>{% blocktrans with hname=host.name %}
+            Addresses allocated to {{ hname }}{% endblocktrans %}</h2>
+        <ul>
+            {% for addr in addrs %}
+                <li>
+                    <a href="/address/{{ addr.addr }}">{{ addr.addr }}</a>
+                    {% if addr.pool %}{% trans " (pool: " %}
+                        <a href="/pool/{{ addr.pool.name }}">
+                            {{ addr.pool.name }}</a>)
+                    {% endif %}
+                    {% if addr.macaddr %}{% trans ", mac: " %}
+                        {{ addr.macaddr }}{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h2>{{ modify_trans }}</h2>
+    <form method="PUT">
+        {% trans "Name" %}: <input type="text" name="newname"><br>
+        {% trans "Mac address" %}: <input type="text" name="macaddr"><br>
+        <input type="submit" value="{{ modify_trans }}">
+    </form>
+
+    <h2>{{ delete_trans }}</h2>
+    <form method="DELETE">
+        <input type="submit" value="{{ delete_trans }}">
+    </form>
+{% endblock %}

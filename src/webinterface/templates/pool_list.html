@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Pool list" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Pool list" %}</h1>
+    {% if pool_list %}
+        <ul>
+        {% for pool in pool_list %}
+            <li><a href="/pool/{{ pool.name }}">{{ pool.name }}</a>,
+                {% trans "range" %}: {{ pool.addr_range_str }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h1>{% trans "Create a new pool" %}</h1>
+    <form method="POST">
+        {% trans "Name" %}: <input type="text" name="name"><br>
+        {% trans "Range definition" %}: <input type="text" name="definition">
+        <br>
+        <input type="submit" value="{% trans "Create" %}">
+    </form>
+{% endblock %}

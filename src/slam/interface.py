@@ -1,0 +1,593 @@
+"""Helper to execute actions on the database independantly from the interface
+and output format."""
+
+import logging
+from slam import generator, models
+from slam.log import DbLogHandler
+
+
+# set-up logging to the database
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.INFO)
+DBLOGHANDLER = DbLogHandler()
+DBLOGHANDLER.setLevel(logging.INFO)
+LOGGER.addHandler(DBLOGHANDLER)
+
+
+class InexistantObjectError(Exception):
+    """Exception raised when the given object name was not found in the
+    database."""
+    pass
+
+
+class DuplicateObjectError(Exception):
+    """Exception raised when trying to create an object that already exists."""
+    pass
+
+
+class MissingParameterError(Exception):
+    """Exception raised when a parameter is missing."""
+    pass
+
+
+class ConfigurationFormatError(Exception):
+    """Exception raised when the given configuration format is not
+    supported."""
+    pass
+
+
+class PropertyFormatError(Exception):
+    """Exception raised if the property format is invalid."""
+    pass
+
+
+def get_host(host_name=None):
+    """Retrieve a host object from the database."""
+    host = None
+
+    if host_name:
+        if models.Host.objects.filter(name=host_name):
+            host = models.Host.objects.get(name=host_name)
+        else:
+            raise InexistantObjectError("Could not find host named: "
+                + str(host_name))
+
+    return host
+
+
+def get_pool(pool_name=None, category=None):
+    """Retrieve a pool object from the database."""
+    if pool_name:
+        if not models.Pool.objects.filter(name=pool_name).count():
+            raise InexistantObjectError("Could not find pool named: "
+                + str(pool_name))
+        return models.Pool.objects.get(name=pool_name)
+    elif category:
+        for poolobj in models.Pool.objects.exclude(category=""):
+            if category in poolobj.category.split(","):
+                return poolobj
+        raise InexistantObjectError("No pool in category: " + category)
+    else:
+        return None
+
+
+def create_pool(pool_name=None, definition=None, category=None):
+    """Try to retrieve the given *pool_name* from the database or a create a
+    new one with the given *definition* otherwise."""
+    if models.Pool.objects.filter(name=pool_name):
+        raise DuplicateObjectError("Pool named \""
+            + pool_name + "\" already exists.")
+    if not pool_name:
+        raise MissingParameterError("Missing a name for the pool to create.")
+    if not definition:
+        raise MissingParameterError("Missing pool definition.")
+    if category is None:
+        category = ""
+    else:
+        category = ",".join(category)
+    pool = models.Pool.create(name=pool_name, definition=definition,
+        category=category)
+    LOGGER.info("Created pool: " + str(pool))
+    pool.save()
+
+    return pool
+
+
+def create_generator(name, type_, outputfile, default=False, header=None,
+        footer=None, checkfile=None, timeout=None, domain=None, pools=None):
+    """Create a new generator object."""
+    if name and models.Config.objects.filter(name=name):
+        raise DuplicateObjectError("Generator \"" + name
+            + "\" already exists.")
+    if not name:
+        raise MissingParameterError(
+            "You must provide a name for the new generator.")
+    if not type_:
+        raise MissingParameterError(
+            "You must provide a type for the new generator.")
+    if not outputfile:
+        raise MissingParameterError(
+            "You must provide an output file for the new generator.")
+
+    genobj = None
+    if type_ == "bind":
+        genobj = generator.BindConfig.create(name=name, default=default,
+            outputfile=outputfile, header=header, footer=footer,
+            checkfile=checkfile, update=True, timeout=timeout)
+    elif type_ == "revbind":
+        genobj = generator.RevBindConfig.create(name=name, default=default,
+            outputfile=outputfile, header=header, footer=footer,
+            checkfile=checkfile, update=True, timeout=timeout)
+    elif type_ == "dhcp":
+        genobj = generator.DhcpdConfig.create(name=name, default=default,
+            outputfile=outputfile, header=header, footer=footer,
+            checkfile=checkfile, update=True)
+    elif type_ == "quattor":
+        genobj = generator.QuattorConfig.create(name=name, default=default,
+            outputfile=outputfile, header=header, checkfile=checkfile,
+            footer=footer, update=True)
+    elif type_ == "laldns":
+        genobj = generator.LalDnsConfig.create(name=name, default=default,
+            outputfile=outputfile, header=header, checkfile=checkfile,
+            footer=footer, update=True)
+    else:
+        raise MissingParameterError("Wrong configuration format: " + type_)
+
+    LOGGER.info("Created new generator: " + str(genobj))
+    if pools:
+        for pool in pools:
+            pool = get_pool(pool)
+            pool.generator.add(genobj)
+
+    genobj.save()
+    return genobj
+
+
+def get_generator(name):
+    """Get the correct configuration generator object."""
+    genobj = None
+
+    if name:
+        if not models.Config.objects.filter(name=name):
+            raise InexistantObjectError("Could not find generator: "
+                + name)
+
+        confobj = models.Config.objects.get(name=name)
+        if confobj.conftype == "bind":
+            genobj = generator.BindConfig.objects.get(name=name)
+        elif confobj.conftype == "rbind":
+            genobj = generator.RevBindConfig.objects.get(name=name)
+        elif confobj.conftype == "dhcp":
+            genobj = generator.DhcpdConfig.objects.get(name=name)
+        elif confobj.conftype == "quatt":
+            genobj = generator.QuattorConfig.objects.get(name=name)
+        elif confobj.conftype == "laldns":
+            genobj = generator.LalDnsConfig.objects.get(name=name)
+        else:
+            raise InexistantObjectError("Could not find generator: "
+                + name)
+
+    return genobj
+
+
+def get_default_generators(conf_type=None):
+    """Get every generators marked as default, eventually filtered by
+    configuration type."""
+    gens = generator.Config.objects.filter(default=True)
+    if conf_type:
+        gens = gens.filter(conftype=conf_type)
+
+    res = []
+    for gen in gens:
+        tmp = get_generator(gen.name)
+        if tmp:
+            res.append(tmp)
+
+    return res
+
+
+def modify_generator(name, default=False, outputfile=None, header=None,
+        footer=None, checkfile=None, timeout=None, domain=None, pools=None):
+    """Modify an existing generator."""
+    gen = get_generator(name)
+    if gen is None:
+        raise InexistantObjectError("Could not find generator: " + name)
+
+    logmsg = ""
+    if default:
+        gen.default = not gen.default
+        if gen.default:
+            logmsg += ", set as default"
+        else:
+            logmsg += ", removed default"
+    if outputfile:
+        gen.outputfile = outputfile
+        logmsg += ", new output file (" + str(outputfile) + ")"
+    if header:
+        gen.headerfile = header
+        logmsg += ", new header file (" + str(header) + ")"
+    if footer:
+        gen.footerfile = footer
+        logmsg += ", new footer file (" + str(footer) + ")"
+    if checkfile:
+        gen.checkfile = ", ".join(checkfile)
+        logmsg += ", new check files (" + str(checkfile) + ")"
+    if timeout:
+        gen.timeout = timeout
+        logmsg += ", new timeout (" + str(timeout) + ")"
+    if domain:
+        gen.domain = domain
+        logmsg += ", new domain (" + str(domain) + ")"
+    if pools:
+        gen.pool_set.clear()
+        for pool in pools:
+            gen.pool_set.add(get_pool(pool))
+            logmsg += ", new pool (" + str(pool.name) + ")"
+
+    # skip the first comma
+    if logmsg:
+        logmsg = logmsg[1:]
+
+    LOGGER.info("Modified generator " + str(name) + logmsg)
+    gen.save()
+
+
+def generate(gen_name=None, pool_name=None, conf_format=None,
+        output=None, header=None, footer=None, checkfile=None, timeout=None,
+        domain=None, update=True):
+    """Generate a specified configuration file for the addresses in the given
+    pool. It returns a list of duplicate records found in the checkfile of the
+    generator."""
+    pools = []
+    if pool_name:
+        for pool in pool_name:
+            pools.append(get_pool(pool))
+
+    gens = []
+    gen = None
+    if gen_name:
+        gen = get_generator(gen_name)
+    elif not conf_format or not output:
+        gens = get_default_generators(conf_format)
+    else:
+        if conf_format == "bind":
+            gen = generator.BindConfig.create(outputfile=output, header=header,
+                footer=footer, checkfile=checkfile, timeout=timeout,
+                update=update, domain=domain)
+        elif conf_format == "revbind":
+            gen = generator.RevBindConfig.create(outputfile=output,
+                header=header, footer=footer, checkfile=checkfile,
+                timeout=timeout, update=update, domain=domain)
+        elif conf_format == "dhcp":
+            gen = generator.DhcpdConfig.create(outputfile=output,
+                header=header, footer=footer, checkfile=checkfile,
+                update=update, domain=domain)
+        elif conf_format == "quattor":
+            gen = generator.QuattorConfig.create(outputfile=output,
+                header=header, footer=footer, checkfile=checkfile,
+                update=update, domain=domain)
+        elif conf_format == "laldns":
+            gen = generator.LalDnsConfig.create(outputfile=output,
+                header=header, footer=footer, checkfile=checkfile,
+                update=update, domain=domain)
+        else:
+            raise ConfigurationFormatError(
+                "Unknown configuration format: " + conf_format)
+
+    # Individual generators are treated as a list of one generator
+    if (not gens) and gen:
+        gens = [gen]
+
+    duplicates = []
+    for gen in gens:
+        if "output" not in gen.__dict__ or not gen.output:
+            gen.load()
+
+        hosts = []
+        relatedpools = models.Pool.objects.filter(generator__name=gen.name,
+                generator__conftype=gen.conftype)
+        if relatedpools:
+            pools = list(relatedpools)
+
+        for host in models.Host.objects.all():
+            if not pools:
+                addrs = list(models.Address.objects.filter(host=host))
+            else:
+                addrs = []
+                for pool in pools:
+                    addrs.extend(list(models.Address.objects.filter(host=host,
+                        pool=pool)))
+            hosts.append((host, addrs, host.alias_set.all()))
+
+        poolmsg = ""
+        if pools:
+            poolmsg = " for pool " + ", ".join([pool.name for pool in pools])
+        if update:
+            LOGGER.info("Update configuration with generator " + str(gen)
+                + poolmsg)
+            duplicates.extend(gen.updateconf(hosts))
+        else:
+            LOGGER.info("Create new configuration with generator " + str(gen)
+                + poolmsg)
+            duplicates.extend(gen.createconf(hosts))
+
+    for dup_host, dup_file, dup_line in duplicates:
+        LOGGER.warn("Duplicate record: a record already exists for "
+            + "host " + str(dup_host) + " in file " + dup_file
+            + " at line " + str(dup_line))
+
+    return duplicates
+
+
+def allocate_address(pool, host=None, address=None, random=False,
+    category=None):
+    """Allocate a new address from *pool* to *host*."""
+    if not pool:
+        if address:
+            for poolobj in models.Pool.objects.all():
+                poolobj._update()
+                if (poolobj.addr_range is not None
+                        and address in poolobj.addr_range):
+                    pool = poolobj
+                    break
+        elif category:
+            pool = get_pool(None, category)
+        else:
+            raise MissingParameterError("Could not find a pool for the given"
+                " pool name, category or address.")
+
+    addr = None
+    if host:
+        if address:
+            addr = pool.allocate(address, host)
+        else:
+            pools = [pool]
+            if category:
+                for poolobj in models.Pool.objects.all():
+                    if (poolobj != pool
+                            and  category in pool.category.split(",")):
+                        pools.append(pool)
+            for poolobj in pools:
+                try:
+                    if random:
+                        addr = poolobj.get_rand()
+                    else:
+                        addr = poolobj.get()
+                    if addr:
+                        break
+                except models.FullPoolError:
+                    pass
+
+        if addr:
+            LOGGER.info("Assign address " + str(addr) + " to host "
+                + str(host))
+            addr.host = host
+            addr.save()
+        else:
+            if category:
+                msg = ("No address available in pools from category "
+                    + category)
+            else:
+                msg = "No address available in pool " + pool.name
+            LOGGER.error(msg)
+            raise models.FullPoolError(msg)
+    else:
+        addr = pool.allocate(address)
+        LOGGER.info("Reserve address " + str(addr) + " in pool " + pool.name)
+
+    return addr
+
+
+def create_host(host, pool=None, address=None, mac=None, random=False,
+    alias=None, category=None):
+    """Create a new host and assign it the first element of addesses or
+    automatically one from the given pool, eventually random."""
+    if not host:
+        raise MissingParameterError(
+            "You must provide a name for the new host.")
+
+    if not alias:
+        alias = []
+
+    if models.Host.objects.filter(name=host):
+        raise DuplicateObjectError("Host \"" + host + "\" already exists.")
+    else:
+        hostobj = models.Host(name=host)
+        logmac = ""
+        if mac:
+            logmac = " (mac: " + str(mac) + ")"
+
+        LOGGER.info("Create new host \"" + str(host) + logmac + "\".")
+        hostobj.save()
+
+    if category:
+        hostobj.category = category
+        hostobj.save()
+
+    for alia in alias:
+        if models.Alias.objects.filter(name=alia):
+            aliasobj = models.Alias.objects.get(name=alia)
+        else:
+            aliasobj = models.Alias(name=alia)
+        aliasobj.save()
+        aliasobj.host.add(hostobj)
+        aliasobj.save()
+
+    if pool or category or address:
+        addrobj = allocate_address(pool, hostobj, address, random, category)
+        pool = addrobj.pool
+        addrres = str(addrobj)
+
+        if mac:
+            if addrobj:
+                addrobj.macaddr = mac
+                addrobj.save()
+            elif hostobj.address_set.all():
+                first_addr =  hostobj.address_set.all()[0]
+                first_addr.macaddr = mac
+                first_addr.save()
+        LOGGER.info("Assigned address " + addrres + " to " + str(host)
+            + " from pool " + pool.name)
+        return str(hostobj), addrres
+    else:
+        if mac:
+            addrobj = models.Address(macaddr=mac, host=hostobj)
+            addrobj.save()
+        return str(hostobj), None
+
+
+def delete(pool=None, addresses=None, hosts=None):
+    """Delete objects from the database: address, host or pool."""
+    if addresses:
+        for addr in addresses:
+            if not models.Address.objects.filter(addr=addr):
+                raise InexistantObjectError("The addresse \"" + addr
+                    + "\" was not found in the database")
+            else:
+                if pool is None:
+                    pool = models.Address.objects.get(addr=addr).pool
+
+                LOGGER.info("Delete address " + str(addr) + " from pool "
+                    + str(pool.name))
+                pool.free(addr)
+    elif hosts:
+        for host in hosts:
+            hostobj = models.Host.objects.get(name=host)
+            # addresses are automatically deleted = considered as free
+            addrs = []
+            for addr in models.Address.objects.filter(host=hostobj):
+                if addr.addr:
+                    addrs.append(addr.addr)
+            LOGGER.info("Delete host " + str(hostobj)
+                + ", releasing addresses: " + ", ".join(addrs))
+            hostobj.delete()
+    elif pool:
+        # addresses are automatically deleted
+        LOGGER.info("Delete pool " + str(pool))
+        pool.delete()
+
+
+def modify(pools=None, host=None, category=None, address=None, mac=None,
+        newname=None, alias=None):
+    """Modify the name of an object in the database."""
+    poolobjs = []
+    if not alias:
+        alias = []
+
+    if pools:
+        for pool in pools:
+            poolobjs.append(get_pool(pool))
+    hostobj = get_host(host)
+    addrobj = None
+    if models.Address.objects.filter(addr=address):
+        addrobj = models.Address.objects.get(addr=address)
+
+    if address and addrobj and mac:
+        addrobj.macaddr = mac
+        LOGGER.info("Modify address " + str(addrobj) + ": assign MAC " + mac)
+        addrobj.save()
+    elif host and hostobj:
+        if not newname and not mac and not alias:
+            raise MissingParameterError("Please provide the new name "
+                + "or a new mac address for the host.")
+        if mac:
+            addrs = hostobj.address_set.all()
+            LOGGER.info("Assign new MAC address " + mac + " to host " + host)
+            if addrs:
+                addrs[0].macaddr = mac
+            else:
+                addrs = [models.Address(macaddr=mac, host=hostobj)]
+            addrs[0].save()
+        if newname:
+            LOGGER.info("Changed name of host " + hostobj.name + " to "
+                + newname)
+            hostobj.name = newname
+            hostobj.save()
+        if category:
+            category = category[0]
+            LOGGER.info("Changed category of host " + hostobj.name + " to "
+                + category)
+            hostobj.category = category
+            hostobj.save()
+        for alia in alias:
+            LOGGER.info("New alias " + alia + " for host " + host)
+            if models.Alias.objects.filter(name=alia):
+                aliasobj = models.Alias.objects.get(name=alia)
+            else:
+                aliasobj = models.Alias(name=alia)
+                aliasobj.save()
+            aliasobj.host.add(hostobj)
+            aliasobj.save()
+    elif pools and poolobjs:
+        poolobj = poolobjs[0]
+        if not category and not newname:
+            raise MissingParameterError(
+                "Please provide the new name or a category for the pool.")
+        if category:
+            category = ",".join(category)
+            LOGGER.info("Changed category of pool " + poolobj.name + " to "
+                + category)
+            poolobj.category = category
+        if newname:
+            LOGGER.info("Changed namme of pool " + poolobj.name + " to "
+                + newname)
+            poolobj.name = newname
+        poolobj.save()
+    else:
+        raise InexistantObjectError(
+            "Could not find the object to modify or wrong action.")
+
+
+def quick_set_prop(prop=None, pool=None, host=None, del_=False):
+    """Parse the property set format value=key and set the property."""
+    if del_:
+        set_prop(prop, None, pool, host, del_)
+    else:
+        if prop.find("=") < 0:
+            raise PropertyFormatError("Property format is property=value.")
+        prop_name = prop[:prop.find("=")]
+        prop_value = prop[prop.find("=") + 1:]
+        set_prop(prop_name, prop_value, pool, host, del_)
+
+
+def set_prop(name=None, value=None, pool=None, host=None, del_=False):
+    """Set or change a property."""
+    hostobj = None
+    poolobj = None
+
+    if host is not None:
+        hostobj = get_host(host)
+        if del_:
+            LOGGER.info("Deleted property " + name + " of host " + host)
+        else:
+            LOGGER.info("Changed property " + name + " of host " + host +
+                " to " + value)
+    elif pool is not None:
+        poolobj = get_pool(pool)
+        if del_:
+            LOGGER.info("Deleted property " + name + " of pool " + pool)
+        else:
+            LOGGER.info("Changed property " + name + " of pool " + pool
+                + " to " + value)
+    else:
+        raise MissingParameterError(
+            "You must specify a pool or a host name to set the property of.")
+
+    if poolobj is None:
+        props = models.Property.objects.filter(host=hostobj)
+    else:
+        props = models.Property.objects.filter(pool=poolobj)
+
+    if del_:
+        if props.filter(name=name):
+            props.get(name=name).delete()
+        else:
+            raise InexistantObjectError("Could not find property: " + name)
+    else:
+        if props.filter(name=name):
+            prop_obj = props.get(name=name)
+            prop_obj.value = value
+        else:
+            prop_obj = models.Property(name=name, value=value,
+                host=hostobj, pool=poolobj)
+        prop_obj.save()
