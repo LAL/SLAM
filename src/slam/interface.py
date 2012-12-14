@@ -2,7 +2,7 @@
 and output format."""
 
 import logging, datetime
-from slam import generator, models
+from slam import generator, models, addrrange
 from slam.log import DbLogHandler
 
 
@@ -48,6 +48,8 @@ def get_host(host_name=None):
     if host_name:
         if models.Host.objects.filter(name=host_name):
             host = models.Host.objects.get(name=host_name)
+        elif models.Alias.objects.filter(name=host_name):
+            host = models.Alias.objects.get(name=host_name).host
         else:
             raise InexistantObjectError("Could not find host named: "
                 + str(host_name))
@@ -622,3 +624,14 @@ def set_prop(name=None, value=None, pool=None, host=None, del_=False):
             prop_obj = models.Property(name=name, value=value,
                 host=hostobj, pool=poolobj)
         prop_obj.save()
+
+
+def sort_addresses(addrs):
+    """Sort addresses given as argument in place, all addresses must belong to
+    the same pool."""
+    if not addrs or not addrs[0].pool:
+        return addrs
+    if not addrs[0].pool.addr_range:
+        addrs[0].pool._update()
+    sortablefunc = addrs[0].pool.addr_range.sortable
+    return sorted(addrs, key=sortablefunc)

@@ -166,7 +166,7 @@ def _list_hosts(args):
             for prop in models.Property.objects.filter(host=hostobj):
                 print str(prop)
         else:
-            for hostobj in models.Host.objects.all():
+            for hostobj in models.Host.objects.all().order_by("name"):
                 msg = str(hostobj)
                 if hostobj.alias_set.all():
                     msg += " (" + " ".join([str(alias) for alias
@@ -226,7 +226,9 @@ def list_(args):
             + " (" + str(used * 100 / tot) + "%)")
         if pool.category:
             print("Categories: " + ", ".join(pool.category.split(",")))
-        for addr in models.Address.objects.filter(pool=pool).order_by("addr"):
+        addrs = list(models.Address.objects.filter(pool=pool))
+        addrs = interface.sort_addresses(addrs)
+        for addr in addrs:
             print str(addr) + "\t\t" + str(addr.host)
         for prop in models.Property.objects.filter(pool=pool).order_by("name"):
             print str(prop)

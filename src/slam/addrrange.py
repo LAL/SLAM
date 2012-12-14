@@ -43,6 +43,10 @@ class Ip4Range:
     range_type = 'ip4'
     dns_record = 'A'
 
+    def sortable(_, addr):
+        """Returns a sortable representation of an address from this range."""
+        return _parse_ip4(addr.addr)
+
     def __init__(self, iprange):
         """Initialize the range with the given subnet *iprange* with format
         x.x.x.x/x."""
@@ -142,6 +146,10 @@ class Ip6Range:
     range_type = "ip6"
     dns_record = "AAAA"
 
+    def sortable(_, addr):
+        """Returns a sortable representation of an address from this range."""
+        return _parse_ip6(addr.addr)
+
     def __init__(self, iprange):
         """Initialize the range with the given subnet *iprange* with format
         12ab:34cd::89ef/x.
@@ -199,6 +207,10 @@ class AddrSet:
     """
 
     range_type = "set"
+
+    def sortable(_, addr):
+        """Returns a sortable representation of an address from this range."""
+        return addr.addr
 
     def __init__(self, addr_set=None, dns_record="A"):
         """Initialize a new address set of DNS record type *dns_record*."""
