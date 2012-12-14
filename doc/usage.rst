@@ -31,6 +31,11 @@ Usage
         [--checkfile CHECK]
         [--timeout TIMEOUT]
         [--domain DOMAIN]
+        [--alias ALIAS]
+        [--inventory INVENTORY]
+        [--serial SERIAL]
+        [--duration DURATION]
+        [--lastuse LASTUSE]
         [ARG...]
 
 .. program:: slam-cli
@@ -110,6 +115,26 @@ Usage
 
     Specify a domain that will be used for every entry in the generated
     configuration files.
+
+.. option:: --alias ALIAS
+
+    Specify one or more alias that can be used instead of the host name.
+
+.. option:: --inventory INVENTORY
+
+    Specify the inventory number of a host.
+
+.. option:: --serial SERIAL
+
+    Specify the serial number of a host.
+
+.. option:: --duration DURATION
+
+    Specify the duration of an address allocation, in days.
+
+.. option:: --lastuse LASTUSE
+
+    Update the time the address was last used with the new timestamp.
 
 .. option:: ARG
 

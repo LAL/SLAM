@@ -65,12 +65,14 @@ def request_data(request):
 
 @login_required
 def logout(request):
+    """View use to destroy the user session."""
     auth.logout(request)
     return msg_view(request, _("Disconnected"),
         _("You have successfully been disconnected from SLAM."))
 
 @csrf_exempt
 def login(request):
+    """View used to log into the interface."""
     if request.method == "POST":
         user = auth.authenticate(username=request.POST["username"],
             password=request.POST["password"])

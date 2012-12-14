@@ -442,7 +442,7 @@ class DhcpdConfig(Config):
                 line = "host " + host.name + " { "
                 if addr.macaddr:
                     line = line + "hardware ethernet " + addr.macaddr + "; "
-                line = line + "fixed-address " + str(addr) + "; }\n"
+                line = line + "fixed-address " + str(host.name) + "; }\n"
                 self.output.write(line)
 
 
@@ -474,19 +474,8 @@ class LalDnsConfig(Config):
         file used by the LAL."""
         for host, addrs, aliases in hosts:
             for addr in addrs:
-                if (addr.pool and addr.pool.addr_range_type == "ip4"
-                        and not aliases):
-                    if host.category:
-                        alias = host.category + "-"
-                    else:
-                        alias = "pc-"
-                    alias += "{0:02d}".format(int(str(addr).split(".")[2]))
-                    alias += "{0:03d}".format(int(str(addr).split(".")[3]))
-                    self.output.write(str(addr) + "\t" + alias + "\t"
-                        + host.name + "\n")
-                else:
-                    alias = ""
-                    for aliasobj in aliases:
-                        alias += "\t" + aliasobj.name
-                    self.output.write(str(addr) + "\t" + host.name
-                        + alias + "\n")
+                alias = ""
+                for aliasobj in aliases:
+                    alias += "\t" + aliasobj.name
+                self.output.write(str(addr) + "\t" + host.name
+                    + alias + "\n")

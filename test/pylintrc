@@ -18,7 +18,9 @@ persistent=no
 # W0232: Class has no __init__ method
 # W0613: Unused argument
 # R0201: Method could be a function
-disable=W0201,W0231,W0232,W0613,R0201
+# R0913: Too many arguments
+# R0915: Too many statements
+disable=W0201,W0231,W0232,W0613,R0201,R0913,R0915
 
 
 [REPORTS]
@@ -39,9 +41,6 @@ generated-members=objects,address_set,type_,_check_host
 
 # Minimum number of public methods for a class (see R0903).
 min-public-methods=0
-
-# Maximum number of arguments
-max-args=10
 
 # Maximum number of return statments per function
 max-returns=10

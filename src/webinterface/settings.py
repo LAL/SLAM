@@ -1,3 +1,7 @@
+import sys
+
+# system's configuration is the default
+sys.path.append("/etc/slam")
 from configuration import *
 
 # Django settings for webinterface project.

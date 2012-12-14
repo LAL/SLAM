@@ -137,8 +137,8 @@ def test_dhcp():
     assert(out.getvalue() == "\n#" + SLAM_HDR1 + "#" + SLAM_HDR2
         + "option domain-name \"foo.example\";\n"
         + "host host1 { hardware ethernet 01:12:34:56:78:9a; "
-        + "fixed-address 192.168.50.30; }\n"
-        + "host host2 { fixed-address 192.168.42.137; }\n"
+        + "fixed-address host1; }\n"
+        + "host host2 { fixed-address host2; }\n"
         + "#" + SLAM_FTR)
 
 
@@ -248,8 +248,8 @@ def test_checkfile():
         "117.103.168.192.in-addr.arpa. 1D IN PTR test.domain.\n"
         + "118.103.168.192.in-addr.arpa. 1D IN PTR host1.domain.")
     _generator_checkfile(generator.DhcpdConfig,
-        "host test { fixed-address 1.2.3.4; }\n"
-        + "host host1 { fixed-address 1.1.1.1; }")
+        "host test { fixed-address test; }\n"
+        + "host host1 { fixed-address host1; }")
     _generator_checkfile(generator.QuattorConfig,
         "escape(\"test\"),\"1.2.3.4\"\n"
         + "escape(\"host2\"),\"1.2.2.2\"")

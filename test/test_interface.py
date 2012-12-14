@@ -1,6 +1,6 @@
 """Test module for the generic interface."""
 
-import os, tempfile
+import os, tempfile, datetime
 from nose.tools import assert_raises
 
 from slam.models import Pool, Host, Address, Property
@@ -51,6 +51,15 @@ def test_getcreate_host():
     interface.create_pool("pool10-2", "172.16.102.0/24", ["cat10"])
     interface.create_host(host="host10-25", address="172.16.102.234")
     assert(Address.objects.get(host__name="host10-25").pool.name == "pool10-2")
+
+    interface.create_host(host="host10-30",
+       pool=interface.get_pool("pool10-2"), serial="serialnum",
+       inventory="inventorynum", duration=42)
+    hostobj = interface.get_host("host10-30")
+    assert(hostobj.serial == "serialnum"
+        and hostobj.inventory == "inventorynum" and
+        Address.objects.get(host__name="host10-30").duration
+            > Address.objects.get(host__name="host10-30").date + datetime.timedelta(days=41))
 
 
 def test_macaddress():
@@ -129,6 +138,12 @@ def test_modify():
     interface.create_host(host="host30-4")
     interface.modify(host="host30-4", mac="imac")
     assert Address.objects.get(host__name="host30-4").macaddr == "imac"
+    hostobj = interface.get_host("host30-4")
+    assert(not (hostobj.serial or hostobj.inventory or
+        Address.objects.get(host__name=hostobj.name).duration))
+    interface.modify(host=hostobj.name, serial="srlnm", inventory="invtnm")
+    hostobj = interface.get_host("host30-4")
+    assert hostobj.serial == "srlnm" and hostobj.inventory == "invtnm"
 
 
 def test_getcreate_generator():

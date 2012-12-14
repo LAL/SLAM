@@ -1,7 +1,7 @@
 """Helper to execute actions on the database independantly from the interface
 and output format."""
 
-import logging
+import logging, datetime
 from slam import generator, models
 from slam.log import DbLogHandler
 
@@ -320,7 +320,7 @@ def generate(gen_name=None, pool_name=None, conf_format=None,
 
 
 def allocate_address(pool, host=None, address=None, random=False,
-    category=None):
+    category=None, duration=None):
     """Allocate a new address from *pool* to *host*."""
     if not pool:
         if address:
@@ -375,11 +375,16 @@ def allocate_address(pool, host=None, address=None, random=False,
         addr = pool.allocate(address)
         LOGGER.info("Reserve address " + str(addr) + " in pool " + pool.name)
 
+    if duration:
+        addr.duration = (datetime.datetime.now() +
+            datetime.timedelta(days=duration))
+        addr.save()
+
     return addr
 
 
 def create_host(host, pool=None, address=None, mac=None, random=False,
-    alias=None, category=None):
+    alias=None, category=None, serial="", inventory="", duration=None):
     """Create a new host and assign it the first element of addesses or
     automatically one from the given pool, eventually random."""
     if not host:
@@ -398,25 +403,31 @@ def create_host(host, pool=None, address=None, mac=None, random=False,
             logmac = " (mac: " + str(mac) + ")"
 
         LOGGER.info("Create new host \"" + str(host) + logmac + "\".")
-        hostobj.save()
 
     if category:
         hostobj.category = category
-        hostobj.save()
+    if serial:
+        hostobj.serial = serial
+    if inventory:
+        hostobj.inventory = inventory
+    hostobj.save()
 
     for alia in alias:
         if models.Alias.objects.filter(name=alia):
-            aliasobj = models.Alias.objects.get(name=alia)
+            LOGGER.warn("Alias " + str(alia) + " already exists and refers to "
+                + models.Alias.objects.get(name=alia).host.name)
         else:
-            aliasobj = models.Alias(name=alia)
-        aliasobj.save()
-        aliasobj.host.add(hostobj)
-        aliasobj.save()
+            aliasobj = models.Alias(name=alia, host=hostobj)
+            aliasobj.save()
 
     if pool or category or address:
         addrobj = allocate_address(pool, hostobj, address, random, category)
         pool = addrobj.pool
         addrres = str(addrobj)
+        if duration:
+            addrobj.duration = (
+                addrobj.date + datetime.timedelta(days=duration))
+            addrobj.save()
 
         if mac:
             if addrobj:
@@ -468,7 +479,8 @@ def delete(pool=None, addresses=None, hosts=None):
 
 
 def modify(pools=None, host=None, category=None, address=None, mac=None,
-        newname=None, alias=None):
+        newname=None, alias=None, serial="", inventory="", duration=None,
+        lastuse=None):
     """Modify the name of an object in the database."""
     poolobjs = []
     if not alias:
@@ -482,14 +494,23 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
     if models.Address.objects.filter(addr=address):
         addrobj = models.Address.objects.get(addr=address)
 
-    if address and addrobj and mac:
-        addrobj.macaddr = mac
-        LOGGER.info("Modify address " + str(addrobj) + ": assign MAC " + mac)
+    if address and addrobj and (mac or duration or lastuse):
+        if mac:
+            addrobj.macaddr = mac
+            LOGGER.info("Modify address " + str(addrobj) + ": assign MAC "
+                + mac)
+        if duration:
+            addrobj.duration = (datetime.datetime.now() +
+                datetime.timedelta(days=duration))
+            LOGGER.info("Modify address " + str(addrobj)
+                + ": new duration untill: " + str(addrobj.duration))
+        if lastuse:
+            addrobj.lastuse = datetime.datetime.fromtimestamp(lastuse)
         addrobj.save()
     elif host and hostobj:
-        if not newname and not mac and not alias:
+        if not (newname or mac or alias or serial or inventory):
             raise MissingParameterError("Please provide the new name "
-                + "or a new mac address for the host.")
+                + "or a new information for the host.")
         if mac:
             addrs = hostobj.address_set.all()
             LOGGER.info("Assign new MAC address " + mac + " to host " + host)
@@ -498,6 +519,16 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
             else:
                 addrs = [models.Address(macaddr=mac, host=hostobj)]
             addrs[0].save()
+        if serial:
+            hostobj.serial = serial
+            LOGGER.info("Changed host " + hostobj.name + ": new serial: "
+                + serial)
+            hostobj.save()
+        if inventory:
+            hostobj.inventory = inventory
+            LOGGER.info("Changed host " + hostobj.name
+                + ": new inventory number: " + inventory)
+            hostobj.save()
         if newname:
             LOGGER.info("Changed name of host " + hostobj.name + " to "
                 + newname)
@@ -512,12 +543,12 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
         for alia in alias:
             LOGGER.info("New alias " + alia + " for host " + host)
             if models.Alias.objects.filter(name=alia):
-                aliasobj = models.Alias.objects.get(name=alia)
+                LOGGER.warn(
+                    "Alias " + str(alia) + " already exists and refers to " +
+                    models.Alias.objects.get(name=alia).host.name)
             else:
-                aliasobj = models.Alias(name=alia)
+                aliasobj = models.Alias(name=alia, host=hostobj)
                 aliasobj.save()
-            aliasobj.host.add(hostobj)
-            aliasobj.save()
     elif pools and poolobjs:
         poolobj = poolobjs[0]
         if not category and not newname:

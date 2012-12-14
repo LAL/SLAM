@@ -34,6 +34,8 @@ class Host(models.Model):
 
     name = models.CharField(max_length=50)
     category = models.CharField(max_length=20, blank=True)
+    serial = models.CharField(max_length=50, blank=True)
+    inventory = models.CharField(max_length=50, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -51,7 +53,7 @@ class Alias(models.Model):
     aliastype = models.CharField(choices=ALIAS_TYPE, max_length=4,
         default="name")
     name = models.CharField(max_length=50)
-    host = models.ManyToManyField("Host")
+    host = models.ForeignKey(Host)
 
     def __unicode__(self):
         return self.name
@@ -217,6 +219,8 @@ class Address(models.Model):
     pool = models.ForeignKey(Pool, blank=True, null=True)
     host = models.ForeignKey(Host, null=True, blank=True)
     date = models.DateTimeField(auto_now=True)
+    duration = models.DateTimeField(blank=True, null=True)
+    lastuse = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
         return self.addr

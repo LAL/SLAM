@@ -2,7 +2,7 @@
 
 """Command-line interface for SLAM."""
 
-import os, sys, argparse, logging, signal
+import os, pwd, sys, argparse, logging, signal
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "webinterface.settings"
 
@@ -49,7 +49,16 @@ def init_argparser():
         help="Timeout for the generated configuration (ie: bind...).")
     argparser.add_argument("--domain", action="store",
         help="Domain for the hosts to generate.")
-    argparser.add_argument("--alias", action="append")
+    argparser.add_argument("--alias", action="append",
+        help="An alias for a host name")
+    argparser.add_argument("--inventory", action="store",
+        help="Inventory number for a host")
+    argparser.add_argument("--serial", action="store",
+        help="Serial number of a machine.")
+    argparser.add_argument("--duration", action="store",
+        help="Number of day for a temporary allocation.")
+    argparser.add_argument("--lastuse", action="store",
+        help="UNIX timestamp of the last use of the address.")
     argparser.add_argument("extra", metavar="ARG", nargs="*",
         help="Extra arguments required by specific actions (ie: modify).")
 
@@ -66,6 +75,11 @@ def parse_args(argparser, argv):
             logging.error("Please provide one --action argument.")
             sys.exit(1)
         args.action = args.action[0]
+
+    if args.duration:
+        args.duration = int(args.duration)
+    if args.lastuse:
+        args.lastuse = int(args.lastuse)
 
     return args
 
@@ -133,6 +147,10 @@ def _list_hosts(args):
                 hoststr = hoststr[:-2] # strip the last comma
 
             print "Host " + hoststr
+            if hostobj.serial:
+                print("Serial number: " + hostobj.serial)
+            if hostobj.inventory:
+                print("Inventory number: " + hostobj.inventory)
             if hostobj.category:
                 print("Category: " + hostobj.category)
             if hostobj.alias_set.count() > 0:
@@ -221,9 +239,11 @@ def list_(args):
             for addr in addrs:
                 print "Address: " + str(addr)
                 if addr.pool:
-                    print "\tPool: " + str(addr.pool)
+                    print("\tPool: " + str(addr.pool))
                 if addr.host:
-                    print "\tHost: " + str(addr.host)
+                    print("\tHost: " + str(addr.host))
+                if addr.duration:
+                    print("\tTemporary until: " + str(addr.duration))
     elif args.host:
         _list_hosts(args)
     #filter by property
@@ -263,7 +283,7 @@ def get(args):
                 if args.category:
                     args.category = args.category[0]
                 addr = interface.allocate_address(pool, hostobj,
-                    args.address[0], args.random, args.category)
+                    args.address[0], args.random, args.category, args.duration)
                 del args.address[0]
             except (interface.MissingParameterError,
                     models.FullPoolError) as exc:
@@ -295,7 +315,7 @@ def _create_host(args, pool):
         try:
             hostres, addrres = interface.create_host(host, pool,
                 args.address[0], macaddr, args.random, args.alias,
-                args.category[0])
+                args.category[0], args.serial, args.inventory, args.duration)
             if addrres is None:
                 print ("Host \"" + hostres + "\" have been created.")
             else:
@@ -422,7 +442,8 @@ def modify(args):
                 args.timeout, args.domain, args.pool_name)
         else:
             interface.modify(args.pool_name, args.host[0], args.category,
-                args.address[0], args.mac[0], args.extra[0], args.alias)
+                args.address[0], args.mac[0], args.extra[0], args.alias,
+                args.serial, args.inventory, args.duration, args.lastuse)
     except (interface.InexistantObjectError,
             interface.MissingParameterError) as exc:
         logging.error(str(exc))
@@ -456,11 +477,28 @@ def list_logs(args):
         print(str(entry))
 
 
+def authenticate():
+    """Check the system user list for authorized users."""
+    allowed = []
+    if os.access("/etc/slam/users", os.R_OK):
+        accessf = open("/etc/slam/users")
+        allowed = accessf.read().split("\n")
+        accessf.close()
+    if not allowed:
+        allowed = ["root"]
+    return pwd.getpwuid(os.getuid())[0] in allowed
+
+
 def run_cli():
     """Dispatch the command-line commands to the different handling
     functions."""
     # Terminate on broken pipes
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+
+    if not authenticate():
+        sys.stderr.write("You are not on the authorized users' list, "
+            "ask your system administrator to allow your username.\n")
+        sys.exit(1)
 
     argparser = init_argparser()
     del sys.argv[0]
