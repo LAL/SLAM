@@ -421,6 +421,9 @@ class DhcpdConfig(Config):
                 or addr.macaddr + ";" in records)):
             return False
 
+        if "host" not in line or len(line.split()) <= 1:
+            return True
+
         name = line[line.find("host"):].split()[1]
         return "host" not in line or not (host.name == name
             or ("." in name and host.name == name[:name.find(".")]))
