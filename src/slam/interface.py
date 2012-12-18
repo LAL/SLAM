@@ -2,7 +2,7 @@
 and output format."""
 
 import logging, datetime
-from slam import generator, models, addrrange
+from slam import generator, models
 from slam.log import DbLogHandler
 
 
@@ -249,7 +249,7 @@ def generate(gen_name=None, pool_name=None, conf_format=None,
     gen = None
     if gen_name:
         gen = get_generator(gen_name)
-    elif not conf_format or not output:
+    elif not conf_format and not output:
         gens = get_default_generators(conf_format)
     else:
         if conf_format == "bind":
@@ -274,7 +274,7 @@ def generate(gen_name=None, pool_name=None, conf_format=None,
                 update=update, domain=domain)
         else:
             raise ConfigurationFormatError(
-                "Unknown configuration format: " + conf_format)
+                "Unknown configuration format: " + str(conf_format))
 
     # Individual generators are treated as a list of one generator
     if (not gens) and gen:
@@ -285,21 +285,20 @@ def generate(gen_name=None, pool_name=None, conf_format=None,
         if "output" not in gen.__dict__ or not gen.output:
             gen.load()
 
-        hosts = []
         relatedpools = models.Pool.objects.filter(generator__name=gen.name,
                 generator__conftype=gen.conftype)
         if relatedpools:
             pools = list(relatedpools)
 
-        for host in models.Host.objects.all():
-            if not pools:
-                addrs = list(models.Address.objects.filter(host=host))
-            else:
-                addrs = []
-                for pool in pools:
-                    addrs.extend(list(models.Address.objects.filter(host=host,
-                        pool=pool)))
-            hosts.append((host, addrs, host.alias_set.all()))
+        genpools = []
+        if not pools:
+            pools = models.Pool.objects.all()
+        for pool in pools:
+            hosts = []
+            for addr in models.Address.objects.filter(pool=pool):
+                if addr.host:
+                    hosts.append((addr.host, addr, addr.host.alias_set.all()))
+            genpools.append((pool, hosts))
 
         poolmsg = ""
         if pools:
@@ -307,11 +306,11 @@ def generate(gen_name=None, pool_name=None, conf_format=None,
         if update:
             LOGGER.info("Update configuration with generator " + str(gen)
                 + poolmsg)
-            duplicates.extend(gen.updateconf(hosts))
+            duplicates.extend(gen.updateconf(genpools))
         else:
             LOGGER.info("Create new configuration with generator " + str(gen)
                 + poolmsg)
-            duplicates.extend(gen.createconf(hosts))
+            duplicates.extend(gen.createconf(genpools))
 
     for dup_host, dup_file, dup_line in duplicates:
         LOGGER.warn("Duplicate record: a record already exists for "

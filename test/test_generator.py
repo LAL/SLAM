@@ -37,7 +37,7 @@ def test_general():
     conf = generator.DhcpdConfig.create(name="newgen",
         outputfile="-", header=hdrpath, footer=ftrpath)
     assert str(conf) == "newgen (dhcp), output file: \"-\""
-    conf.createconf([])
+    conf.createconf([(None, [])])
     assert(out.getvalue() == "header1\nheader2\n" + "\n#" + SLAM_HDR1
         + "#" + SLAM_HDR2 + "#" + SLAM_FTR + "footer1\nfooter2\n")
 
@@ -45,7 +45,7 @@ def test_general():
     conf = generator.DhcpdConfig.objects.get(name="newgen")
     out = StringIO.StringIO()
     sys.stdout = out
-    conf.createconf([])
+    conf.createconf([(None, [])])
     assert conf.headerfile == hdrpath
     assert conf.footerfile == ftrpath
     assert conf.outputfile == "-"
@@ -89,11 +89,13 @@ def test_bind():
     addr1 = models.Address(addr="addr", pool=models.Pool(dns_record="A"))
     addr2 = models.Address(addr="rdda", pool=models.Pool(dns_record="A"))
     addr3 = models.Address(addr="addr2", pool=models.Pool(dns_record="AAAA"))
-    conf.createconf([(host1, [addr1, addr2], []), (host2, [addr3], [])])
+    conf.createconf([(models.Pool.create(name="tstp", definition="1.2.3.0/24"),
+        [(host1, addr1, []), (host1, addr2, []), (host2, addr3, [])])])
 
     assert(out.getvalue() == "stuff\n@ 1D IN SOA foo bar "
         + datetime.date.today().strftime("%Y%m%d") + "03 a b c d\n\n;"
         + SLAM_HDR1 + ";" + SLAM_HDR2
+        + "; Pool tstp (range: 1.2.3.0/24)\n"
         + "host1\t1D\tIN\tA\taddr\n"
         + "host1\t1D\tIN\tA\trdda\n"
         + "host2\t1D\tIN\tAAAA\taddr2\n"
@@ -113,7 +115,7 @@ def test_revbind():
         pool=models.Pool(addr_range_type="ip4", dns_record="A"))
     addr2 = models.Address(addr="fe80:1234:5678:9abc:def0:1234:5678:9abc",
         pool=models.Pool(addr_range_type="ip6", dns_record="AAAA"))
-    conf.createconf([(host1, [addr1], []), (host2, [addr2], [])])
+    conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
 
     print("@@@" + out.getvalue() + "@@@")
     assert(out.getvalue() == "\n;" + SLAM_HDR1 + ";" + SLAM_HDR2
@@ -132,7 +134,7 @@ def test_dhcp():
     host2 = models.Host(name="host2")
     addr1 = models.Address(addr="192.168.50.30", macaddr="01:12:34:56:78:9a")
     addr2 = models.Address(addr="192.168.42.137")
-    conf.createconf([(host1, [addr1], []), (host2, [addr2], [])])
+    conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
 
     assert(out.getvalue() == "\n#" + SLAM_HDR1 + "#" + SLAM_HDR2
         + "option domain-name \"foo.example\";\n"
@@ -151,7 +153,7 @@ def test_quattor():
     host2 = models.Host(name="host2")
     addr1 = models.Address(addr="192.168.50.30", macaddr="01:12:34:56:78:9a")
     addr2 = models.Address(addr="192.168.42.137")
-    conf.createconf([(host1, [addr1], []), (host2, [addr2], [])])
+    conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
 
     assert(out.getvalue() == "\n#" + SLAM_HDR1 + "#" + SLAM_HDR2
         + 'escape("host1"),"192.168.50.30",\n'
@@ -174,7 +176,8 @@ def test_update():
     addr1 = models.Address(addr="addr", pool=models.Pool(dns_record="A"))
     addr2 = models.Address(addr="rdda", pool=models.Pool(dns_record="A"))
     addr3 = models.Address(addr="addr2", pool=models.Pool(dns_record="AAAA"))
-    conf.updateconf([(host1, [addr1, addr2], []), (host2, [addr3], [])])
+    conf.updateconf([(None,
+        [(host1, addr1, []), (host1, addr2, []), (host2, addr3, [])])])
 
     orig.seek(0)
     res = orig.read()
@@ -195,13 +198,15 @@ def _generator_checkfile(cls, content):
 
     host1 = models.Host(name="host1")
     host2 = models.Host(name="host2")
+    addr1 = models.Address(addr="addr", pool=models.Pool(dns_record="A"))
+    addr2 = models.Address(addr="rdda", pool=models.Pool(dns_record="A"))
 
     conf = cls.create(outputfile="-")
-    dup = conf.createconf([(host1, [], []), (host2, [], [])])
+    dup = conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
     assert len(dup) == 0
 
     conf = cls.create(outputfile="-", checkfile=[path])
-    dup = conf.createconf([(host1, [], []), (host2, [], [])])
+    dup = conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
     assert len(dup) == 1
 
     os.unlink(path)
@@ -223,22 +228,27 @@ def test_checkfile():
 
     host1 = models.Host(name="host1")
     host2 = models.Host(name="host2")
+    addr1 = models.Address(addr="addr", pool=models.Pool(dns_record="A"))
+    addr2 = models.Address(addr="rdda", pool=models.Pool(dns_record="A"))
+    addr3 = models.Address(addr="addr42", pool=models.Pool(dns_record="A"))
+    addr4 = models.Address(addr="rdda42", pool=models.Pool(dns_record="A"))
+
 
     conf = generator.BindConfig.create(outputfile="-")
-    conf.createconf([(host1, [], []), (host2, [], [])])
+    conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
 
     conf = generator.BindConfig.create(outputfile="-", checkfile=[path2])
-    dup = conf.createconf([(host1, [], []), (host2, [], [])])
+    dup = conf.createconf([(None, [(host1, addr3, []), (host2, addr4, [])])])
     assert len(dup) == 0
 
     conf = generator.BindConfig.create(outputfile="-", checkfile=[path1])
-    dup = conf.createconf([(host1, [], []), (host2, [], [])])
-    assert len(dup) == 3
+    dup = conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
+    assert len(dup) == 4
 
     conf = generator.BindConfig.create(outputfile="-",
         checkfile=[path1, path2])
-    dup = conf.createconf([(host1, [], []), (host2, [], [])])
-    assert len(dup) == 3
+    dup = conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
+    assert len(dup) == 6
 
     os.unlink(path1)
     os.unlink(path2)

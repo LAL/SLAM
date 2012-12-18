@@ -43,7 +43,7 @@ class Ip4Range:
     range_type = 'ip4'
     dns_record = 'A'
 
-    def sortable(_, addr):
+    def sortable(self, addr):
         """Returns a sortable representation of an address from this range."""
         return _parse_ip4(addr.addr)
 
@@ -146,7 +146,7 @@ class Ip6Range:
     range_type = "ip6"
     dns_record = "AAAA"
 
-    def sortable(_, addr):
+    def sortable(self, addr):
         """Returns a sortable representation of an address from this range."""
         return _parse_ip6(addr.addr)
 
@@ -208,7 +208,7 @@ class AddrSet:
 
     range_type = "set"
 
-    def sortable(_, addr):
+    def sortable(self, addr):
         """Returns a sortable representation of an address from this range."""
         return addr.addr
 

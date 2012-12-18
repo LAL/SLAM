@@ -31,7 +31,6 @@ Usage
         [--checkfile CHECK]
         [--timeout TIMEOUT]
         [--domain DOMAIN]
-        [--alias ALIAS]
         [--inventory INVENTORY]
         [--serial SERIAL]
         [--duration DURATION]
@@ -115,10 +114,6 @@ Usage
 
     Specify a domain that will be used for every entry in the generated
     configuration files.
-
-.. option:: --alias ALIAS
-
-    Specify one or more alias that can be used instead of the host name.
 
 .. option:: --inventory INVENTORY
 

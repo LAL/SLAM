@@ -169,7 +169,7 @@ def _list_hosts(args):
             for hostobj in models.Host.objects.all().order_by("name"):
                 msg = str(hostobj)
                 if hostobj.alias_set.all():
-                    msg += " (" + " ".join([str(alias) for alias
+                    msg += " (" + ", ".join([str(alias) for alias
                         in hostobj.alias_set.all()]) + ")"
                 if hostobj.category:
                     msg += ", category: " + hostobj.category
