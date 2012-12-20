@@ -114,8 +114,14 @@ def list_pools(request):
             _("The pool \"%(pool)s\" have been created: %(poolstr)s.")
                 % {"pool": pool_name, "poolstr": str(poolobj)})
     else:
-        pools = models.Pool.objects.all().order_by("name")
-        print(str(request.user))
+        poolobjs = models.Pool.objects.all().order_by("name")
+        pools = []
+        for poolobj in poolobjs:
+            addr_used = models.Address.objects.filter(pool=poolobj).count()
+            addr_avail = poolobj.len()
+            pools.append((poolobj,
+                addr_used, addr_avail, addr_used * 100 / addr_avail))
+
         if request.GET.get("format") == "json":
             return render_to_response("pool_list.json",
                 {"request": request, "pool_list": pools})
@@ -163,18 +169,42 @@ def pool_info(request, pool_name):
     else:
         addr_used = models.Address.objects.filter(pool=poolobj).count()
         addr_avail = poolobj.len()
+        addrs = list(models.Address.objects.filter(pool=poolobj))
+        addrs = interface.sort_addresses(addrs)
         templ_values = {"request": request,
             "pool": poolobj,
             "addr_used": addr_used,
             "addr_avail": addr_avail,
             "addr_perc": addr_used * 100 / addr_avail,
-            "addrs": models.Address.objects.filter(
-                pool=poolobj).order_by("addr"),
+            "addrs": addrs,
             "props": models.Property.objects.filter(pool=poolobj)}
         if request.GET.get("format") == "json":
             return render_to_response("pool.json", templ_values)
         else:
             return render_to_response("pool.html", templ_values)
+
+
+@login_required
+def pool_map(request, pool_name):
+    """Make a map of the allocation of addresses inside a pool."""
+    addrs = []
+    poolobj = get_object_or_404(models.Pool, name=pool_name)
+    poolobj._update()
+    addr_used = models.Address.objects.filter(pool=poolobj).count()
+    addr_avail = poolobj.len()
+    pool_addrs = models.Address.objects.filter(pool=poolobj)
+    for addr in poolobj.addr_range:
+        if poolobj.isallocated(addr):
+            addrs.append(pool_addrs.get(addr=addr))
+        else:
+            addrs.append(models.Address(addr=addr, pool=None, host=None))
+    templ_values = {"request": request,
+        "pool": poolobj,
+        "addrs": addrs,
+        "addr_used": addr_used,
+        "addr_avail": addr_avail,
+        "addr_perc": addr_used * 100 / addr_avail}
+    return render_to_response("pool_map.html", templ_values)
 
 
 @login_required
@@ -210,15 +240,7 @@ def list_hosts(request):
         host_list = []
         for host in hosts:
             addrs = models.Address.objects.filter(host=host).order_by("addr")
-            addr_list = []
-            for addr in addrs:
-                if addr.addr:
-                    if addr.pool:
-                        pool = addr.pool.name
-                    else:
-                        pool = None
-                    addr_list.append((addr.addr, pool))
-            host_list.append((host.name, addr_list))
+            host_list.append((host, addrs))
         context_values = {"request": request, "host_list": host_list,
             "pools": [pool.name for pool in
                 models.Pool.objects.all().order_by("name")],

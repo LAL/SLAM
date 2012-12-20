@@ -5,20 +5,26 @@
 
 {% block content %}
     <h1>{% trans "Pool list" %}</h1>
-    {% if pool_list %}
-        <ul>
-        {% for pool in pool_list %}
-            <li><a href="/pool/{{ pool.name }}">{{ pool.name }}</a>,
-                {% trans "range" %}: {{ pool.addr_range_str }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
+    <table class="table table-condensed table-bordered table-striped table-hover">
+        <thead><tr>
+            <th>{% trans "Pool name" %}</th>
+            <th>{% trans "Range" %}</th>
+            <th>{% trans "Usage" %}</th>
+        </tr></thead>
+        <tbody>{% for pool, addr_used, addr_avail, addr_perc in pool_list %}
+            <tr>
+                <td><a href="/pool/{{ pool.name }}">{{ pool.name }}</a></td>
+                <td>{{ pool.addr_range_str }}</td>
+                <td>{{ addr_used }} / {{ addr_avail }} ({{ addr_perc }}%)</td>
+            </tr>
+        {% endfor %}</tbody>
+    </table>
 
     <h1>{% trans "Create a new pool" %}</h1>
     <form method="POST">
         {% trans "Name" %}: <input type="text" name="name"><br>
         {% trans "Range definition" %}: <input type="text" name="definition">
         <br>
-        <input type="submit" value="{% trans "Create" %}">
+        <button class="btn btn-primary" type="submit">{% trans "Create" %}</button>
     </form>
 {% endblock %}

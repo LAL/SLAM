@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Map of" %} {{ pool.name }}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Map of" %} {{ pool.name }}</h1>
+
+    <p>
+        {% trans "Usage" %}: {{ addr_used }}/{{ addr_avail }} ({{ addr_perc }}%)<br>
+        <a href="/pool/{{ pool.name }}">{% trans "Return to" %} {{ pool.name }}</a>
+    </p>
+
+    <table class="table table-bordered table-hover table-condensed">
+        <thead>
+        <tr>
+            <th>{% trans "Address" %}</th>
+            <th>{% trans "Host name" %}</th>
+            <th>{% trans "Expiration (remaining)" %}</th>
+        </tr>
+        </thead>
+        <tbody>{% for addr in addrs %}{% if addr.addr %}
+            {% if not addr.pool %}<tr class="success">
+            {% elif addr.duration %}<tr class="warning">
+            {% else %}<tr class="error">{% endif %}
+                <td><a href="/address/{{ addr.addr }}">{{ addr.addr }}</a></td>
+                <td>{% with aliases=addr.host.alias_set.all %}
+                    <a href="/host/{{ addr.host.name }}">{{ addr.host.name }}</a>
+                    {% if aliases %}
+                        ({% trans "aliases" %}: {{ aliases|join:", " }})
+                    {% endif %}
+                {% endwith %}</td>
+                <td>{% if addr.duration %}
+                    {{ addr.duration|date }} ({{ addr.duration|timeuntil }})
+                {% endif %}</td>
+            </tr>
+        {% endif %}{% endfor %}</body
+    </table>
+{% endblock %}

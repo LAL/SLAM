@@ -4,11 +4,12 @@
 {% block title %}{% trans "Error: " %}{{ title }}{% endblock %}
 
 {% block content %}
-    <h1>{% trans "Error: " %}{{ title }}</h1>
-
-    <p style="font-weight:bold; color:red;">{{ msg }}</p>
+    <div class="alert alert-error">
+        <h1>{% trans "Error: " %}{{ title }}</h1>
+        <p>{{ msg }}</p>
+    </div>
 
     {% if referer %}
-        <p><a href="{{ referer }}"></a></p>
+            <p><a href="{{ referer }}">{% trans "Previous" %}</a></p>
     {% endif %}
 {% endblock %}

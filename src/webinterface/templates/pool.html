@@ -13,21 +13,30 @@
             <li>{% trans "Category" %}: {{ pool.category}}</li>
         {% endif %}
         <li>{% trans "Range" %}: {{ pool.addr_range_str }}</li>
-        <li>{% trans "Usage" %}: {{ addr_used }}/{{ addr_avail }}
-            ({{ addr_perc }}%)</li>
+        <li>
+            {% trans "Usage" %}: {{ addr_used }}/{{ addr_avail }} ({{ addr_perc }}%)
+        </li>
+        <li><a href="/pool/{{ pool.name }}/map">{% trans "View usage map" %}</a></li>
     </ul>
     <h2>{% blocktrans with pname=pool.name %}Addresses in {{ pname }}
         {% endblocktrans %}</h2>
-    <ul>
-        {% for addr in addrs %}{% if addr.addr %}
-            <li><a href="/address/{{ addr.addr }}">{{ addr.addr }}</a>
-                {% if addr.host %}
-                    - <a href="/host/{{ addr.host.name }}">
-                        {{ addr.host.name }}</a>
-                {% endif %}
-            </li>
-        {% endif %}{% endfor %}
-    </ul>
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <tr>
+            <th>{% trans "Address" %}</th>
+            <th>{% trans "Host name" %}</th>
+            <th>{% trans "Mac address" %}</th>
+            <th>{% trans "Aliases" %}</th>
+        </tr>
+        {% for addr in addrs %}{% if addr.addr %}<tr>
+            <td><a href="/address/{{ addr.addr }}">{{ addr.addr }}</a></td>
+            <td>
+                {% if addr.host %}<a href="/host/{{ addr.host.name }}">
+                        {{ addr.host.name }}</a>{% endif %}
+            </td>
+            <td>{{ addr.macaddr }}</td>
+            <td>{{ addr.host.alias_set.all|join:", " }}</td>
+        </tr>{% endif %}{% endfor %}
+    </table>
 
     <h2>{% trans "Additional information" %}</h2>
 
@@ -36,9 +45,9 @@
             <li>
                 <form method="DELETE" action="/property">
                     {{ prop.name }}: {{ prop.value }}
+                    <button class="close" type="submit">&times;</button>
                     <input type="hidden" name="pool" value="{{ pool.name }}">
                     <input type="hidden" name="name" value="{{ prop.name }}">
-                    <input type="submit" value="X">
                 </form>
             </li>
         {% endfor %}
@@ -50,18 +59,18 @@
         <input type="hidden" name="pool" value="{{ pool.name }}"><br>
         {% trans "Name" %}: <input type="text" name="name"><br>
         {% trans "Value" %}: <input type="text" name="value"><br>
-        <input type="submit" value="{% trans "Add" %}">
+        <button class="btn" type="submit">{% trans "Add" %}</button>
     </form>
 
     <h2>{{ modify_trans }}</h2>
     <form method="PUT">
         {% trans "Name" %}: <input type="text" name="newname"><br>
         {% trans "Category" %}: <input type="text" name="category"><br>
-        <input type="submit" value="{{ modify_trans }}">
+        <button class="btn" type="submit">{{ modify_trans }}</button>
     </form>
 
     <h2>{{ delete_trans }}</h2>
     <form method="DELETE">
-        <input type="submit" value="{{ delete_trans }}">
+        <button class="btn btn-danger" type="submit">{{ delete_trans }}</button>
     </form>
 {% endblock %}

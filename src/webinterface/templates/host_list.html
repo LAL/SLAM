@@ -6,17 +6,34 @@
 {% block content %}
     <h1>{% trans "Host list" %}</h1>
     {% if host_list %}
-        <ul>
-        {% for name, addrs in host_list %}
-            <li><a href="/host/{{ name }}">{{ name }}</a>
-                {% if addrs %}:{% endif %}
-                {% for addr, pool in addrs %}
-                    {% if not forloop.first %}, {% endif %} {{ addr }}
-                        (pool: <a href="/pool/{{ pool }}">{{ pool }}</a>)
-                {% endfor %}
-            </li>
+        <table class="table table-hover table-striped table-bordered table-condensed" style="vertical-align: middle">
+        <tr>
+            <th>{% trans "Host name" %}</th>
+            <th style="max-width: 50px">{% trans "Aliases" %}</th>
+            <th>{% trans "Addresses" %}</th>
+            <th>{% trans "MAC addresses" %}</th>
+        </tr>
+        {% for host, addrs in host_list %}
+            <tr>
+                <td><a href="/host/{{ host.name }}">{{ host.name }}</a></td>
+                <td>{{ host.alias_set.all|join:"<br>" }}</td>
+                <td>
+                    {% for addr in addrs %}
+                        {% if not forloop.first %}<br>{% endif %}
+                        <a href="/address/{{ addr.addr }}">{{ addr.addr }}</a>
+                        {% if addr.pool %}
+                            (pool: <a href="/pool/{{ addr.pool.name }}">{{ addr.pool.name }}</a>)
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for addr in addrs %}
+                        {% if not forloop.first %}<br>{% endif %}{{ addr.macaddr }}
+                    {% endfor %}
+                </td>
+            </tr>
         {% endfor %}
-        </ul>
+        </table>
     {% endif %}
 
     <h1>{% trans "Create a new host" %}</h1>
@@ -37,6 +54,6 @@
         {% trans "Mac address" %}: <input type="text" name="mac"><br>
         {% trans "Random allocation" %} <input type="checkbox" name="random">
         <br>
-        <input type="submit" value="{% trans "Create" %}">
+        <button class="btn btn-primary" type="submit">{% trans "Create" %}</button>
     </form>
 {% endblock %}

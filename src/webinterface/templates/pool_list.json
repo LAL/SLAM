@@ -1,4 +1,4 @@
-[{% for pool in pool_list %}
+[{% for pool, _, _, _ in pool_list %}
     {
         "name": "{{ pool.name }}",
         "definition": "{{ pool.addr_range_str }}"

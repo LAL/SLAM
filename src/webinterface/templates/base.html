@@ -4,21 +4,37 @@
 <html>
     <head>
         <title>{% block title %} {% endblock %}</title>
+        <link href="/ressources/css/bootstrap.css" rel="stylesheet" media="screen">
+        <style type="text/css">
+            /* Fix Boostrap's mistake... */
+            body { padding-top: 60px; }
+        </style>
+
     </head>
     <body>
-        <ul>
-            <li><a href="/pool/">{% trans "Pools" %}</a></li>
-            <li><a href="/host/">{% trans "Hosts" %}</a></li>
-            {% if request and request.user and request.user.is_authenticated %}
-                <li><a href="/logout">{% trans "Logout" %}</a></li>
-            {% else %}
-                <li><a href="/login">{% trans "Login" %}</a></li>
-            {% endif %}
-            <li><a href="/lang/">{% trans "Language" %}</a></li>
-            <li><a href="/logs/">{% trans "Log journal" %}</a></li>
-        </ul>
-        <hr>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <ul class="nav pull-right">
+                        <li><a href="/lang/">{% trans "Language" %}</a></li>
+                        {% if request and request.user and request.user.is_authenticated %}
+                            <li><a href="/logout">{% trans "Logout" %}</a></li>
+                        {% else %}
+                            <li><a href="/login">{% trans "Login" %}</a></li>
+                        {% endif %}
+                    </ul>
+                    <ul class="nav">
+                        <li class="active"><a class="brand" href="/">SLAM</a></li>
+                        <li><a href="/pool/">{% trans "Pools" %}</a></li>
+                        <li><a href="/host/">{% trans "Hosts" %}</a></li>
+                        <li><a href="/logs/">{% trans "Log journal" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-        {% block content %}{% endblock %}
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
     </body>
 </html>

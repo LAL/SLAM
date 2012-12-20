@@ -219,7 +219,7 @@ class Address(models.Model):
     pool = models.ForeignKey(Pool, blank=True, null=True)
     host = models.ForeignKey(Host, null=True, blank=True)
     date = models.DateTimeField(auto_now=True)
-    duration = models.DateTimeField(blank=True, null=True)
+    duration = models.DateTimeField(blank=True, null=True, default=None)
     lastuse = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):

@@ -17,8 +17,7 @@
                 <li>
                     <a href="/address/{{ addr.addr }}">{{ addr.addr }}</a>
                     {% if addr.pool %}{% trans " (pool: " %}
-                        <a href="/pool/{{ addr.pool.name }}">
-                            {{ addr.pool.name }}</a>)
+                        <a href="/pool/{{ addr.pool.name }}">{{ addr.pool.name }}</a>)
                     {% endif %}
                     {% if addr.macaddr %}{% trans ", mac: " %}
                         {{ addr.macaddr }}{% endif %}
@@ -31,11 +30,11 @@
     <form method="PUT">
         {% trans "Name" %}: <input type="text" name="newname"><br>
         {% trans "Mac address" %}: <input type="text" name="macaddr"><br>
-        <input type="submit" value="{{ modify_trans }}">
+        <button type="submit" class="btn">{{ modify_trans }}</button>
     </form>
 
     <h2>{{ delete_trans }}</h2>
     <form method="DELETE">
-        <input type="submit" value="{{ delete_trans }}">
+        <button class="btn btn-danger" type="submit">{{ delete_trans }}</button>
     </form>
 {% endblock %}
