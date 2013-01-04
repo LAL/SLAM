@@ -91,6 +91,25 @@ def login(request):
 @login_required
 def list_pools(request):
     """List available pools in the database."""
+    poolobjs = models.Pool.objects.all().order_by("name")
+    pools = []
+    for poolobj in poolobjs:
+        addr_used = models.Address.objects.filter(pool=poolobj).count()
+        addr_avail = poolobj.len()
+        pools.append((poolobj,
+            addr_used, addr_avail, addr_used * 100 / addr_avail))
+
+    if request.GET.get("format") == "json":
+        return render_to_response("pool_list.json",
+            {"request": request, "pool_list": pools})
+    else:
+        return render_to_response("pool_list.html",
+            {"request": request, "pool_list": pools})
+
+
+@login_required
+def add_pool(request):
+    """Create a new pool."""
     if request.method == "POST":
         pool_name = request.POST.get("name")
         try:
@@ -114,21 +133,7 @@ def list_pools(request):
             _("The pool \"%(pool)s\" have been created: %(poolstr)s.")
                 % {"pool": pool_name, "poolstr": str(poolobj)})
     else:
-        poolobjs = models.Pool.objects.all().order_by("name")
-        pools = []
-        for poolobj in poolobjs:
-            addr_used = models.Address.objects.filter(pool=poolobj).count()
-            addr_avail = poolobj.len()
-            pools.append((poolobj,
-                addr_used, addr_avail, addr_used * 100 / addr_avail))
-
-        if request.GET.get("format") == "json":
-            return render_to_response("pool_list.json",
-                {"request": request, "pool_list": pools})
-        else:
-            return render_to_response("pool_list.html",
-                {"request": request, "pool_list": pools})
-
+        return render_to_response("add_pool.html", {"request": request})
 
 @login_required
 def pool_info(request, pool_name):
@@ -210,6 +215,20 @@ def pool_map(request, pool_name):
 @login_required
 def list_hosts(request):
     """List all host objects in the database."""
+    hosts = models.Host.objects.all().order_by("name")
+    host_list = []
+    for host in hosts:
+        addrs = models.Address.objects.filter(host=host).order_by("addr")
+        host_list.append((host, addrs))
+    context_values = {"request": request, "host_list": host_list}
+    if request.GET.get("format") == "json":
+        return render_to_response("host_list.json", context_values)
+    else:
+        return render_to_response("host_list.html", context_values)
+
+
+@login_required
+def add_host(request):
     if request.method == "POST":
         try:
             pool = interface.get_pool(pool_name=request.POST.get("pool_name"),
@@ -236,20 +255,16 @@ def list_hosts(request):
         return msg_view(request,
             _("Created host %(host)s") % {"host": hoststr}, msg)
     else:
-        hosts = models.Host.objects.all().order_by("name")
-        host_list = []
-        for host in hosts:
-            addrs = models.Address.objects.filter(host=host).order_by("addr")
-            host_list.append((host, addrs))
-        context_values = {"request": request, "host_list": host_list,
+        categories = []
+        for pools in models.Pool.objects.exclude(category=""):
+            for cat in pools.category.split(","):
+                if cat not in categories:
+                    categories.append(cat)
+        context_values = {"request": request,
             "pools": [pool.name for pool in
                 models.Pool.objects.all().order_by("name")],
-            "categories": [pool.category for pool in
-                models.Pool.objects.exclude(category="").order_by("category")]}
-        if request.GET.get("format") == "json":
-            return render_to_response("host_list.json", context_values)
-        else:
-            return render_to_response("host_list.html", context_values)
+            "categories": sorted(categories)}
+        return render_to_response("add_host.html", context_values)
 
 
 @login_required

@@ -11,6 +11,15 @@
         <a href="/pool/{{ pool.name }}">{% trans "Return to" %} {{ pool.name }}</a>
     </p>
 
+    <table class="table table-bordered table-hover table-condensed" style="width:auto">
+        <thead><tr><th>{% trans "Legend" %}</th></tr></thead>
+        <tbody>
+            <tr class="success"><td>{% trans "Free" %}</td></tr>
+            <tr class="error"><td>{% trans "Allocated" %}</td></tr>
+            <tr class="warning"><td>{% trans "Temporarily Allocated" %}</td></tr>
+        </tbody>
+    </table>
+
     <table class="table table-bordered table-hover table-condensed">
         <thead>
         <tr>

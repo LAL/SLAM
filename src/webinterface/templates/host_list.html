@@ -35,25 +35,4 @@
         {% endfor %}
         </table>
     {% endif %}
-
-    <h1>{% trans "Create a new host" %}</h1>
-    <form method="POST">
-        {% trans "Name" %}: <input type="text" name="name"><br>
-        {% trans "Pool name" %}: <select name="pool_name">
-            <option value=""></option>
-            {% for pool in pools %}
-                <option value="{{ pool }}">{{ pool }}</option>
-            {% endfor %}
-        </select> {% trans "or category" %}: <select name="category">
-            <option value=""></option>
-            {% for cat in categories %}
-                <option value="{{ cat }}">{{ cat }}</option>
-            {% endfor %}
-        </select><br>
-        {% trans "Address" %}: <input type="text" name="address"><br>
-        {% trans "Mac address" %}: <input type="text" name="mac"><br>
-        {% trans "Random allocation" %} <input type="checkbox" name="random">
-        <br>
-        <button class="btn btn-primary" type="submit">{% trans "Create" %}</button>
-    </form>
 {% endblock %}

@@ -4,7 +4,7 @@
 <html>
     <head>
         <title>{% block title %} {% endblock %}</title>
-        <link href="/ressources/css/bootstrap.css" rel="stylesheet" media="screen">
+        <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet" media="screen">
         <style type="text/css">
             /* Fix Boostrap's mistake... */
             body { padding-top: 60px; }
@@ -12,6 +12,8 @@
 
     </head>
     <body>
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.js"></script>
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
@@ -25,8 +27,26 @@
                     </ul>
                     <ul class="nav">
                         <li class="active"><a class="brand" href="/">SLAM</a></li>
-                        <li><a href="/pool/">{% trans "Pools" %}</a></li>
-                        <li><a href="/host/">{% trans "Hosts" %}</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                {% trans "Pools" %}
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/pool">{% trans "List" %}</a></li>
+                                <li><a href="/addpool">{% trans "Add" %}</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                {% trans "Hosts" %}
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/host">{% trans "List" %}</a></li>
+                                <li><a href="/addhost">{% trans "Add" %}</a></li>
+                            </ul>
+                        </li>
                         <li><a href="/logs/">{% trans "Log journal" %}</a></li>
                     </ul>
                 </div>
