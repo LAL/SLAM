@@ -7,7 +7,26 @@
     {% trans "Modify" as modify_trans %}
     {% trans "Delete" as delete_trans %}
 
+    {% if confirm_delete %}<div class="alert alert-block">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h2>{% trans "Confirm deletion" %}</h2>
+        {% blocktrans %}
+            This will delete permanently delete host {{ host.name }} and all
+            related information. Do you really want to delete it ?
+        {% endblocktrans %}
+
+        <form method="DELETE">
+            <button class="btn btn-danger" type="submit">{{ delete_trans }}</button>
+        </form>
+    </div>{% endif %}
+
     <h1>{% trans "Host" %} {{ host.name }}</h1>
+
+    <ul>
+        {% if host.alias_set.all %}
+            <li>{% trans "Aliases" %}: {{ host.alias_set.all|join:", " }}</li>
+        {% endif %}
+    </ul>
 
     {% if addrs %}
         <h2>{% blocktrans with hname=host.name %}
@@ -35,6 +54,7 @@
 
     <h2>{{ delete_trans }}</h2>
     <form method="DELETE">
+        <input type="hidden" name="confirm" value="1">
         <button class="btn btn-danger" type="submit">{{ delete_trans }}</button>
     </form>
 {% endblock %}

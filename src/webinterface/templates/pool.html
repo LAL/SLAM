@@ -18,6 +18,14 @@
         </li>
         <li><a href="/pool/{{ pool.name }}/map">{% trans "View usage map" %}</a></li>
     </ul>
+
+    <h2>{{ modify_trans }}</h2>
+    <form method="PUT">
+        {% trans "Name" %}: <input type="text" name="newname"><br>
+        {% trans "Category" %}: <input type="text" name="category"><br>
+        <button class="btn" type="submit">{{ modify_trans }}</button>
+    </form>
+
     <h2>{% blocktrans with pname=pool.name %}Addresses in {{ pname }}
         {% endblocktrans %}</h2>
     <table class="table table-striped table-bordered table-hover table-condensed">
@@ -60,17 +68,5 @@
         {% trans "Name" %}: <input type="text" name="name"><br>
         {% trans "Value" %}: <input type="text" name="value"><br>
         <button class="btn" type="submit">{% trans "Add" %}</button>
-    </form>
-
-    <h2>{{ modify_trans }}</h2>
-    <form method="PUT">
-        {% trans "Name" %}: <input type="text" name="newname"><br>
-        {% trans "Category" %}: <input type="text" name="category"><br>
-        <button class="btn" type="submit">{{ modify_trans }}</button>
-    </form>
-
-    <h2>{{ delete_trans }}</h2>
-    <form method="DELETE">
-        <button class="btn btn-danger" type="submit">{{ delete_trans }}</button>
     </form>
 {% endblock %}

@@ -71,9 +71,9 @@ def test_poollist():
     res = get_request("/pool?format=json")
     assert len(res) == 0
 
-    run_request("POST", "/pool",
+    run_request("POST", "/addpool",
         {"name": "poollist1", "definition": "127.0.0.0/8"})
-    run_request("POST", "/pool",
+    run_request("POST", "/addpool",
         {"name": "poollist2", "definition": "fe80::/7"})
 
     res = get_request("/pool?format=json")
@@ -88,9 +88,10 @@ def test_hostlist():
     res = get_request("/host?format=json")
     assert len(res) == 0
 
-    run_request("POST", "/host", {"name": "host1",
+    run_request("POST", "/addhost", {"name": "host1",
         "pool_name": "poollist1", "mac": "macaddr1"})
-    run_request("POST", "/host", {"name": "host2", "pool_name": "poollist1"})
+    run_request("POST", "/addhost", {"name": "host2",
+        "pool_name": "poollist1"})
 
     res = get_request("/host?format=json")
     assert len(res) == 2
@@ -101,9 +102,9 @@ def test_hostlist():
 
 
 def test_pool():
-    run_request("POST", "/pool", {"name": "pooltest1",
+    run_request("POST", "/addpool", {"name": "pooltest1",
         "definition": "1.2.3.0/24", "category": "testcat"})
-    run_request("POST", "/host", {"name": "host3", "pool_name": "pooltest1"})
+    run_request("POST", "/addhost", {"name": "host3", "pool_name": "pooltest1"})
 
     res = get_request("/pool/pooltest1?format=json")
     assert res["name"] == "pooltest1"
@@ -127,22 +128,22 @@ def test_pool():
 def test_pool_error():
     status_request("GET", "/pool/inexistant", status=404)
     status_request("DELETE", "/pool/inexistant", status=404)
-    status_request("POST", "/pool", status=400)
+    status_request("POST", "/addpool", status=400)
 
-    run_request("POST", "/pool",
+    run_request("POST", "/addpool",
         {"name": "pooltest4", "definition": "1.2.3.0/24"})
-    status_request("POST", "/pool", {"name": "pooltest4",
+    status_request("POST", "/addpool", {"name": "pooltest4",
         "definition": "1.2.3.0/24"}, status=409)
 
     status_request("PUT", "/pool/pooltest4", status=400)
 
 
 def test_host():
-    run_request("POST", "/pool", {"name": "pooltest3",
+    run_request("POST", "/addpool", {"name": "pooltest3",
         "definition": "172.16.0.0/12", "category": "testcat3"})
-    run_request("POST", "/host",
+    run_request("POST", "/addhost",
         {"name": "host4", "pool_name": "pooltest3"})
-    run_request("POST", "/host", {"name": "host5",
+    run_request("POST", "/addhost", {"name": "host5",
         "category": "testcat3", "address": "172.31.42.42", "mac": "mac42"})
 
     res = get_request("/host/host4?format=json")
@@ -171,19 +172,19 @@ def test_host_error():
     status_request("GET", "/host/inexistant", status=404)
     status_request("DELETE", "/host/inexistant", status=404)
 
-    status_request("POST", "/host", status=400)
+    status_request("POST", "/addhost", status=400)
 
-    run_request("POST", "/host", {"name": "host7", "pool_name": "pooltest3"})
-    status_request("POST", "/host", {"name": "host7",
+    run_request("POST", "/addhost", {"name": "host7", "pool_name": "pooltest3"})
+    status_request("POST", "/addhost", {"name": "host7",
         "pool_name": "pooltest3"}, status=409)
 
     status_request("PUT", "/host/host7", status=400)
 
 
 def test_address():
-    run_request("POST", "/pool",
+    run_request("POST", "/addpool",
         {"name": "pooltest10", "definition": "10.13.10.0/24"})
-    run_request("POST", "/host", {"name": "host20", "pool_name": "pooltest10"})
+    run_request("POST", "/addhost", {"name": "host20", "pool_name": "pooltest10"})
 
     res = get_request("/address/10.13.10.0?format=json")
     assert res["address"] == "10.13.10.0"

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-04 17:18+0100\n"
+"POT-Creation-Date: 2013-01-08 15:01+0100\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -70,7 +70,7 @@ msgid ""
 msgstr ""
 "Un pool du même nom ou de même catégorie existe déjà dans la base de données"
 
-#: views.py:128 views.py:246 views.py:284 views.py:354
+#: views.py:128 views.py:246 views.py:284 views.py:359
 msgid "Missing information"
 msgstr "Information manquante"
 
@@ -164,25 +164,25 @@ msgstr "L’hôte \"%(host)s\" a bien été modifié"
 msgid "The host \"%(host)s\" has been correctly modified."
 msgstr "L’hôte \"%(host)s\" a bien été modifié."
 
-#: views.py:299
+#: views.py:306
 msgid " has been removed"
 msgstr " a été supprimé"
 
-#: views.py:300
+#: views.py:307
 #, python-format
 msgid "The host \"%(host)s\" has correctly been removed."
 msgstr "L’hôte \"%(host)s\" a bien été supprimé."
 
-#: views.py:319
+#: views.py:324
 msgid "Address deleted"
 msgstr "Adresse supprimée"
 
-#: views.py:320
+#: views.py:325
 #, python-format
 msgid "The address \"%(addr)s\" has been correctly removed."
 msgstr "L’address \"%(addr)s\" a bien été supprimée."
 
-#: views.py:355
+#: views.py:360
 msgid ""
 "You must at least specify a pool or a host and the name of property to "
 "create, edit or delete a property."
@@ -190,20 +190,20 @@ msgstr ""
 "Vous devez au moins spécifier le nom d'un pool ou d'un host et le nom de "
 "l'information que vous souhaitez créer, modifier ou supprimer."
 
-#: views.py:358
+#: views.py:363
 msgid "Property modified"
 msgstr "Information modifiée"
 
-#: views.py:359
+#: views.py:364
 #, python-format
 msgid "The property %(prop)s has been correctly added or edited."
 msgstr "L'information \"%(prop)s\" a correctement été ajoutée ou modifiée."
 
-#: views.py:362
+#: views.py:367
 msgid "Property deleted"
 msgstr "Information supprimée"
 
-#: views.py:363
+#: views.py:368
 #, python-format
 msgid "The property %(prop)s has been correctly deleted."
 msgstr "L'information \"%(prop)s\" a correctement été supprimée."
@@ -217,33 +217,49 @@ msgstr "Liste des hôtes"
 msgid "Create a new host"
 msgstr "Créer un nouvel hôte"
 
-#: templates/add_host.html:9 templates/add_pool.html:9 templates/host.html:31
-#: templates/pool.html:60 templates/pool.html.py:67
+#: templates/add_host.html:10 templates/add_pool.html:10
+#: templates/host.html:50 templates/pool.html:24 templates/pool.html.py:68
 msgid "Name"
 msgstr "Nom"
 
-#: templates/add_host.html:10 templates/pool_list.html:10
+#: templates/add_host.html:13 templates/pool_list.html:10
 msgid "Pool name"
 msgstr "Nom du pool"
 
-#: templates/add_host.html:15
+#: templates/add_host.html:21
 msgid "or category"
 msgstr "ou catégorie"
 
-#: templates/add_host.html:21 templates/pool.html:25
+#: templates/add_host.html:29 templates/pool.html:33
 #: templates/pool_map.html:26
 msgid "Address"
 msgstr "Adresse"
 
-#: templates/add_host.html:22 templates/host.html:32 templates/pool.html:27
+#: templates/add_host.html:32 templates/host.html:51 templates/pool.html:35
 msgid "Mac address"
 msgstr "Adresses MAC"
 
-#: templates/add_host.html:23
+#: templates/add_host.html:36
 msgid "Random allocation"
 msgstr "Allocation aléatoire"
 
-#: templates/add_host.html:25 templates/add_pool.html:12
+#: templates/add_host.html:40
+msgid "Optional information"
+msgstr "Informations optionnelles"
+
+#: templates/add_host.html:41
+msgid "Serial number"
+msgstr "Numéro de série"
+
+#: templates/add_host.html:44
+msgid "Inventory number"
+msgstr "Numéro d’inventaire"
+
+#: templates/add_host.html:47
+msgid "Owner"
+msgstr "Propriétaire"
+
+#: templates/add_host.html:50 templates/add_pool.html:16
 msgid "Create"
 msgstr "Créer"
 
@@ -256,7 +272,7 @@ msgstr "Liste des pools"
 msgid "Create a new pool"
 msgstr "Créer un nouveau pool"
 
-#: templates/add_pool.html:10
+#: templates/add_pool.html:13
 msgid "Range definition"
 msgstr "Définition de la plage"
 
@@ -297,7 +313,7 @@ msgstr "Pools"
 msgid "List"
 msgstr "Liste"
 
-#: templates/base.html:37 templates/base.html.py:47 templates/pool.html:62
+#: templates/base.html:37 templates/base.html.py:47 templates/pool.html:70
 msgid "Add"
 msgstr "Ajouter"
 
@@ -317,7 +333,7 @@ msgstr "Erreur : "
 msgid "Previous"
 msgstr "Précédent"
 
-#: templates/host.html:4 templates/host.html.py:10
+#: templates/host.html:4 templates/host.html.py:23
 msgid "Host"
 msgstr "Hôte"
 
@@ -329,7 +345,24 @@ msgstr "Modifier"
 msgid "Delete"
 msgstr "Supprimer"
 
+#: templates/host.html:12
+msgid "Confirm deletion"
+msgstr "Confirmation de la suppression"
+
 #: templates/host.html:13
+#, python-format
+msgid ""
+"\n"
+"            This will delete permanently delete host %(host.name)s and all\n"
+"            related information. Do you really want to delete it ?\n"
+"        "
+msgstr ""
+
+#: templates/host.html:27 templates/host_list.html:12 templates/pool.html:36
+msgid "Aliases"
+msgstr "Alias"
+
+#: templates/host.html:32
 #, python-format
 msgid ""
 "\n"
@@ -338,22 +371,18 @@ msgstr ""
 "\n"
 "            Adresses allouées à %(hname)s"
 
-#: templates/host.html:19
+#: templates/host.html:38
 msgid " (pool: "
 msgstr " (pool: "
 
-#: templates/host.html:22
+#: templates/host.html:41
 msgid ", mac: "
 msgstr ", adresse MAC : "
 
-#: templates/host_list.html:11 templates/pool.html:26
+#: templates/host_list.html:11 templates/pool.html:34
 #: templates/pool_map.html:27
 msgid "Host name"
 msgstr "Nom de l'hôte"
-
-#: templates/host_list.html:12 templates/pool.html:28
-msgid "Aliases"
-msgstr "Alias"
 
 #: templates/host_list.html:13
 msgid "Addresses"
@@ -387,7 +416,7 @@ msgstr "Mot de passe"
 msgid "Pool"
 msgstr "Pool"
 
-#: templates/pool.html:13 templates/pool.html.py:68
+#: templates/pool.html:13 templates/pool.html.py:25
 msgid "Category"
 msgstr "Catégorie"
 
@@ -404,7 +433,7 @@ msgstr "Utilisation"
 msgid "View usage map"
 msgstr "Voir la carte d'utilisation"
 
-#: templates/pool.html:21
+#: templates/pool.html:29
 #, python-format
 msgid ""
 "Addresses in %(pname)s\n"
@@ -413,15 +442,15 @@ msgstr ""
 "Adresses dans %(pname)s\n"
 "        "
 
-#: templates/pool.html:41
+#: templates/pool.html:49
 msgid "Additional information"
 msgstr "Informations supplémentaires"
 
-#: templates/pool.html:56
+#: templates/pool.html:64
 msgid "Add new information"
 msgstr "Ajouter une nouvelle information"
 
-#: templates/pool.html:61
+#: templates/pool.html:69
 msgid "Value"
 msgstr "Valeur"
 

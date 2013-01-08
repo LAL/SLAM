@@ -229,6 +229,7 @@ def list_hosts(request):
 
 @login_required
 def add_host(request):
+    """Add a new host to SLAM's database."""
     if request.method == "POST":
         try:
             pool = interface.get_pool(pool_name=request.POST.get("pool_name"),
@@ -290,24 +291,29 @@ def host_info(request, host_name):
             _("Host \"%(host)s\" has been modified") % {"host": host_name},
             _("The host \"%(host)s\" has been correctly modified.")
                     % {"host": host_name})
-    elif request.method == "DELETE":
-        get_object_or_404(models.Host, name=host_name)
-        try:
-            interface.delete(hosts=[host_name])
-        except interface.InexistantObjectError:
-            return error_404(request)
-        return msg_view(request, host_name + _(" has been removed"),
-            _("The host \"%(host)s\" has correctly been removed.")
-                % {"host": host_name})
     else:
         host = get_object_or_404(models.Host, name=host_name)
         addrs = models.Address.objects.filter(host=host).order_by("addr")
-        if request.GET.get("format") == "json":
-            return render_to_response("host.json",
-                {"request": request, "host": host, "addrs": addrs})
+        if request.method == "DELETE":
+            if data.get("confirm"):
+                return render_to_response("host.html", {"request": request,
+                    "host": host, "addrs": addrs, "confirm_delete": 1})
+            else:
+                get_object_or_404(models.Host, name=host_name)
+                try:
+                    interface.delete(hosts=[host_name])
+                except interface.InexistantObjectError:
+                    return error_404(request)
+                return msg_view(request, host_name + _(" has been removed"),
+                    _("The host \"%(host)s\" has correctly been removed.")
+                        % {"host": host_name})
         else:
-            return render_to_response("host.html",
-                {"request": request, "host": host, "addrs": addrs})
+            if request.GET.get("format") == "json":
+                return render_to_response("host.json",
+                    {"request": request, "host": host, "addrs": addrs})
+            else:
+                return render_to_response("host.html",
+                    {"request": request, "host": host, "addrs": addrs})
 
 
 @login_required
