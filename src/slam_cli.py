@@ -13,10 +13,10 @@ def init_argparser():
     argparser = argparse.ArgumentParser(
         description= "SLAM command-line interface")
     argparser.add_argument("-a", "--action", action="append", required=True,
-        choices=["list", "create", "get", "delete", "modify",
-            "setprop", "rmprop", "createconf", "upconf", "log"],
+        choices=["list", "create", "get", "delete", "modify", "setprop",
+            "rmprop", "createconf", "upconf", "log", "export"],
         help="The action to perform: list | create | get | delete | modify "
-            + "| setprop | rmprop | createconf | upconf ")
+            + "| setprop | rmprop | createconf | upconf | export")
     argparser.add_argument("-pn", "--pool-name", action="append",
         help="The name of an address pool.")
     argparser.add_argument("-c", "--category", action="append",
@@ -503,6 +503,7 @@ def run_cli():
         sys.exit(1)
 
     argparser = init_argparser()
+    cmd = sys.argv[0]
     del sys.argv[0]
     args = parse_args(argparser, sys.argv)
     if not args.action:
@@ -523,6 +524,8 @@ def run_cli():
         modify(args)
     elif args.action == "log":
         list_logs(args)
+    elif args.action == "export":
+        print(interface.export(cmd))
     else: # "list"
         list_(args)
 

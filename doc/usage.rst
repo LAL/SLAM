@@ -14,7 +14,7 @@ Usage
 
     $ ./slam_cli.py
         [-h]
-        -a {list|create|get|delete|modify|setprop|rmprop|createconf|upconf|doc}
+        -a {list|create|get|delete|modify|setprop|rmprop|createconf|upconf|export}
         [-pn POOL_NAME]
         [-p POOL]
         [-A ADDRESS]
@@ -46,7 +46,7 @@ Usage
 .. option:: -a, --action ACTION
 
     Select any available action among: list, create, get, delete,
-    modify, setprop, rmprop, createconf, upconf or log.
+    modify, setprop, rmprop, createconf, upconf, log or export.
 
     This option is required.
 
@@ -341,13 +341,18 @@ List all pool and host that have a *buidling* property of value *200*::
     $ ./slam_cli.py -a list building=200
 
 
-Logs
-""""
+Other
+"""""
 
 Every action is logged in the database. It is possible to access log entries
 with::
 
     $ ./slam_cli.py -a log
+
+A back-up can be done with the *export* action which will output all the SLAM's
+commands to regenerate the full database::
+
+    $ ./slam_cli.py -a export > restore.sh
 
 
 Web interface

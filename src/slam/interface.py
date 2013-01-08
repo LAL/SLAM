@@ -1,7 +1,7 @@
 """Helper to execute actions on the database independantly from the interface
 and output format."""
 
-import logging, datetime
+import logging, datetime, sys
 from slam import generator, models
 from slam.log import DbLogHandler
 
@@ -511,7 +511,7 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
     elif host and hostobj:
         if not (newname or mac or alias or serial or inventory):
             raise MissingParameterError("Please provide the new name "
-                + "or a new information for the host.")
+                + "or a new information for the host " + hostobj.name)
         if mac:
             addrs = hostobj.address_set.all()
             LOGGER.info("Assign new MAC address " + mac + " to host " + host)
@@ -553,8 +553,8 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
     elif pools and poolobjs:
         poolobj = poolobjs[0]
         if not category and not newname:
-            raise MissingParameterError(
-                "Please provide the new name or a category for the pool.")
+            raise MissingParameterError("Please provide the new name or a "
+                + "category for the pool " + poolobj.name)
         if category:
             category = ",".join(category)
             LOGGER.info("Changed category of pool " + poolobj.name + " to "
@@ -634,3 +634,108 @@ def sort_addresses(addrs):
         addrs[0].pool._update()
     sortablefunc = addrs[0].pool.addr_range.sortable
     return sorted(addrs, key=sortablefunc)
+
+
+def export(cmd):
+    """Export SLAM's command allowing to recreate the current database from
+    scratch."""
+    res = ""
+    for pool in models.Pool.objects.all():
+        option = ""
+        if pool.addr_range_str:
+            option += " -p " + pool.addr_range_str
+        if pool.category:
+            option += " -c " + pool.category
+        if pool.dns_record:
+            option += " --domain " + pool.dns_record
+        res += cmd + " -a create -pn " + pool.name + option + "\n"
+
+    allocated = []
+    for host in models.Host.objects.all():
+        option = ""
+        if host.category:
+            option += " -c " + host.category
+        if host.serial:
+            option += " --serial " + host.serial
+        if host.inventory:
+            option += " --inventory " + host.inventory
+        for alias in models.Alias.objects.filter(host=host):
+            option += " --alias " + alias.name
+        for addr in models.Address.objects.filter(host=host):
+            if addr.addr:
+                option += " -A " + addr.addr
+                allocated.append(addr.addr)
+                break
+        res += cmd + " -a create -H " + host.name + option + "\n"
+
+    for prop in models.Property.objects.all():
+        option = ""
+        if prop.pool:
+            option += " -pn " + prop.pool.name
+        elif prop.host:
+            option += " -H " + prop.host.name
+        res += (cmd + " -a setprop " + prop.name + "=" + prop.value
+            + option + "\n")
+
+    for addr in models.Address.objects.all():
+        if addr.macaddr and addr.host:
+            res += (cmd + " -a modify -H " + addr.host.name
+                + " -m " + addr.macaddr + "\n")
+
+        if not addr.addr:
+            continue
+
+        option = ""
+        if addr.host:
+            option += " -H " + addr.host.name
+        if addr.pool:
+            option += " -pn " + addr.pool.name
+        if addr.duration:
+            option += " --duration " + int(
+                addr.duration - datetime.datetime.now().total_seconds())
+        if addr.lastuse:
+            option += " --last-use " + addr.lastuse.strftime("%s")
+
+        if addr.addr in allocated:
+            if addr.duration or addr.lastuse:
+                res += cmd + " -a modify -A " + addr.addr + option + "\n"
+        elif not addr.host:
+            res += cmd + " -a create -A " + addr.addr + option + "\n"
+        else:
+            res += cmd + " -a get -A " + addr.addr + option + "\n"
+
+    for gen in models.Config.objects.all():
+        type_ = ""
+        if not gen.conftype:
+            continue
+        if gen.conftype == "bind":
+            type_ = "bind"
+        elif gen.conftype == "rbind":
+            type_ = "revbind"
+        elif gen.conftype == "dhcp":
+            type_ = "dhcp"
+        elif gen.conftype == "quatt":
+            type_ = "quattor"
+        elif gen.conftype == "laldns":
+            type_ = "laldns"
+        else:
+            continue
+
+        option = ""
+        if gen.default:
+            option += "--default"
+        if gen.outputfile:
+            option += " -o " + gen.outputfile
+        for head in gen.headerfile.split(","):
+            option += " --header " + head
+        for foot in gen.footerfile.split(","):
+            option += " --footer " + foot
+        for check in gen.checkfile.split(","):
+            option += " --checkfile " + check
+        if gen.timeout:
+            option += " --timeout " + gen.timeout
+        if gen.domain:
+            option += " --domain " + gen.domain
+        res += cmd + " -a create " + type_ + "\n"
+
+    return res

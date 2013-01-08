@@ -30,7 +30,7 @@ Usage
 
     ./slam_cli.py
         [-h]
-        -a {list|create|get|delete|modify|setprop|rmprop|createconf|upconf}
+        -a {list|create|get|delete|modify|setprop|rmprop|createconf|upconf|log|export}
         [-pn POOL_NAME]
         [-p POOL]
         [-A ADDRESS]
@@ -49,9 +49,10 @@ Usage
 
 arguments:
     -h, --help            show this help message and exit
-    -a, --action {list,create,delete,modify,createconf,upconf}
+    -a, --action {list,create,delete,modify,createconf,upconf|log|export}
                           The action to perform: list | create | delete
                           | modify |setprop | rmprop | createconf | upconf
+                          | log | export
     -pn, --pool-name POOL_NAME
                           The name of an address pool.
     -p, --pool POOL       Address definition of the pool to manage (ex:
