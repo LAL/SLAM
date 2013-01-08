@@ -1,15 +1,11 @@
 SLAM's todo-list
 ================
 
-* comment field in address
 * confirmation before disallocation
 * log with authenticated user in Web interface
 * in add_host : link to the map of the pools
-* delete delete_pool
 * add additional field in modify_host
-* add alias in host_info
 * search host by alias
 * search for host
 * page to regenerate all files and reload severs
-* add new field in Host model : NODNS
 * web interface for search, search by property, etc.

@@ -323,6 +323,8 @@ class BindConfig(Config):
         """Generate one configuration record per address for every host given
         in the Bind format line."""
         for host, addr, _ in hosts:
+            if host.nodns:
+                continue
             self.output.write(host.name + "\t" + str(self.timeout)
                 + "\tIN\t" + addr.pool.dns_record + "\t"
                 + str(addr) + "\n")
@@ -364,6 +366,8 @@ class RevBindConfig(Config):
     def generate(self, hosts):
         """Generate a reverse mapping for Addresses"""
         for host, addr, _ in hosts:
+            if host.nodns:
+                continue
             if addr.pool.addr_range_type == "ip4":
                 split = str(addr).split(".")
                 rev = "in-addr.arpa."
@@ -463,6 +467,8 @@ class LalDnsConfig(Config):
         """Generate configuration for the specific format of DNS configuration
         file used by the LAL."""
         for host, addr, aliases in hosts:
+            if host.nodns:
+                continue
             alias = ""
             for aliasobj in aliases:
                 alias += "\t" + aliasobj.name

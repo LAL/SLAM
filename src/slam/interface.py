@@ -12,6 +12,9 @@ LOGGER.setLevel(logging.INFO)
 DBLOGHANDLER = DbLogHandler()
 DBLOGHANDLER.setLevel(logging.INFO)
 LOGGER.addHandler(DBLOGHANDLER)
+STDOUTHANDLER = logging.StreamHandler()
+STDOUTHANDLER.setLevel(logging.INFO)
+LOGGER.addHandler(STDOUTHANDLER)
 
 
 class InexistantObjectError(Exception):
@@ -385,7 +388,8 @@ def allocate_address(pool, host=None, address=None, random=False,
 
 
 def create_host(host, pool=None, address=None, mac=None, random=False,
-    alias=None, category=None, serial="", inventory="", duration=None):
+    alias=None, category=None, serial="", inventory="", duration=None,
+    nodns=False):
     """Create a new host and assign it the first element of addesses or
     automatically one from the given pool, eventually random."""
     if not host:
@@ -399,11 +403,11 @@ def create_host(host, pool=None, address=None, mac=None, random=False,
         raise DuplicateObjectError("Host \"" + host + "\" already exists.")
     else:
         hostobj = models.Host(name=host)
-        logmac = ""
-        if mac:
-            logmac = " (mac: " + str(mac) + ")"
 
-        LOGGER.info("Create new host \"" + str(host) + logmac + "\".")
+    logmac = ""
+    if mac:
+        logmac = " (mac: " + str(mac) + ")"
+    LOGGER.info("Create new host \"" + str(host) + logmac + "\".")
 
     if category:
         hostobj.category = category
@@ -411,6 +415,8 @@ def create_host(host, pool=None, address=None, mac=None, random=False,
         hostobj.serial = serial
     if inventory:
         hostobj.inventory = inventory
+    if nodns:
+        hostobj.nodns = True
     hostobj.save()
 
     for alia in alias:
@@ -481,7 +487,7 @@ def delete(pool=None, addresses=None, hosts=None):
 
 def modify(pools=None, host=None, category=None, address=None, mac=None,
         newname=None, alias=None, serial="", inventory="", duration=None,
-        lastuse=None):
+        lastuse=None, nodns=False, comment=""):
     """Modify the name of an object in the database."""
     poolobjs = []
     if not alias:
@@ -495,7 +501,7 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
     if models.Address.objects.filter(addr=address):
         addrobj = models.Address.objects.get(addr=address)
 
-    if address and addrobj and (mac or duration or lastuse):
+    if address and addrobj and (mac or duration or lastuse or comment):
         if mac:
             addrobj.macaddr = mac
             LOGGER.info("Modify address " + str(addrobj) + ": assign MAC "
@@ -507,9 +513,11 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
                 + ": new duration untill: " + str(addrobj.duration))
         if lastuse:
             addrobj.lastuse = datetime.datetime.fromtimestamp(lastuse)
+        if comment:
+            addrobj.comment = comment
         addrobj.save()
     elif host and hostobj:
-        if not (newname or mac or alias or serial or inventory):
+        if not (newname or mac or alias or serial or inventory or nodns):
             raise MissingParameterError("Please provide the new name "
                 + "or a new information for the host " + hostobj.name)
         if mac:
@@ -540,6 +548,10 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
             LOGGER.info("Changed category of host " + hostobj.name + " to "
                 + category)
             hostobj.category = category
+            hostobj.save()
+        if nodns:
+            LOGGER.info("Changed NODNS setting of host " + hostobj.name)
+            hostobj.nodns = not hostobj.nodns
             hostobj.save()
         for alia in alias:
             LOGGER.info("New alias " + alia + " for host " + host)

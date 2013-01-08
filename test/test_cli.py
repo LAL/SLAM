@@ -60,8 +60,11 @@ def test_list():
     slam_cli.create(args)
     args = slam_cli.parse_args(ap, ("-a create -H host1 -pn test1 -m mac-1 "
         + "--alias alias1 --alias alias2 --serial srlnm "
-        + "--inventory invnum").split())
+        + "--inventory invnum --nodns").split())
     slam_cli.create(args)
+    args = slam_cli.parse_args(ap,
+        "-a modify -A 192.168.0.0 --comment comment".split())
+    slam_cli.modify(args)
     args = slam_cli.parse_args(ap, "-a list".split())
     slam_cli.list_(args)
 
@@ -77,7 +80,7 @@ def test_list():
     slam_cli.list_(args)
     assert(sys.stdout.getvalue() == 'Host host1, mac: mac-1'
         + '\nSerial number: srlnm\nInventory number: invnum\n'
-        + 'Alias: alias1, alias2\nAddress 192.168.0.0 (pool: test1)\n')
+        + 'Alias: alias1, alias2\nNODNS\nAddress 192.168.0.0 (pool: test1)\n')
 
     sys.stdout = StringIO.StringIO()
     args = slam_cli.parse_args(ap, "-a list -A 192.168.0.0".split())
@@ -85,7 +88,8 @@ def test_list():
     assert(sys.stdout.getvalue() ==
         'Address: 192.168.0.0\n'
         + '\tPool: test1 (range: 192.168.0.0/16)\n'
-        + '\tHost: host1\n')
+        + '\tHost: host1\n'
+        + '\tComment:\ncomment\n')
 
     args = slam_cli.parse_args(ap, "-a setprop -pn test1 building=200".split())
     slam_cli.set_(args)

@@ -36,6 +36,7 @@ class Host(models.Model):
     category = models.CharField(max_length=20, blank=True)
     serial = models.CharField(max_length=50, blank=True)
     inventory = models.CharField(max_length=50, blank=True)
+    nodns = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
@@ -221,6 +222,7 @@ class Address(models.Model):
     date = models.DateTimeField(auto_now=True)
     duration = models.DateTimeField(blank=True, null=True, default=None)
     lastuse = models.DateTimeField(blank=True, null=True)
+    comment = models.TextField(blank=True)
 
     def __unicode__(self):
         return self.addr

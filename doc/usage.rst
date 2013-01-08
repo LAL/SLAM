@@ -35,6 +35,8 @@ Usage
         [--serial SERIAL]
         [--duration DURATION]
         [--lastuse LASTUSE]
+        [--comment COMMENT]
+        [--nodns]
         [ARG...]
 
 .. program:: slam-cli
@@ -131,6 +133,14 @@ Usage
 
     Update the time the address was last used with the new timestamp.
 
+.. option:: --comment COMMENT
+
+    Add a comment to an address.
+
+.. option:: --nodns
+
+    Specify that no DNS record will be generated for a given host.
+
 .. option:: ARG
 
     Specify arguments for additional information required by specific action or
@@ -190,6 +200,11 @@ Create a new host and assign it to the pool corresponding to the category
 
     $ ./slam_cli.py -a create -H server64 -c server
 
+Create a new host which addresses won't be generated for DNS configuration
+files::
+
+    $ ./slam_cli.py -a create -H nat -c network --nodns
+
 
 Get
 """
@@ -242,6 +257,10 @@ Modify the mac address of a host::
 Modify the category of a pool::
 
     $ ./slam_cli.py -a modify -pn serv -c servercategory
+
+Add a comment to an address::
+
+    $ ./slam_cli.py -a modify -A 10.9.8.6 --comment "Special address."
 
 
 Generate

@@ -59,6 +59,10 @@ def init_argparser():
         help="Number of day for a temporary allocation.")
     argparser.add_argument("--lastuse", action="store",
         help="UNIX timestamp of the last use of the address.")
+    argparser.add_argument("--comment", action="store",
+        help="Store a comment related to an address.")
+    argparser.add_argument("--nodns", action="store_true",
+        help="No DNS record will be generated for the addresses of this host.")
     argparser.add_argument("extra", metavar="ARG", nargs="*",
         help="Extra arguments required by specific actions (ie: modify).")
 
@@ -156,6 +160,8 @@ def _list_hosts(args):
             if hostobj.alias_set.count() > 0:
                 print("Alias: " + ", ".join(
                     [alias.name for alias in list(hostobj.alias_set.all())]))
+            if hostobj.nodns:
+                print("NODNS")
             for addr in models.Address.objects.filter(host=hostobj).exclude(
                     addr="").order_by("addr"):
                 if addr.pool:
@@ -246,6 +252,8 @@ def list_(args):
                     print("\tHost: " + str(addr.host))
                 if addr.duration:
                     print("\tTemporary until: " + str(addr.duration))
+                if addr.comment:
+                    print("\tComment:\n" + addr.comment)
     elif args.host:
         _list_hosts(args)
     #filter by property
@@ -317,7 +325,8 @@ def _create_host(args, pool):
         try:
             hostres, addrres = interface.create_host(host, pool,
                 args.address[0], macaddr, args.random, args.alias,
-                args.category[0], args.serial, args.inventory, args.duration)
+                args.category[0], args.serial, args.inventory, args.duration,
+                args.nodns)
             if addrres is None:
                 print ("Host \"" + hostres + "\" have been created.")
             else:
@@ -445,7 +454,8 @@ def modify(args):
         else:
             interface.modify(args.pool_name, args.host[0], args.category,
                 args.address[0], args.mac[0], args.extra[0], args.alias,
-                args.serial, args.inventory, args.duration, args.lastuse)
+                args.serial, args.inventory, args.duration, args.lastuse,
+                args.nodns, args.comment)
     except (interface.InexistantObjectError,
             interface.MissingParameterError) as exc:
         logging.error(str(exc))

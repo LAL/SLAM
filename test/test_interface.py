@@ -61,6 +61,10 @@ def test_getcreate_host():
         Address.objects.get(host__name="host10-30").duration
             > Address.objects.get(host__name="host10-30").date + datetime.timedelta(days=41))
 
+    interface.create_host(host="host10-40", pool=interface.get_pool("pool10"), nodns=True)
+    hostobj = interface.get_host("host10-40")
+    assert hostobj.nodns
+
 
 def test_macaddress():
     interface.create_pool("pool15", "10.15.0.0/24")
@@ -120,9 +124,11 @@ def test_modify():
         and Address.objects.get(host__name="host30-2").macaddr == "mac30-1")
     hostobj = interface.get_host("host30-2")
     assert len(hostobj.alias_set.all()) == 0
-    interface.modify(host="host30-2", alias=["alias30-1", "alias30-2"])
+    assert not hostobj.nodns
+    interface.modify(host="host30-2", alias=["alias30-1", "alias30-2"], nodns=True)
+    hostobj = interface.get_host("host30-2")
     assert(len(hostobj.alias_set.all()) == 2
-        and hostobj.alias_set.all()[1].name == "alias30-2")
+        and hostobj.alias_set.all()[1].name == "alias30-2" and hostobj.nodns)
 
     assert_raises(interface.MissingParameterError,
         interface.modify, ["pool30-2"])
@@ -144,6 +150,12 @@ def test_modify():
     interface.modify(host=hostobj.name, serial="srlnm", inventory="invtnm")
     hostobj = interface.get_host("host30-4")
     assert hostobj.serial == "srlnm" and hostobj.inventory == "invtnm"
+
+    addrobj = Address.objects.get(addr="10.30.1.0")
+    assert not addrobj.comment
+    interface.modify(address="10.30.1.0", comment="The quick brown fox...")
+    addrobj = Address.objects.get(addr="10.30.1.0")
+    assert addrobj.comment == "The quick brown fox..."
 
 
 def test_getcreate_generator():
