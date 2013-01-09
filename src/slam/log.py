@@ -20,13 +20,15 @@ class LogEntry(models.Model):
 class DbLogHandler(logging.Handler):
     """Log handler that store log records in database."""
 
+    author = None
+
     def emit(self, record):
         """Store a new log record in database."""
-        author = ""
-        if os.getenv("SUDO_USER"):
-            author = os.getenv("SUDO_USER")
-        elif os.getenv("USER"):
-            author = os.getenv("USER")
+        if not self.author:
+            if os.getenv("SUDO_USER"):
+                self.author = os.getenv("SUDO_USER")
+            elif os.getenv("USER"):
+                self.author = os.getenv("USER")
 
-        newrec = LogEntry(author=author, msg=record.msg)
+        newrec = LogEntry(author=self.author, msg=record.msg)
         newrec.save()

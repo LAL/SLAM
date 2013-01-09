@@ -648,6 +648,11 @@ def sort_addresses(addrs):
     return sorted(addrs, key=sortablefunc)
 
 
+def set_log_author(author):
+    """Set name of the user for logging."""
+    DBLOGHANDLER.author = author
+
+
 def export(cmd):
     """Export SLAM's command allowing to recreate the current database from
     scratch."""

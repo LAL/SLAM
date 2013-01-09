@@ -78,6 +78,7 @@ def login(request):
             password=request.POST["password"])
         if user is not None:
             auth.login(request, user)
+            interface.set_log_author(user.username)
             return msg_view(request, _("Logged in"),
                 _("You can now manage your addresses!"))
         else:
@@ -292,7 +293,9 @@ def host_info(request, host_name):
             _("The host \"%(host)s\" has been correctly modified.")
                     % {"host": host_name})
     else:
-        host = get_object_or_404(models.Host, name=host_name)
+        host = interface.get_host(host_name)
+        if not host:
+            error_404()
         addrs = models.Address.objects.filter(host=host).order_by("addr")
         if request.method == "DELETE":
             if data.get("confirm"):
@@ -321,10 +324,15 @@ def address_info(request, address):
     """Get information about an address or disallocate it."""
     addr = get_object_or_404(models.Address, addr=address)
     if request.method == "DELETE":
-        interface.delete(addresses=[address])
-        return msg_view(request, _("Address deleted"),
-            _("The address \"%(addr)s\" has been correctly removed.")
-                % {"addr": address})
+        data = request_data(request)
+        if data.get("confirm"):
+            return render_to_response("address.html",
+                {"request": request, "addr": addr, "confirm_delete": 1})
+        else:
+            interface.delete(addresses=[address])
+            return msg_view(request, _("Address deleted"),
+                _("The address \"%(addr)s\" has been correctly removed.")
+                    % {"addr": address})
     else:
         if request.GET.get("format") == "json":
             return render_to_response("address.json",

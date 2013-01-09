@@ -10,8 +10,8 @@
     {% if confirm_delete %}<div class="alert alert-block">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <h2>{% trans "Confirm deletion" %}</h2>
-        {% blocktrans %}
-            This will delete permanently delete host {{ host.name }} and all
+        {% blocktrans with hostname=host.name %}
+            This will delete permanently delete host {{ hostname }} and all
             related information. Do you really want to delete it ?
         {% endblocktrans %}
 

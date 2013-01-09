@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-08 15:01+0100\n"
+"POT-Creation-Date: 2013-01-09 10:56+0100\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -47,54 +47,54 @@ msgstr "Déconnecté"
 msgid "You have successfully been disconnected from SLAM."
 msgstr "Vous avez bien été déconnecté de SLAM."
 
-#: views.py:81
+#: views.py:82
 msgid "Logged in"
 msgstr "Connecté"
 
-#: views.py:82
+#: views.py:83
 msgid "You can now manage your addresses!"
 msgstr "Vous pouvez maintenant gérer vos adresses !"
 
-#: views.py:85
+#: views.py:86
 msgid "Invalid login or password."
 msgstr "Nom d'utilisateur ou mot de passe incorrecte."
 
-#: views.py:124
+#: views.py:125
 msgid "Pool already exists"
 msgstr "Le pool existe déjà"
 
-#: views.py:125
+#: views.py:126
 msgid ""
 "A pool with the same name or the same category already exists in the "
 "database."
 msgstr ""
 "Un pool du même nom ou de même catégorie existe déjà dans la base de données"
 
-#: views.py:128 views.py:246 views.py:284 views.py:359
+#: views.py:129 views.py:248 views.py:286 views.py:368
 msgid "Missing information"
 msgstr "Information manquante"
 
-#: views.py:129
+#: views.py:130
 msgid "You must specify at least a name and a definition to create a new pool."
 msgstr ""
 "Vous devez au moins préciser un nom et une définition pour créer un nouveau "
 "pool"
 
-#: views.py:132
+#: views.py:133
 #, python-format
 msgid "Created pool %(pool)s"
 msgstr "Pool %(pool)s créé"
 
-#: views.py:133
+#: views.py:134
 #, python-format
 msgid "The pool \"%(pool)s\" have been created: %(poolstr)s."
 msgstr "Le pool \"%(pool)s\" a été créé : %(poolstr)s."
 
-#: views.py:153
+#: views.py:154
 msgid "Bad Request"
 msgstr "Requête invalide"
 
-#: views.py:154
+#: views.py:155
 #, python-format
 msgid ""
 "Your request is invalid, please verify it is correct. Internal reason: "
@@ -103,86 +103,86 @@ msgstr ""
 "Votre requête est invalide, veuillez vérifier les informations fournies."
 "Raison interne : %(exc)s."
 
-#: views.py:160
+#: views.py:161
 #, python-format
 msgid "Pool \"%(pool)s\" has been modified"
 msgstr "Pool \"%(pool)s\" a été modifié"
 
-#: views.py:161
+#: views.py:162
 #, python-format
 msgid "The pool \"%(pool)s\" has been correctly modified."
 msgstr "Le pool \"%(pool)s\" a correctement été modifié."
 
-#: views.py:171
+#: views.py:172
 #, python-format
 msgid "%(name)s has been removed"
 msgstr "%(name)s a été supprimé"
 
-#: views.py:172
+#: views.py:173
 #, python-format
 msgid "The pool \"%(name)s\" (%(def)s) has been removed."
 msgstr "Le pool \"%(name)s\" (%(def)s) a été supprimé."
 
-#: views.py:247
+#: views.py:249
 msgid "You must at least specify a name to create a new host."
 msgstr "Vous devez au moins spécifier le nom du nouvel hôte à créer."
 
-#: views.py:249
+#: views.py:251
 msgid "Host already exists"
 msgstr "L'hôte existe déjà"
 
-#: views.py:250
+#: views.py:252
 #, python-format
 msgid "Could not create host %(host)s because it already exists."
 msgstr "Impossible de créer l'hôte %(host)s car il existe déjà."
 
-#: views.py:252
+#: views.py:254
 #, python-format
 msgid "The host \"%(host)s\" have been created"
 msgstr "L’hôte \"%(host)s\" a été créé"
 
-#: views.py:254
+#: views.py:256
 msgid " and was assigned to address: "
 msgstr " et a reçu l’adresse : "
 
-#: views.py:256
+#: views.py:258
 #, python-format
 msgid "Created host %(host)s"
 msgstr "L’hôte %(host)s a été créé"
 
-#: views.py:285
+#: views.py:287
 msgid "You must specify the new values to modify an object."
 msgstr "Vous devez indiquer de nouvelles information pour modifier cet objet."
 
-#: views.py:290
+#: views.py:292
 #, python-format
 msgid "Host \"%(host)s\" has been modified"
 msgstr "L’hôte \"%(host)s\" a bien été modifié"
 
-#: views.py:291
+#: views.py:293
 #, python-format
 msgid "The host \"%(host)s\" has been correctly modified."
 msgstr "L’hôte \"%(host)s\" a bien été modifié."
 
-#: views.py:306
+#: views.py:310
 msgid " has been removed"
 msgstr " a été supprimé"
 
-#: views.py:307
+#: views.py:311
 #, python-format
 msgid "The host \"%(host)s\" has correctly been removed."
 msgstr "L’hôte \"%(host)s\" a bien été supprimé."
 
-#: views.py:324
+#: views.py:333
 msgid "Address deleted"
 msgstr "Adresse supprimée"
 
-#: views.py:325
+#: views.py:334
 #, python-format
 msgid "The address \"%(addr)s\" has been correctly removed."
 msgstr "L’address \"%(addr)s\" a bien été supprimée."
 
-#: views.py:360
+#: views.py:369
 msgid ""
 "You must at least specify a pool or a host and the name of property to "
 "create, edit or delete a property."
@@ -190,20 +190,20 @@ msgstr ""
 "Vous devez au moins spécifier le nom d'un pool ou d'un host et le nom de "
 "l'information que vous souhaitez créer, modifier ou supprimer."
 
-#: views.py:363
+#: views.py:372
 msgid "Property modified"
 msgstr "Information modifiée"
 
-#: views.py:364
+#: views.py:373
 #, python-format
 msgid "The property %(prop)s has been correctly added or edited."
 msgstr "L'information \"%(prop)s\" a correctement été ajoutée ou modifiée."
 
-#: views.py:367
+#: views.py:376
 msgid "Property deleted"
 msgstr "Information supprimée"
 
-#: views.py:368
+#: views.py:377
 #, python-format
 msgid "The property %(prop)s has been correctly deleted."
 msgstr "L'information \"%(prop)s\" a correctement été supprimée."
@@ -276,7 +276,7 @@ msgstr "Créer un nouveau pool"
 msgid "Range definition"
 msgstr "Définition de la plage"
 
-#: templates/address.html:4 templates/address.html.py:9
+#: templates/address.html:4 templates/address.html.py:22
 msgid "Address: "
 msgstr "Adresse : "
 
@@ -284,11 +284,28 @@ msgstr "Adresse : "
 msgid "Disallocate"
 msgstr "Désallouer"
 
-#: templates/address.html:13
+#: templates/address.html:11
+msgid "Confirm disallocation"
+msgstr "Confirmation de la désallocation"
+
+#: templates/address.html:12
+#, python-format
+msgid ""
+"\n"
+"            This will permanently disallocate address %(addr)s from host\n"
+"            %(hostname)s. Are you sure?\n"
+"        "
+msgstr ""
+"\n"
+"            Vous êtes sur le point de désallouer définitivement l'adresse"
+"            %(addr)s de l’hôte %(hostname)s. Êtes-vous sûr ?\n"
+"        "
+
+#: templates/address.html:26
 msgid "Pool: "
 msgstr "Pool : "
 
-#: templates/address.html:18
+#: templates/address.html:31
 msgid "Host: "
 msgstr "Hôte : "
 
@@ -353,10 +370,15 @@ msgstr "Confirmation de la suppression"
 #, python-format
 msgid ""
 "\n"
-"            This will delete permanently delete host %(host.name)s and all\n"
+"            This will delete permanently delete host %(hostname)s and all\n"
 "            related information. Do you really want to delete it ?\n"
 "        "
 msgstr ""
+"\n"
+"            Vous êtes sur le point de supprimer définitivement l’hôte"
+"            %(hostname)s et toutes les informations le concernant."
+"            Êtes vous sûr ?"
+"        "
 
 #: templates/host.html:27 templates/host_list.html:12 templates/pool.html:36
 msgid "Aliases"

@@ -6,6 +6,19 @@
 {% block content %}
     {% trans "Disallocate" as delete_trans %}
 
+    {% if confirm_delete %}<div class="alert alert-block">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h2>{% trans "Confirm disallocation" %}</h2>
+        {% blocktrans with addr=addr.addr hostname=addr.host.name %}
+            This will permanently disallocate address {{ addr }} from host
+            {{ hostname }}. Are you sure?
+        {% endblocktrans %}
+
+        <form method="DELETE">
+            <button class="btn btn-danger" type="submit">{{ delete_trans }}</button>
+        </form>
+    </div>{% endif %}
+
     <h1>{% trans "Address: " %}{{ addr.addr }}</h1>
 
     <ul>
@@ -23,6 +36,7 @@
 
     <h2>{{ delete_trans }}</h2>
     <form method="DELETE">
+        <input type="hidden" name="confirm" value="1">
         <button class="btn btn-danger" type="submit">{{ delete_trans }}</button>
     </form>
 {% endblock %}
