@@ -10,15 +10,7 @@
             <label>{% trans "Name" %}</label>
             <input type="text" name="name">
 
-            <label>{% trans "Pool name" %}</label>
-            <select name="pool_name">
-                <option value=""></option>
-                {% for pool in pools %}
-                    <option value="{{ pool }}">{{ pool }}</option>
-                {% endfor %}
-            </select>
-
-            <label>{% trans "or category" %}</label>
+            <label>{% trans "Category" %}</label>
             <select name="category">
                 <option value=""></option>
                 {% for cat in categories %}
@@ -26,14 +18,31 @@
                 {% endfor %}
             </select>
 
-            <label>{% trans "Address" %}</label>
-            <input type="text" name="address">
+            <div class="row">
+                <div class="span3">
+                    <label>{% trans "Pool name (optional)" %}</label>
+                    <select name="pool_name">
+                        <option value=""></option>
+                        {% for pool in pools %}
+                            <option value="{{ pool }}">{{ pool }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="span3">
+                    <label>{% trans "<strong>and/or</strong> address (optional)" %}</label>
+                    <input type="text" name="address">
+                </div>
+            </div>
 
             <label>{% trans "Mac address" %}</label>
             <input type="text" name="mac"><br>
 
             <label><input type="checkbox" name="random">
             {% trans "Random allocation" %}</label>
+
+            <label><input type="checkbox" name="nodns">
+            {% trans "Do not generate DNS records for this host" %}</label>
         </fieldset>
 
         <fieldset>

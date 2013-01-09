@@ -602,9 +602,9 @@ def set_prop(name=None, value=None, pool=None, host=None, del_=False):
     if host is not None:
         hostobj = get_host(host)
         if del_:
-            LOGGER.info("Deleted property " + name + " of host " + host)
+            LOGGER.info("Deleted property " + name + " of host " + str(host))
         else:
-            LOGGER.info("Changed property " + name + " of host " + host +
+            LOGGER.info("Changed property " + name + " of host " + str(host) +
                 " to " + value)
     elif pool is not None:
         poolobj = get_pool(pool)

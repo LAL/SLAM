@@ -243,7 +243,11 @@ def add_host(request):
                 pool=pool,
                 address=request.POST.get("address"),
                 mac=request.POST.get("mac"),
-                random=request.POST.get("random"))
+                random=request.POST.get("random"),
+                alias=request.POST.get("alias"),
+                serial=request.POST.get("serial"),
+                inventory=request.POST.get("inventory"),
+                nodns=request.POST.get("nodns"))
         except interface.MissingParameterError:
             return error_view(request, 400, _("Missing information"),
                 _("You must at least specify a name to create a new host."))
@@ -254,6 +258,9 @@ def add_host(request):
         msg = _("The host \"%(host)s\" have been created") % {"host": hoststr}
         if addrstr:
             msg = msg + _(" and was assigned to address: ") + addrstr
+        if request.POST.get("owner"):
+            interface.set_prop("owner", request.POST.get("owner"),
+                host=request.POST.get("name"))
         return msg_view(request,
             _("Created host %(host)s") % {"host": hoststr}, msg)
     else:
@@ -273,15 +280,26 @@ def add_host(request):
 def host_info(request, host_name):
     """Manipulate or show a host in the database."""
     data = request_data(request)
+    host = interface.get_host(host_name)
+    if not host:
+        error_404()
+
     if request.method == "PUT":
         try:
             category = data.get("category")
             if category:
-                interface.modify(host=host_name, mac=data.get("macaddr"),
-                    newname=data.get("newname"), category=[category])
-            else:
-                interface.modify(host=host_name, mac=data.get("macaddr"),
-                    newname=data.get("newname"))
+                category = [category]
+
+            interface.modify(host=host_name,
+                mac=data.get("macaddr"),
+                newname=data.get("newname"),
+                category=category,
+                alias=data.get("alias"),
+                serial=data.get("serial"),
+                inventory=data.get("inventory"),
+                nodns=(data.get("nodns") != host.nodns))
+            if data.get("owner"):
+                interface.set_prop("owner", data.get("owner"), host=host)
         except interface.MissingParameterError:
             return error_view(request, 400, _("Missing information"),
                 _("You must specify the new values to modify an object."))
@@ -293,9 +311,6 @@ def host_info(request, host_name):
             _("The host \"%(host)s\" has been correctly modified.")
                     % {"host": host_name})
     else:
-        host = interface.get_host(host_name)
-        if not host:
-            error_404()
         addrs = models.Address.objects.filter(host=host).order_by("addr")
         if request.method == "DELETE":
             if data.get("confirm"):
@@ -311,12 +326,15 @@ def host_info(request, host_name):
                     _("The host \"%(host)s\" has correctly been removed.")
                         % {"host": host_name})
         else:
+            tmp_val = {"request": request, "host": host, "addrs": addrs,
+                "props": models.Property.objects.filter(host=host)}
+            if models.Property.objects.filter(name="owner", host=host):
+                tmp_val["owner"] = models.Property.objects.get(
+                    name="owner", host=host).value
             if request.GET.get("format") == "json":
-                return render_to_response("host.json",
-                    {"request": request, "host": host, "addrs": addrs})
+                return render_to_response("host.json", tmp_val)
             else:
-                return render_to_response("host.html",
-                    {"request": request, "host": host, "addrs": addrs})
+                return render_to_response("host.html", tmp_val)
 
 
 @login_required
@@ -368,16 +386,12 @@ def property_(request):
             return error_view(request, 400, _("Missing information"),
                 _("You must at least specify a pool or a host and the name of"
                     " property to create, edit or delete a property."))
-        if request.method == "POST":
-            return msg_view(request, _("Property modified"),
-                _("The property %(prop)s has been correctly added or edited.")
-                    % {"prop": request.POST.get("name")})
-        else:
-            return msg_view(request, _("Property deleted"),
-                _("The property %(prop)s has been correctly deleted.")
-                    % {"prop": request.POST.get("name")})
-    else:
-        return redirect("/")
+        if request.POST.get("host"):
+            return redirect("/host/" + request.POST.get("host"))
+        elif request.POST.get("pool"):
+            return redirect("/host/" + request.POST.get("pool"))
+
+    return redirect("/")
 
 
 def lang(request):

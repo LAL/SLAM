@@ -2,8 +2,7 @@ SLAM's todo-list
 ================
 
 * disallocation should put the MAC in an empty address
+* catch exception in the Web interface
 * possibility to delete aliases
-* in add_host : link to the map of the pools
-* add additional field in modify_host
 * page to regenerate all files and reload severs
 * web interface for search, search by property, etc.
