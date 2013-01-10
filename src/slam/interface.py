@@ -303,6 +303,7 @@ def generate(gen_name=None, pool_name=None, conf_format=None,
                     hosts.append((addr.host, addr, addr.host.alias_set.all()))
             genpools.append((pool, hosts))
 
+        gen.backup()
         poolmsg = ""
         if pools:
             poolmsg = " for pool " + ", ".join([pool.name for pool in pools])

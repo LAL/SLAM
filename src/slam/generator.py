@@ -2,7 +2,7 @@
 generation.
 """
 
-import sys, os, re, datetime
+import sys, os, re, datetime, shutil
 from django.db import models
 
 
@@ -155,6 +155,14 @@ class Config(models.Model):
         line."""
         # implemented in child classes
         pass
+
+    def backup(self):
+        """Backup the existing configuration file to filename.timestamp."""
+        if (self.outputfile and self.outputfile != "-"
+                and os.access(self.outputfile, os.R_OK)
+                and os.stat(self.outputfile).st_size > 0):
+            shutil.copyfile(self.outputfile, self.outputfile + "-"
+                + datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
     def createconf(self, genpools):
         """Create a new configuration file from the header, the content and the
