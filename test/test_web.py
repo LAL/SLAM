@@ -35,6 +35,7 @@ def setup():
         http_error_400 = _ignore
         http_error_404 = _ignore
         http_error_409 = _ignore
+        http_error_500 = _ignore
     class IgnoreRedirects(urllib2.HTTPRedirectHandler):
         def _ignore(self, request, response, code, msg, hdrs):
             return response
@@ -57,6 +58,10 @@ def run_request(method, url, data=None):
 
 def status_request(method, url, data=None, status=200):
     req = request(url, method, data)
+    if req.code != status:
+        f = open("/tmp/test.err", "w")
+        f.write(req.read())
+        f.close()
     assert req.code == status
 
 

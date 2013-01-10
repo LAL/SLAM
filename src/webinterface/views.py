@@ -280,9 +280,10 @@ def add_host(request):
 def host_info(request, host_name):
     """Manipulate or show a host in the database."""
     data = request_data(request)
-    host = interface.get_host(host_name)
-    if not host:
-        error_404()
+    try:
+        host = interface.get_host(host_name)
+    except interface.InexistantObjectError:
+        return error_404(request)
 
     if request.method == "PUT":
         try:
@@ -297,7 +298,7 @@ def host_info(request, host_name):
                 alias=data.get("alias"),
                 serial=data.get("serial"),
                 inventory=data.get("inventory"),
-                nodns=(data.get("nodns") != host.nodns))
+                nodns=((data.get("nodns") == "on") != host.nodns))
             if data.get("owner"):
                 interface.set_prop("owner", data.get("owner"), host=host)
         except interface.MissingParameterError:
