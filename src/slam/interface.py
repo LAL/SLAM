@@ -742,12 +742,15 @@ def export(cmd):
             option += "--default"
         if gen.outputfile:
             option += " -o " + gen.outputfile
-        for head in gen.headerfile.split(","):
-            option += " --header " + head
-        for foot in gen.footerfile.split(","):
-            option += " --footer " + foot
-        for check in gen.checkfile.split(","):
-            option += " --checkfile " + check
+        if gen.headerfile:
+            for head in gen.headerfile.split(","):
+                option += " --header " + head
+        if gen.footerfile:
+            for foot in gen.footerfile.split(","):
+                option += " --footer " + foot
+        if gen.checkfile:
+            for check in gen.checkfile.split(","):
+                option += " --checkfile " + check
         if gen.timeout:
             option += " --timeout " + gen.timeout
         if gen.domain:
