@@ -1,5 +1,7 @@
 """Webinterface view functions."""
 
+import os, subprocess
+
 from django.shortcuts import render_to_response, render, redirect
 from django.shortcuts import get_object_or_404#, get_list_or_404
 from django.http import QueryDict
@@ -10,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
 from slam import interface, models
+from configuration import RELOAD_SCRIPT
 
 def msg_view(request, title, message):
     """View used to display a simple message to the user."""
@@ -393,6 +396,28 @@ def property_(request):
             return redirect("/host/" + request.POST.get("pool"))
 
     return redirect("/")
+
+
+@login_required
+def reload(request):
+    """Generate all configuration files."""
+    if request.method == "POST":
+        if RELOAD_SCRIPT and os.access(RELOAD_SCRIPT, os.R_OK):
+            proc = subprocess.Popen(["/bin/sh", RELOAD_SCRIPT],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout = proc.stdout.read()
+            stderr = proc.stderr.read()
+            ret = proc.wait()
+            return render_to_response("reload.html",
+                {"request": request, "executed": True,
+                    "error": ret != 0, "stdout": stdout, "stderr": stderr})
+        else:
+            return error_view(request, 500, _("Could not generate files"),
+                _("Impossible to generate configuration files, the "
+                    "RELOAD_SCRIPT variable is not defined in the SLAM's "
+                    "configuration file."))
+    else:
+        return render_to_response("reload.html", {"request": request})
 
 
 def lang(request):

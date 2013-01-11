@@ -4,97 +4,97 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-09 16:00+0100\n"
+"POT-Creation-Date: 2013-01-11 10:56+0100\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: views.py:36
+#: views.py:39
 msgid "Not found"
 msgstr "Page introuvable"
 
-#: views.py:37
+#: views.py:40
 #, python-format
 msgid "Could not found the resource %(res)s."
 msgstr "La ressource %(res)s est introuvable."
 
-#: views.py:42
+#: views.py:45
 msgid "Forbidden"
 msgstr "Accès interdit"
 
-#: views.py:43
+#: views.py:46
 #, python-format
 msgid "You are not allowed to acces to the resource %(res)s."
 msgstr "Vous n'avez pas le droit d'accéder à la ressource %(res)s."
 
-#: views.py:49
+#: views.py:52
 msgid "Internal Error"
 msgstr "Erreur interne"
 
-#: views.py:50
+#: views.py:53
 #, python-format
 msgid "An internal error occured while generating the page for %(res)s."
 msgstr ""
 "Une erreur interne s'est produite pendant la génération de la page pour "
 "%(res)s."
 
-#: views.py:70
+#: views.py:73
 msgid "Disconnected"
 msgstr "Déconnecté"
 
-#: views.py:71
+#: views.py:74
 msgid "You have successfully been disconnected from SLAM."
 msgstr "Vous avez bien été déconnecté de SLAM."
 
-#: views.py:82
+#: views.py:85
 msgid "Logged in"
 msgstr "Connecté"
 
-#: views.py:83
+#: views.py:86
 msgid "You can now manage your addresses!"
 msgstr "Vous pouvez maintenant gérer vos adresses !"
 
-#: views.py:86
+#: views.py:89
 msgid "Invalid login or password."
 msgstr "Nom d'utilisateur ou mot de passe incorrecte."
 
-#: views.py:125
+#: views.py:128
 msgid "Pool already exists"
 msgstr "Le pool existe déjà"
 
-#: views.py:126
+#: views.py:129
 msgid ""
 "A pool with the same name or the same category already exists in the "
 "database."
 msgstr ""
 "Un pool du même nom ou de même catégorie existe déjà dans la base de données"
 
-#: views.py:129 views.py:252 views.py:302 views.py:383
+#: views.py:132 views.py:255 views.py:308 views.py:390
 msgid "Missing information"
 msgstr "Information manquante"
 
-#: views.py:130
+#: views.py:133
 msgid "You must specify at least a name and a definition to create a new pool."
 msgstr ""
 "Vous devez au moins préciser un nom et une définition pour créer un nouveau "
 "pool"
 
-#: views.py:133
+#: views.py:136
 #, python-format
 msgid "Created pool %(pool)s"
 msgstr "Pool %(pool)s créé"
 
-#: views.py:134
+#: views.py:137
 #, python-format
 msgid "The pool \"%(pool)s\" have been created: %(poolstr)s."
 msgstr "Le pool \"%(pool)s\" a été créé : %(poolstr)s."
 
-#: views.py:154
+#: views.py:157
 msgid "Bad Request"
 msgstr "Requête invalide"
 
-#: views.py:155
+#: views.py:158
 #, python-format
 msgid ""
 "Your request is invalid, please verify it is correct. Internal reason: "
@@ -103,86 +103,86 @@ msgstr ""
 "Votre requête est invalide, veuillez vérifier les informations fournies."
 "Raison interne : %(exc)s."
 
-#: views.py:161
+#: views.py:164
 #, python-format
 msgid "Pool \"%(pool)s\" has been modified"
 msgstr "Pool \"%(pool)s\" a été modifié"
 
-#: views.py:162
+#: views.py:165
 #, python-format
 msgid "The pool \"%(pool)s\" has been correctly modified."
 msgstr "Le pool \"%(pool)s\" a correctement été modifié."
 
-#: views.py:172
+#: views.py:175
 #, python-format
 msgid "%(name)s has been removed"
 msgstr "%(name)s a été supprimé"
 
-#: views.py:173
+#: views.py:176
 #, python-format
 msgid "The pool \"%(name)s\" (%(def)s) has been removed."
 msgstr "Le pool \"%(name)s\" (%(def)s) a été supprimé."
 
-#: views.py:253
+#: views.py:256
 msgid "You must at least specify a name to create a new host."
 msgstr "Vous devez au moins spécifier le nom du nouvel hôte à créer."
 
-#: views.py:255
+#: views.py:258
 msgid "Host already exists"
 msgstr "L'hôte existe déjà"
 
-#: views.py:256
+#: views.py:259
 #, python-format
 msgid "Could not create host %(host)s because it already exists."
 msgstr "Impossible de créer l'hôte %(host)s car il existe déjà."
 
-#: views.py:258
+#: views.py:261
 #, python-format
 msgid "The host \"%(host)s\" have been created"
 msgstr "L’hôte \"%(host)s\" a été créé"
 
-#: views.py:260
+#: views.py:263
 msgid " and was assigned to address: "
 msgstr " et a reçu l’adresse : "
 
-#: views.py:265
+#: views.py:268
 #, python-format
 msgid "Created host %(host)s"
 msgstr "L’hôte %(host)s a été créé"
 
-#: views.py:303
+#: views.py:309
 msgid "You must specify the new values to modify an object."
 msgstr "Vous devez indiquer de nouvelles information pour modifier cet objet."
 
-#: views.py:308
+#: views.py:314
 #, python-format
 msgid "Host \"%(host)s\" has been modified"
 msgstr "L’hôte \"%(host)s\" a bien été modifié"
 
-#: views.py:309
+#: views.py:315
 #, python-format
 msgid "The host \"%(host)s\" has been correctly modified."
 msgstr "L’hôte \"%(host)s\" a bien été modifié."
 
-#: views.py:323
+#: views.py:329
 msgid " has been removed"
 msgstr " a été supprimé"
 
-#: views.py:324
+#: views.py:330
 #, python-format
 msgid "The host \"%(host)s\" has correctly been removed."
 msgstr "L’hôte \"%(host)s\" a bien été supprimé."
 
-#: views.py:348
+#: views.py:355
 msgid "Address deleted"
 msgstr "Adresse supprimée"
 
-#: views.py:349
+#: views.py:356
 #, python-format
 msgid "The address \"%(addr)s\" has been correctly removed."
 msgstr "L’address \"%(addr)s\" a bien été supprimée."
 
-#: views.py:384
+#: views.py:391
 msgid ""
 "You must at least specify a pool or a host and the name of property to "
 "create, edit or delete a property."
@@ -190,23 +190,17 @@ msgstr ""
 "Vous devez au moins spécifier le nom d'un pool ou d'un host et le nom de "
 "l'information que vous souhaitez créer, modifier ou supprimer."
 
-#: views.py:387
-msgid "Property modified"
-msgstr "Information modifiée"
+#: views.py:415
+msgid "Could not generate files"
+msgstr "Impossible de générer les fichiers"
 
-#: views.py:388
-#, python-format
-msgid "The property %(prop)s has been correctly added or edited."
-msgstr "L'information \"%(prop)s\" a correctement été ajoutée ou modifiée."
-
-#: views.py:391
-msgid "Property deleted"
-msgstr "Information supprimée"
-
-#: views.py:392
-#, python-format
-msgid "The property %(prop)s has been correctly deleted."
-msgstr "L'information \"%(prop)s\" a correctement été supprimée."
+#: views.py:416
+msgid ""
+"Impossible to generate configuration files, the RELOAD_SCRIPT variable is "
+"not defined in the SLAM's configuration file."
+msgstr ""
+"Impossible de générer les fichiers de configuration : la variable "
+"RELOAD_SCRIPT n'est pas définie dans le fichier de configuration de SLAM."
 
 #: templates/add_host.html:4 templates/host_list.html:4
 #: templates/host_list.html.py:7
@@ -218,11 +212,12 @@ msgid "Create a new host"
 msgstr "Créer un nouvel hôte"
 
 #: templates/add_host.html:10 templates/add_pool.html:10
-#: templates/host.html:64 templates/pool.html:24 templates/pool.html.py:68
+#: templates/host.html:54 templates/host.html.py:68 templates/host.html:84
+#: templates/pool.html:33 templates/pool.html.py:44
 msgid "Name"
 msgstr "Nom"
 
-#: templates/add_host.html:13 templates/pool.html:13 templates/pool.html.py:25
+#: templates/add_host.html:13 templates/pool.html:14 templates/pool.html.py:47
 msgid "Category"
 msgstr "Catégorie"
 
@@ -234,7 +229,7 @@ msgstr "Nom du pool (optionnel)"
 msgid "<strong>and/or</strong> address (optional)"
 msgstr "<strong>ou</strong> adresse (optionnel)"
 
-#: templates/add_host.html:38 templates/host.html:67 templates/pool.html:35
+#: templates/add_host.html:38 templates/host.html:87 templates/pool.html:61
 msgid "Mac address"
 msgstr "Adresses MAC"
 
@@ -242,7 +237,8 @@ msgstr "Adresses MAC"
 msgid "Random allocation"
 msgstr "Allocation aléatoire"
 
-#: templates/add_host.html:45 templates/host.html:39 templates/host.html.py:86
+#: templates/add_host.html:45 templates/host.html:39
+#: templates/host.html.py:106
 msgid "Do not generate DNS records for this host"
 msgstr "Ne pas générer d'enregistrements DNS pour cet hôte"
 
@@ -250,15 +246,16 @@ msgstr "Ne pas générer d'enregistrements DNS pour cet hôte"
 msgid "Optional information"
 msgstr "Informations optionnelles"
 
-#: templates/add_host.html:50 templates/host.html:27 templates/host.html.py:78
+#: templates/add_host.html:50 templates/host.html:27 templates/host.html.py:98
 msgid "Serial number"
 msgstr "Numéro de série"
 
-#: templates/add_host.html:53 templates/host.html:30 templates/host.html.py:75
+#: templates/add_host.html:53 templates/host.html:30 templates/host.html.py:95
 msgid "Inventory number"
 msgstr "Numéro d’inventaire"
 
-#: templates/add_host.html:56 templates/host.html:33 templates/host.html.py:81
+#: templates/add_host.html:56 templates/host.html:33
+#: templates/host.html.py:101
 msgid "Owner"
 msgstr "Propriétaire"
 
@@ -333,7 +330,8 @@ msgstr "Pools"
 msgid "List"
 msgstr "Liste"
 
-#: templates/base.html:37 templates/base.html.py:47 templates/pool.html:70
+#: templates/base.html:37 templates/base.html.py:47 templates/host.html:56
+#: templates/pool.html:35
 msgid "Add"
 msgstr "Ajouter"
 
@@ -344,6 +342,10 @@ msgstr "Hôtes"
 #: templates/base.html:50 templates/logs.html:4 templates/logs.html.py:7
 msgid "Log journal"
 msgstr "Journal"
+
+#: templates/base.html:51 templates/reload.html:38
+msgid "Generate"
+msgstr "Générer"
 
 #: templates/error.html:4 templates/error.html.py:8 templates/error.txt:3
 msgid "Error: "
@@ -382,11 +384,19 @@ msgstr ""
 "l’hôte            %(hostname)s et toutes les informations le "
 "concernant.            Êtes vous sûr ?        "
 
-#: templates/host.html:36 templates/host_list.html:12 templates/pool.html:36
+#: templates/host.html:36 templates/host_list.html:12 templates/pool.html:62
 msgid "Aliases"
 msgstr "Alias"
 
-#: templates/host.html:44
+#: templates/host.html:44 templates/pool.html:23
+msgid "Additional information"
+msgstr "Informations supplémentaires"
+
+#: templates/host.html:55 templates/pool.html:34
+msgid "Value"
+msgstr "Valeur"
+
+#: templates/host.html:63
 #, python-format
 msgid ""
 "\n"
@@ -395,19 +405,19 @@ msgstr ""
 "\n"
 "            Adresses allouées à %(hname)s"
 
-#: templates/host.html:50
-msgid " (pool: "
-msgstr " (pool: "
+#: templates/host.html:69 templates/pool.html:4 templates/pool.html.py:10
+msgid "Pool"
+msgstr "Pool"
 
-#: templates/host.html:53
-msgid ", mac: "
-msgstr ", adresse MAC : "
+#: templates/host.html:70
+msgid "MAC address"
+msgstr "Adresses MAC"
 
-#: templates/host.html:72
+#: templates/host.html:92
 msgid "Alias (comma-separated)"
 msgstr "Alias (séparés par virgule)"
 
-#: templates/host_list.html:11 templates/pool.html:34
+#: templates/host_list.html:11 templates/pool.html:60
 #: templates/pool_map.html:27
 msgid "Host name"
 msgstr "Nom de l'hôte"
@@ -440,11 +450,7 @@ msgstr "Nom d'utilisateur"
 msgid "Password"
 msgstr "Mot de passe"
 
-#: templates/pool.html:4 templates/pool.html.py:10
-msgid "Pool"
-msgstr "Pool"
-
-#: templates/pool.html:15 templates/pool_list.html:11
+#: templates/pool.html:16 templates/pool_list.html:11
 msgid "Range"
 msgstr "Plage"
 
@@ -453,11 +459,11 @@ msgstr "Plage"
 msgid "Usage"
 msgstr "Utilisation"
 
-#: templates/pool.html:19
+#: templates/pool.html:20
 msgid "View usage map"
 msgstr "Voir la carte d'utilisation"
 
-#: templates/pool.html:29
+#: templates/pool.html:55
 #, python-format
 msgid ""
 "Addresses in %(pname)s\n"
@@ -466,21 +472,9 @@ msgstr ""
 "Adresses dans %(pname)s\n"
 "        "
 
-#: templates/pool.html:33 templates/pool_map.html:26
+#: templates/pool.html:59 templates/pool_map.html:26
 msgid "Address"
 msgstr "Adresse"
-
-#: templates/pool.html:49
-msgid "Additional information"
-msgstr "Informations supplémentaires"
-
-#: templates/pool.html:64
-msgid "Add new information"
-msgstr "Ajouter une nouvelle information"
-
-#: templates/pool.html:69
-msgid "Value"
-msgstr "Valeur"
 
 #: templates/pool_list.html:10
 msgid "Pool name"
@@ -518,11 +512,46 @@ msgstr "Expiration (temps restant)"
 msgid "aliases"
 msgstr "alias"
 
-#~ msgid "This host won't appear in the DNS."
-#~ msgstr "C"
+#: templates/reload.html:4 templates/reload.html.py:31
+msgid "Generate configuration"
+msgstr "Générer la configuration"
 
-#~ msgid "<strong>or</strong> category"
-#~ msgstr "<strong>ou</strong> catégorie"
+#: templates/reload.html:8
+msgid "Generation's result"
+msgstr "Résultat de la génération"
 
-#~ msgid "or category"
-#~ msgstr "ou catégorie"
+#: templates/reload.html:11
+msgid ""
+"An error occured during the generation of config\n"
+"            files. Please look at the error output to solve this problem.\n"
+"            "
+msgstr "Une erreur s’est produite pendant la génération des fichiers de "
+"configuration. Veuillez regarder la sortie d'erreur afin de résoudre le "
+"problème."
+
+#: templates/reload.html:15
+msgid ""
+"The generation of configuration files was\n"
+"            successful."
+msgstr "La génération des fichiers de configuration a réussie."
+
+#: templates/reload.html:21
+msgid "Error output"
+msgstr "Sortie d'erreur"
+
+#: templates/reload.html:27
+msgid "Standard output"
+msgstr "Sortie standard"
+
+#: templates/reload.html:32
+msgid ""
+"\n"
+"            This page allow you to regenerate the configuration files for "
+"the\n"
+"            various network services with the data from the database.\n"
+"        "
+msgstr ""
+"\n"
+"Cette page vous permet de regénérer les fichiers de configurations "
+"pour les différents services réseau à partir des données de la base de "
+"données."

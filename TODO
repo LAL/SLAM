@@ -4,5 +4,4 @@ SLAM's todo-list
 * disallocation should put the MAC in an empty address
 * catch exception in the Web interface
 * possibility to delete aliases
-* page to regenerate all files and reload severs
 * web interface for search, search by property, etc.

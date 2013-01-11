@@ -32,3 +32,7 @@ LANGUAGE_CODE = 'fr-FR'
 # You can run this command in a shell and paste its result :
 #   echo "`</dev/urandom tr -dc '[:graph:]' | head -c50`"
 SECRET_KEY = r""""""
+
+# A script that handle generated files and that will be launched from the web
+# interface when a user ask to regenerate configuration files.
+RELOAD_SCRIPT = ""

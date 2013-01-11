@@ -664,8 +664,6 @@ def export(cmd):
             option += " -p " + pool.addr_range_str
         if pool.category:
             option += " -c " + pool.category
-        if pool.dns_record:
-            option += " --domain " + pool.dns_record
         res += cmd + " -a create -pn " + pool.name + option + "\n"
 
     allocated = []
