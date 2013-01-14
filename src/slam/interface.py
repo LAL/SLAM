@@ -304,7 +304,7 @@ def generate(gen_name=None, pool_name=None, conf_format=None,
                     if models.Property.objects.filter(
                             name="mx", host=addr.host):
                         mx = models.Property.objects.get(
-                            name="mx", host=addr.host)
+                            name="mx", host=addr.host).value
                     hosts.append((addr.host,
                         addr, addr.host.alias_set.all(), mx))
             genpools.append((pool, hosts))
