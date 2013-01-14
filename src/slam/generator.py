@@ -140,7 +140,7 @@ class Config(models.Model):
                     if self.comment in line:
                         line = line[:line.find(self.comment)]
                     if line:
-                        for host, addr, _ in hosts:
+                        for host, addr, _, _ in hosts:
                             if not host.name:
                                 continue
                             if not self._unique_host(line, host, addr):
@@ -330,7 +330,7 @@ class BindConfig(Config):
     def generate(self, hosts):
         """Generate one configuration record per address for every host given
         in the Bind format line."""
-        for host, addr, _ in hosts:
+        for host, addr, _, _ in hosts:
             if host.nodns:
                 continue
             self.output.write(host.name + "\t" + str(self.timeout)
@@ -373,7 +373,7 @@ class RevBindConfig(Config):
 
     def generate(self, hosts):
         """Generate a reverse mapping for Addresses"""
-        for host, addr, _ in hosts:
+        for host, addr, _, _ in hosts:
             if host.nodns:
                 continue
             if addr.pool.addr_range_type == "ip4":
@@ -412,7 +412,7 @@ class QuattorConfig(Config):
     def generate(self, hosts):
         """Generate a configuration for every hosts for a Quattor configuration
         file."""
-        for host, addr, _ in hosts:
+        for host, addr, _, _ in hosts:
             self.output.write('escape("' + host.name + '"),"'
                 + str(addr) + '",\n')
 
@@ -447,12 +447,12 @@ class DhcpdConfig(Config):
         if self.domain:
             self.output.write("option domain-name \"" + self.domain + "\";\n")
 
-        for host, addr, _ in hosts:
-            line = "host " + host.name + " { "
+        for host, addr, _, _ in hosts:
             if addr.macaddr:
-                line = line + "hardware ethernet " + addr.macaddr + "; "
-            line = line + "fixed-address " + str(host.name) + "; }\n"
-            self.output.write(line)
+                line = "host " + host.name + " { "
+                line += "hardware ethernet " + addr.macaddr + "; "
+                line += "fixed-address " + str(host.name) + "; }\n"
+                self.output.write(line)
 
 
 class LalDnsConfig(Config):
@@ -474,11 +474,11 @@ class LalDnsConfig(Config):
     def generate(self, hosts):
         """Generate configuration for the specific format of DNS configuration
         file used by the LAL."""
-        for host, addr, aliases in hosts:
+        for host, addr, aliases, mx in hosts:
             if host.nodns:
                 continue
             alias = ""
             for aliasobj in aliases:
                 alias += "\t" + aliasobj.name
             self.output.write(str(addr) + "\t" + host.name
-                + alias + "\n")
+                + alias + "\t" + mx + "\n")

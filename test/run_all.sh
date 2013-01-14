@@ -21,6 +21,7 @@ DATABASES = {"default": {
 TIME_ZONE = "Europe/Paris"
 LANGUAGE_CODE = "fr-FR"
 SECRET_KEY = "random"
+RELOAD_SCRIPT = ""
 ' > configuration.py
 
 cd ..

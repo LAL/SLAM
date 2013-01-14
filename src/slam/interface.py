@@ -300,7 +300,13 @@ def generate(gen_name=None, pool_name=None, conf_format=None,
             hosts = []
             for addr in models.Address.objects.filter(pool=pool):
                 if addr.host:
-                    hosts.append((addr.host, addr, addr.host.alias_set.all()))
+                    mx = ""
+                    if models.Property.objects.filter(
+                            name="mx", host=addr.host):
+                        mx = models.Property.objects.get(
+                            name="mx", host=addr.host)
+                    hosts.append((addr.host,
+                        addr, addr.host.alias_set.all(), mx))
             genpools.append((pool, hosts))
 
         gen.backup()

@@ -19,6 +19,7 @@ DATABASES = {"default": {
     }}
 TIME_ZONE = "Europe/Paris"
 LANGUAGE_CODE = "fr-FR"
+RELOAD_SCRIPT = ""
 ' > ./src/configuration.py
 
 echo 'SECRET_KEY = r"""'"`</dev/urandom tr -dc '[:graph:]' | head -c50`"'"""' \

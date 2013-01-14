@@ -36,3 +36,6 @@ SECRET_KEY = r""""""
 # A script that handle generated files and that will be launched from the web
 # interface when a user ask to regenerate configuration files.
 RELOAD_SCRIPT = ""
+
+# The absolute path to the slam directory
+ROOT_DIR = ""

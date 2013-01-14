@@ -90,7 +90,8 @@ def test_bind():
     addr2 = models.Address(addr="rdda", pool=models.Pool(dns_record="A"))
     addr3 = models.Address(addr="addr2", pool=models.Pool(dns_record="AAAA"))
     conf.createconf([(models.Pool.create(name="tstp", definition="1.2.3.0/24"),
-        [(host1, addr1, []), (host1, addr2, []), (host2, addr3, [])])])
+        [(host1, addr1, [], ""), (host1, addr2, [], ""),
+            (host2, addr3, [], "")])])
 
     assert(out.getvalue() == "stuff\n@ 1D IN SOA foo bar "
         + datetime.date.today().strftime("%Y%m%d") + "03 a b c d\n\n;"
@@ -115,7 +116,7 @@ def test_revbind():
         pool=models.Pool(addr_range_type="ip4", dns_record="A"))
     addr2 = models.Address(addr="fe80:1234:5678:9abc:def0:1234:5678:9abc",
         pool=models.Pool(addr_range_type="ip6", dns_record="AAAA"))
-    conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
+    conf.createconf([(None, [(host1, addr1, [], ""), (host2, addr2, [], "")])])
 
     print("@@@" + out.getvalue() + "@@@")
     assert(out.getvalue() == "\n;" + SLAM_HDR1 + ";" + SLAM_HDR2
@@ -134,13 +135,12 @@ def test_dhcp():
     host2 = models.Host(name="host2")
     addr1 = models.Address(addr="192.168.50.30", macaddr="01:12:34:56:78:9a")
     addr2 = models.Address(addr="192.168.42.137")
-    conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
+    conf.createconf([(None, [(host1, addr1, [], ""), (host2, addr2, [], "")])])
 
     assert(out.getvalue() == "\n#" + SLAM_HDR1 + "#" + SLAM_HDR2
         + "option domain-name \"foo.example\";\n"
         + "host host1 { hardware ethernet 01:12:34:56:78:9a; "
         + "fixed-address host1; }\n"
-        + "host host2 { fixed-address host2; }\n"
         + "#" + SLAM_FTR)
 
 
@@ -153,7 +153,7 @@ def test_quattor():
     host2 = models.Host(name="host2")
     addr1 = models.Address(addr="192.168.50.30", macaddr="01:12:34:56:78:9a")
     addr2 = models.Address(addr="192.168.42.137")
-    conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
+    conf.createconf([(None, [(host1, addr1, [], ""), (host2, addr2, [], "")])])
 
     assert(out.getvalue() == "\n#" + SLAM_HDR1 + "#" + SLAM_HDR2
         + 'escape("host1"),"192.168.50.30",\n'
@@ -177,7 +177,8 @@ def test_update():
     addr2 = models.Address(addr="rdda", pool=models.Pool(dns_record="A"))
     addr3 = models.Address(addr="addr2", pool=models.Pool(dns_record="AAAA"))
     conf.updateconf([(None,
-        [(host1, addr1, []), (host1, addr2, []), (host2, addr3, [])])])
+        [(host1, addr1, [], ""), (host1, addr2, [], ""),
+            (host2, addr3, [], "")])])
 
     orig.seek(0)
     res = orig.read()
@@ -202,11 +203,13 @@ def _generator_checkfile(cls, content):
     addr2 = models.Address(addr="rdda", pool=models.Pool(dns_record="A"))
 
     conf = cls.create(outputfile="-")
-    dup = conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
+    dup = conf.createconf([(None, [(host1, addr1, [], ""),
+        (host2, addr2, [], "")])])
     assert len(dup) == 0
 
     conf = cls.create(outputfile="-", checkfile=[path])
-    dup = conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
+    dup = conf.createconf([(None, [(host1, addr1, [], ""),
+        (host2, addr2, [], "")])])
     assert len(dup) == 1
 
     os.unlink(path)
@@ -235,19 +238,22 @@ def test_checkfile():
 
 
     conf = generator.BindConfig.create(outputfile="-")
-    conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
+    conf.createconf([(None, [(host1, addr1, [], ""), (host2, addr2, [], "")])])
 
     conf = generator.BindConfig.create(outputfile="-", checkfile=[path2])
-    dup = conf.createconf([(None, [(host1, addr3, []), (host2, addr4, [])])])
+    dup = conf.createconf([(None, [(host1, addr3, [], ""),
+        (host2, addr4, [], "")])])
     assert len(dup) == 0
 
     conf = generator.BindConfig.create(outputfile="-", checkfile=[path1])
-    dup = conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
+    dup = conf.createconf([(None, [(host1, addr1, [], ""),
+        (host2, addr2, [], "")])])
     assert len(dup) == 4
 
     conf = generator.BindConfig.create(outputfile="-",
         checkfile=[path1, path2])
-    dup = conf.createconf([(None, [(host1, addr1, []), (host2, addr2, [])])])
+    dup = conf.createconf([(None, [(host1, addr1, [], ""),
+        (host2, addr2, [], "")])])
     assert len(dup) == 6
 
     os.unlink(path1)
