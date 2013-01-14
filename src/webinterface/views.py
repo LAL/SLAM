@@ -262,8 +262,11 @@ def add_host(request):
         if addrstr:
             msg = msg + _(" and was assigned to address: ") + addrstr
         if request.POST.get("owner"):
-            interface.set_prop("owner", request.POST.get("owner"),
-                host=request.POST.get("name"))
+            try:
+                interface.set_prop("owner", request.POST.get("owner"),
+                    host=request.POST.get("name"))
+            except interface.InexistantObjectError:
+                error_404(request)
         return msg_view(request,
             _("Created host %(host)s") % {"host": hoststr}, msg)
     else:
@@ -351,7 +354,10 @@ def address_info(request, address):
             return render_to_response("address.html",
                 {"request": request, "addr": addr, "confirm_delete": 1})
         else:
-            interface.delete(addresses=[address])
+            try:
+                interface.delete(addresses=[address])
+            except interface.InexistantObjectError:
+                error_404(request)
             return msg_view(request, _("Address deleted"),
                 _("The address \"%(addr)s\" has been correctly removed.")
                     % {"addr": address})
@@ -390,6 +396,9 @@ def property_(request):
             return error_view(request, 400, _("Missing information"),
                 _("You must at least specify a pool or a host and the name of"
                     " property to create, edit or delete a property."))
+        except interface.InexistantObjectError:
+            return error_404(request)
+        #except interface.inexistant
         if request.POST.get("host"):
             return redirect("/host/" + request.POST.get("host"))
         elif request.POST.get("pool"):
