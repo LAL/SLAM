@@ -472,6 +472,12 @@ def delete(pool=None, addresses=None, hosts=None):
                 if pool is None:
                     pool = models.Address.objects.get(addr=addr).pool
 
+                addrobj = models.Address.objects.get(addr=addr)
+                if addrobj.macaddr:
+                    newaddr = models.Address(macaddr=addrobj.macaddr,
+                        host=addrobj.host, allocated=False)
+                    newaddr.save()
+
                 LOGGER.info("Delete address " + str(addr) + " from pool "
                     + str(pool.name))
                 pool.free(addr)
@@ -524,7 +530,8 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
             addrobj.comment = comment
         addrobj.save()
     elif host and hostobj:
-        if not (newname or mac or alias or serial or inventory or nodns):
+        if not (newname or mac or alias or serial or inventory or nodns
+                or (not alias and models.Alias.objects.filter(host=hostobj))):
             raise MissingParameterError("Please provide the new name "
                 + "or a new information for the host " + hostobj.name)
         if mac:
@@ -560,15 +567,20 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
             LOGGER.info("Changed NODNS setting of host " + hostobj.name)
             hostobj.nodns = not hostobj.nodns
             hostobj.save()
-        for alia in alias:
-            LOGGER.info("New alias " + alia + " for host " + host)
-            if models.Alias.objects.filter(name=alia):
-                LOGGER.warn(
-                    "Alias " + str(alia) + " already exists and refers to " +
-                    models.Alias.objects.get(name=alia).host.name)
-            else:
-                aliasobj = models.Alias(name=alia, host=hostobj)
-                aliasobj.save()
+        if not alias and models.Alias.objects.filter(host=hostobj):
+            LOGGER.info("Cleared all aliases for host " + host)
+            models.Alias.objects.filter(host=hostobj).delete()
+        else:
+            models.Alias.objects.filter(host=hostobj).delete()
+            for alia in alias:
+                LOGGER.info("New alias " + alia + " for host " + host)
+                if models.Alias.objects.filter(name=alia):
+                    LOGGER.warn("Alias " + str(alia)
+                        + " already exists and refers to "
+                        + models.Alias.objects.get(name=alia).host.name)
+                else:
+                    aliasobj = models.Alias(name=alia, host=hostobj)
+                    aliasobj.save()
     elif pools and poolobjs:
         poolobj = poolobjs[0]
         if not category and not newname:

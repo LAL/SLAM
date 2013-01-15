@@ -23,6 +23,9 @@
     <h1>{% trans "Host" %} {{ host.name }}</h1>
 
     <table class="table" style="width:auto">
+        {% if mac %}
+            <tr><th>{% trans "MAC addresses" %}</th><td>{{ mac }}</td></tr>
+        {% endif %}
         {% if host.serial %}
             <tr><th>{% trans "Serial number" %}</th><td>{{ host.serial }}</td></tr>
         {% endif %}
@@ -70,10 +73,11 @@
                     <th>{% trans "MAC address" %}</th>
                 </tr>
             </thead>
-            {% for addr in addrs %}<tr>
+            {% for addr in addrs %}{% if addr.addr %}<tr>
                 <td><a href="/address/{{ addr.addr }}">{{ addr.addr }}</a></td>
                 <td>{% if addr.pool %}<a href="/pool/{{ addr.pool.name }}">{{ addr.pool.name }}</a>{% endif %}</td>
-                <td>{% if addr.macaddr %}{{ addr.macaddr }}{% endif %}</td></tr>{% endfor %}
+                <td>{% if addr.macaddr %}{{ addr.macaddr }}{% endif %}</td>
+            </tr>{% endif %}{% endfor %}
         </table>
     {% endif %}
 
@@ -89,8 +93,17 @@
                 <input type="text" name="macaddr" placeholder="{{ firstaddr.macaddr }}">
             {% endwith %}
 
-            <label>{% trans "Alias (comma-separated)" %}</label>
-            <input type="text" name="alias" placeholder="{{ host.alias_set.all|join:"," }}">
+            <div class="row">
+                <div class="span3">
+                    <label>{% trans "Alias (comma-separated)" %}</label>
+                    <input type="text" name="alias" placeholder="{{ host.alias_set.all|join:"," }}">
+                </div>
+
+                <div class="span3">
+                    <label><input type="checkbox" name="clearalias" >
+                    {% trans "Clear alias list" %}</label>
+                </div>
+            </div>
 
             <label>{% trans "Inventory number" %}</label>
             <input type="text" name="inventory" placeholder="{{ host.inventory }}">

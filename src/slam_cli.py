@@ -357,6 +357,9 @@ def create(args):
 
     # generator creation
     if args.generator and args.extra:
+        pool = []
+        if args.pool_name:
+            pool = [args.pool_name]
         try:
             interface.create_generator(args.generator, args.extra[0],
                 args.output, args.default, args.header, args.footer,

@@ -240,6 +240,9 @@ def add_host(request):
                 category=request.POST.get("category"))
         except interface.InexistantObjectError:
             return error_404(request)
+        alias = request.POST.get("alias")
+        if alias:
+            alias.replace(", ", ",")
         try:
             hoststr, addrstr = interface.create_host(
                 host=request.POST.get("name"),
@@ -247,7 +250,7 @@ def add_host(request):
                 address=request.POST.get("address"),
                 mac=request.POST.get("mac"),
                 random=request.POST.get("random"),
-                alias=request.POST.get("alias"),
+                alias=alias.split(","),
                 serial=request.POST.get("serial"),
                 inventory=request.POST.get("inventory"),
                 nodns=request.POST.get("nodns"))
@@ -296,12 +299,17 @@ def host_info(request, host_name):
             category = data.get("category")
             if category:
                 category = [category]
+            alias = data.get("alias").replace(", ", ",")
+            if data.get("clearalias") == "on":
+                alias = []
+            else:
+                alias = alias.split(",")
 
             interface.modify(host=host_name,
                 mac=data.get("macaddr"),
                 newname=data.get("newname"),
                 category=category,
-                alias=data.get("alias"),
+                alias=alias,
                 serial=data.get("serial"),
                 inventory=data.get("inventory"),
                 nodns=((data.get("nodns") == "on") != host.nodns))
@@ -334,6 +342,7 @@ def host_info(request, host_name):
                         % {"host": host_name})
         else:
             tmp_val = {"request": request, "host": host, "addrs": addrs,
+                "mac": ", ".join([addr.macaddr for addr in addrs]),
                 "props": models.Property.objects.filter(host=host)}
             if models.Property.objects.filter(name="owner", host=host):
                 tmp_val["owner"] = models.Property.objects.get(

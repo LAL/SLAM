@@ -2,6 +2,5 @@ SLAM's todo-list
 ================
 
 * disallocation should put the MAC in an empty address
-* catch exception in the Web interface
-* possibility to delete aliases
 * web interface for search, search by property, etc.
+* web interface: allocate a new IP to a given host
