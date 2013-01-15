@@ -1,6 +1,8 @@
 import re
 import itertools
 
+from slam import interface
+
 _HTML_TYPES = ('text/html', 'application/xhtml+xml')
 _SUPPORTED_TRANSFORMS = ['PUT', 'DELETE']
 _FORM_RE = re.compile(
@@ -39,3 +41,14 @@ class HttpMethodsMiddleware(object):
                 add_transform_field, response.content)
         return response
 
+
+class LoginRecordMiddleware:
+    """Record the login used inside slam.interface to correctly report it
+    inside the logs."""
+
+    def process_request(self, request):
+        if request.user and request.user.username:
+            interface.set_log_author(request.user.username)
+        else:
+            interface.set_log_author("root")
+        return None

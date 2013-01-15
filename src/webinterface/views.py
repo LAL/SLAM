@@ -81,7 +81,6 @@ def login(request):
             password=request.POST["password"])
         if user is not None:
             auth.login(request, user)
-            interface.set_log_author(user.username)
             return msg_view(request, _("Logged in"),
                 _("You can now manage your addresses!"))
         else:
