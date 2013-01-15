@@ -357,13 +357,12 @@ def create(args):
 
     # generator creation
     if args.generator and args.extra:
-        pool = []
-        if args.pool_name:
-            pool = [args.pool_name]
+        if not args.pool_name:
+            args.pool_name = []
         try:
             interface.create_generator(args.generator, args.extra[0],
                 args.output, args.default, args.header, args.footer,
-                args.checkfile, args.timeout, args.domain, pool)
+                args.checkfile, args.timeout, args.domain, args.pool_name)
         except (interface.DuplicateObjectError,
                 interface.MissingParameterError) as exc:
             logging.error(str(exc))
