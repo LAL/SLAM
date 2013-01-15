@@ -84,6 +84,10 @@ TEMPLATE_DIRS = (
     ROOT_DIR + "/src/webinterface/templates/",
 )
 
+LOCALE_PATHS = (
+    ROOT_DIR + "/src/webinterface/locale/",
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
