@@ -137,6 +137,7 @@ def create_generator(name, type_, outputfile, default=False, header=None,
             footer=footer, update=True)
     else:
         raise MissingParameterError("Wrong configuration format: " + type_)
+    genobj.save()
 
     LOGGER.info("Created new generator: " + str(genobj))
     if pools:
