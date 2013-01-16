@@ -249,8 +249,7 @@ def list_hosts(request):
     if request.GET.get("sort") == "addr":
         hosts = models.Host.objects.all().order_by("address__addr")
     elif request.GET.get("sort") == "alias":
-        hosts = models.Host.objects.all().order_by(
-            "alias__name").distinct("name")
+        hosts = models.Host.objects.all().order_by( "alias__name")
     elif request.GET.get("sort") == "mac":
         hosts = models.Host.objects.all().order_by("address__macaddr")
     else:
