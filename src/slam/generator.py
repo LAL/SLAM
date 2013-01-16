@@ -161,8 +161,14 @@ class Config(models.Model):
         if (self.outputfile and self.outputfile != "-"
                 and os.access(self.outputfile, os.R_OK)
                 and os.stat(self.outputfile).st_size > 0):
-            shutil.copyfile(self.outputfile, self.outputfile + "-"
-                + datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+            if os.access(os.path.dirname(self.outputfile) + "/backup", os.W_OK):
+                backup = (os.path.dirname(self.outputfile) + "/backup/"
+                    + os.path.basename(self.outputfile) + "-"
+                    + datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+                shutil.copyfile(self.outputfile, backup)
+            else:
+                shutil.copyfile(self.outputfile, self.outputfile + "-"
+                    + datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
     def createconf(self, genpools):
         """Create a new configuration file from the header, the content and the
@@ -447,11 +453,19 @@ class DhcpdConfig(Config):
         if self.domain:
             self.output.write("option domain-name \"" + self.domain + "\";\n")
 
-        for host, addr, _, _ in hosts:
+        for host, addr, aliases, _ in hosts:
             if addr.macaddr:
-                line = "host " + host.name + " { "
+                hostname = host.name
+                # LAL-specific, dirty hack to handle the pc-[a-9] names
+                if len(aliases) == 1 and (
+                        hostname.startswith("pc-")
+                        or hostname.startswith("nb-")
+                        or hostname.startswith("mac-")
+                        or hostname.startswith("mbp-")):
+                    hostname = aliases[0].name
+                line = "host " + hostname + " { "
                 line += "hardware ethernet " + addr.macaddr + "; "
-                line += "fixed-address " + str(host.name) + "; }\n"
+                line += "fixed-address " + str(hostname) + "; }\n"
                 self.output.write(line)
 
 
