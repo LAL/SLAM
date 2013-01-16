@@ -5,5 +5,3 @@ SLAM's todo-list
 * web interface for search, search by property, mac, IP, name, alias, etc.
 * lists of hosts in pools and host_list with sort buttons (at least name, ip,
 alias)
-* fix next= / referrer
-* error when create a new host with an existing mac addr

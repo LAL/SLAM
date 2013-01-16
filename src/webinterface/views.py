@@ -14,10 +14,15 @@ from django.contrib.auth.decorators import login_required
 from slam import interface, models
 from configuration import RELOAD_SCRIPT
 
-def msg_view(request, title, message):
+POOL_MAP_LIMIT = 4096
+
+def msg_view(request, title, message, referer=None):
     """View used to display a simple message to the user."""
-    tmp_values = {"request": request, "title": title, "msg": message,
-        "referer": request.META.get("HTTP_REFERER")}
+    tmp_values = {"request": request, "title": title, "msg": message}
+    if referer:
+        tmp_values["referer"] = referer
+    else:
+        tmp_values["referer"] = request.META.get("HTTP_REFERER")
     if request.GET.get("format") == "json":
         return render_to_response("message.txt", tmp_values)
     else:
@@ -71,7 +76,7 @@ def logout(request):
     """View use to destroy the user session."""
     auth.logout(request)
     return msg_view(request, _("Disconnected"),
-        _("You have successfully been disconnected from SLAM."))
+        _("You have successfully been disconnected from SLAM."), referer="/")
 
 @csrf_exempt
 def login(request):
@@ -82,7 +87,7 @@ def login(request):
         if user is not None:
             auth.login(request, user)
             return msg_view(request, _("Logged in"),
-                _("You can now manage your addresses!"))
+                _("You can now manage your addresses!"), referer="/")
         else:
             return render_to_response("login.html",
                 {"request": request, "error": _("Invalid login or password."),
@@ -137,7 +142,8 @@ def add_pool(request):
         return msg_view(request,
             _("Created pool %(pool)s") % {"pool": pool_name},
             _("The pool \"%(pool)s\" have been created: %(poolstr)s.")
-                % {"pool": pool_name, "poolstr": str(poolobj)})
+                % {"pool": pool_name, "poolstr": str(poolobj)},
+                referer="/pool/" + str(pool_name))
     else:
         return render_to_response("add_pool.html", {"request": request})
 
@@ -162,10 +168,14 @@ def pool_info(request, pool_name):
         except (interface.InexistantObjectError,
                 interface.DuplicateObjectError):
             return error_404(request)
+        if data.get("newname"):
+            referer = "/pool/" + str(data.get("newname"))
+        else:
+            referer = "/pool/" + pool_name
         return msg_view(request,
             _("Pool \"%(pool)s\" has been modified") % {"pool": pool_name},
             _("The pool \"%(pool)s\" has been correctly modified.")
-                % {"pool": pool_name})
+                % {"pool": pool_name}, referer=referer)
     elif request.method == "DELETE":
         name = str(poolobj.name)
         def_ = str(poolobj)
@@ -179,7 +189,7 @@ def pool_info(request, pool_name):
         return msg_view(request,
             _("%(name)s has been removed") % {"name": name},
             _("The pool \"%(name)s\" (%(def)s) has been removed.")
-                % {"name": name, "def": def_})
+                % {"name": name, "def": def_}, referer="/pool")
     else:
         addr_used = models.Address.objects.filter(pool=poolobj).count()
         addr_avail = poolobj.len()
@@ -207,11 +217,15 @@ def pool_map(request, pool_name):
     addr_used = models.Address.objects.filter(pool=poolobj).count()
     addr_avail = poolobj.len()
     pool_addrs = models.Address.objects.filter(pool=poolobj)
+    i = POOL_MAP_LIMIT
     for addr in poolobj.addr_range:
+        if i == 0:
+            break
         if poolobj.isallocated(addr):
             addrs.append(pool_addrs.get(addr=addr))
         else:
             addrs.append(models.Address(addr=addr, pool=None, host=None))
+        i -= 1
     templ_values = {"request": request,
         "pool": poolobj,
         "addrs": addrs,
@@ -250,12 +264,19 @@ def add_host(request):
             alias.replace(", ", ",").split(",")
         else:
             alias = []
+        if (request.POST.get("mac") and models.Address.objects.filter(
+                macaddr=request.POST.get("mac"))):
+            return error_view(request, 412, _("MAC adress taken"),
+                _("The MAC adresse of the host you are trying to create "
+                    "already belongs to host %(host)s.")
+                    % {"host": models.Address.objects.filter(
+                            macaddr=request.POST.get("mac"))[0].host.name})
         try:
             hoststr, addrstr = interface.create_host(
                 host=request.POST.get("name"),
                 pool=pool,
                 address=request.POST.get("address"),
-                mac=request.POST.get("mac"),
+                mac=request.POST.get("mac").lower(),
                 random=request.POST.get("random"),
                 alias=alias,
                 serial=request.POST.get("serial"),
@@ -297,7 +318,8 @@ def add_host(request):
                     _("You must at least specify the name of the new property "
                         "you want to create."))
         return msg_view(request,
-            _("Created host %(host)s") % {"host": hoststr}, msg)
+            _("Created host %(host)s") % {"host": hoststr}, msg,
+            referer="/host/" + hoststr)
     else:
         categories = []
         for pools in models.Pool.objects.exclude(category=""):
@@ -349,10 +371,14 @@ def host_info(request, host_name):
         except (interface.InexistantObjectError,
                 interface.DuplicateObjectError):
             return error_404(request)
+        if data.get("newname"):
+            referer = "/host/" + str(data.get("newname"))
+        else:
+            referer = "/host/" + host_name
         return msg_view(request,
             _("Host \"%(host)s\" has been modified") % {"host": host_name},
             _("The host \"%(host)s\" has been correctly modified.")
-                    % {"host": host_name})
+                    % {"host": host_name}, referer=referer)
     else:
         addrs = models.Address.objects.filter(host=host).order_by("addr")
         if request.method == "DELETE":
@@ -367,7 +393,7 @@ def host_info(request, host_name):
                     return error_404(request)
                 return msg_view(request, host_name + _(" has been removed"),
                     _("The host \"%(host)s\" has correctly been removed.")
-                        % {"host": host_name})
+                        % {"host": host_name}, referer="/host")
         else:
             tmp_val = {"request": request, "host": host, "addrs": addrs,
                 "mac": ", ".join([addr.macaddr for addr in addrs]),
@@ -397,7 +423,7 @@ def address_info(request, address):
                 error_404(request)
             return msg_view(request, _("Address deleted"),
                 _("The address \"%(addr)s\" has been correctly removed.")
-                    % {"addr": address})
+                    % {"addr": address}, referer="/")
     else:
         if request.GET.get("format") == "json":
             return render_to_response("address.json",
