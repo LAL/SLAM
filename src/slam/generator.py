@@ -474,11 +474,11 @@ class LalDnsConfig(Config):
     def generate(self, hosts):
         """Generate configuration for the specific format of DNS configuration
         file used by the LAL."""
-        for host, addr, aliases, mx in hosts:
+        for host, addr, aliases, mx_record in hosts:
             if host.nodns:
                 continue
             alias = ""
             for aliasobj in aliases:
                 alias += "\t" + aliasobj.name
             self.output.write(str(addr) + "\t" + host.name
-                + alias + "\t" + mx + "\n")
+                + alias + "\t" + mx_record + "\n")

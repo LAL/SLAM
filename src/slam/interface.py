@@ -301,13 +301,13 @@ def generate(gen_name=None, pool_name=None, conf_format=None,
             hosts = []
             for addr in models.Address.objects.filter(pool=pool):
                 if addr.host:
-                    mx = ""
+                    mx_record = ""
                     if models.Property.objects.filter(
                             name="mx", host=addr.host):
-                        mx = models.Property.objects.get(
+                        mx_record = models.Property.objects.get(
                             name="mx", host=addr.host).value
                     hosts.append((addr.host,
-                        addr, addr.host.alias_set.all(), mx))
+                        addr, addr.host.alias_set.all(), mx_record))
             genpools.append((pool, hosts))
 
         gen.backup()
@@ -374,6 +374,10 @@ def allocate_address(pool, host=None, address=None, random=False,
             LOGGER.info("Assign address " + str(addr) + " to host "
                 + str(host))
             addr.host = host
+            emptyaddrs = host.address_set.exclude(macaddr="").filter(addr="")
+            if emptyaddrs:
+                addr.macaddr = emptyaddrs[0].macaddr
+                emptyaddrs[0].delete()
             addr.save()
         else:
             if category:
@@ -501,7 +505,7 @@ def delete(pool=None, addresses=None, hosts=None):
 
 def modify(pools=None, host=None, category=None, address=None, mac=None,
         newname=None, alias=None, serial="", inventory="", duration=None,
-        lastuse=None, nodns=False, comment=""):
+        lastuse=None, nodns=False, comment="", clearalias=False):
     """Modify the name of an object in the database."""
     poolobjs = []
     if not alias:
@@ -531,8 +535,8 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
             addrobj.comment = comment
         addrobj.save()
     elif host and hostobj:
-        if not (newname or mac or alias or serial or inventory or nodns
-                or (not alias and models.Alias.objects.filter(host=hostobj))):
+        if not (newname or mac or alias or serial or inventory
+                or nodns or clearalias):
             raise MissingParameterError("Please provide the new name "
                 + "or a new information for the host " + hostobj.name)
         if mac:
@@ -568,10 +572,10 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
             LOGGER.info("Changed NODNS setting of host " + hostobj.name)
             hostobj.nodns = not hostobj.nodns
             hostobj.save()
-        if not alias and models.Alias.objects.filter(host=hostobj):
-            LOGGER.info("Cleared all aliases for host " + host)
+        if clearalias:
             models.Alias.objects.filter(host=hostobj).delete()
-        else:
+            LOGGER.info("Cleared all aliases for host " + host)
+        elif alias:
             models.Alias.objects.filter(host=hostobj).delete()
             for alia in alias:
                 LOGGER.info("New alias " + alia + " for host " + host)

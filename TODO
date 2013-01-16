@@ -1,6 +1,9 @@
 SLAM's todo-list
 ================
 
-* disallocation should put the MAC in an empty address
-* web interface for search, search by property, etc.
 * web interface: allocate a new IP to a given host
+* web interface for search, search by property, mac, IP, name, alias, etc.
+* lists of hosts in pools and host_list with sort buttons (at least name, ip,
+alias)
+* fix next= / referrer
+* error when create a new host with an existing mac addr

@@ -1,6 +1,6 @@
 """Webinterface view functions."""
 
-import os, subprocess
+import os, subprocess, sys
 
 from django.shortcuts import render_to_response, render, redirect
 from django.shortcuts import get_object_or_404#, get_list_or_404
@@ -131,6 +131,9 @@ def add_pool(request):
             return error_view(request, 400, _("Missing information"),
                 _("You must specify at least a name and a definition to create"
                     " a new pool."))
+        except addrrange.InvalidAddressError:
+            return error_view(request, 412, _("Invalid address range"),
+                _("The address range you provided is invalid."))
         return msg_view(request,
             _("Created pool %(pool)s") % {"pool": pool_name},
             _("The pool \"%(pool)s\" have been created: %(poolstr)s.")
@@ -170,6 +173,9 @@ def pool_info(request, pool_name):
             interface.delete(pool=poolobj)
         except interface.InexistantObjectError:
             return error_404(request)
+        except models.AddressNotAllocatedError:
+            return error_view(request, 412, _("Address not allocated"),
+                _("The address you provided is already unallocated."))
         return msg_view(request,
             _("%(name)s has been removed") % {"name": name},
             _("The pool \"%(name)s\" (%(def)s) has been removed.")
@@ -241,7 +247,9 @@ def add_host(request):
             return error_404(request)
         alias = request.POST.get("alias")
         if alias:
-            alias.replace(", ", ",")
+            alias.replace(", ", ",").split(",")
+        else:
+            alias = []
         try:
             hoststr, addrstr = interface.create_host(
                 host=request.POST.get("name"),
@@ -249,7 +257,7 @@ def add_host(request):
                 address=request.POST.get("address"),
                 mac=request.POST.get("mac"),
                 random=request.POST.get("random"),
-                alias=alias.split(","),
+                alias=alias,
                 serial=request.POST.get("serial"),
                 inventory=request.POST.get("inventory"),
                 nodns=request.POST.get("nodns"))
@@ -260,6 +268,21 @@ def add_host(request):
             return error_view(request, 409, _("Host already exists"),
                 _("Could not create host %(host)s because it already exists.")
                     % {"host": str(request.POST.get("name"))})
+        except models.AddressNotInPoolError:
+            return error_view(request, 412, _("Address not in pool"),
+                _("The address you provided (%(addr)s) is not in the pool "
+                    "%(pool)s.")
+                    % {"addr": str(request.POST.get("address")),
+                        "pool": str(pool.name)})
+        except models.AddressNotAvailableError:
+            return error_view(request, 412, _("Address not available"),
+                _("The address you asked for (%(addr)s) is not available.")
+                    % {"addr": str(request.POST.get("address"))})
+        except models.FullPoolError:
+            return error_view(request, 412, _("Pool is full"),
+                _("The destination address pool (%(pool)s) is full. "
+                    "Impossible to allocate another IP in this pool.")
+                    % {"pool": str(pool.name)})
         msg = _("The host \"%(host)s\" have been created") % {"host": hoststr}
         if addrstr:
             msg = msg + _(" and was assigned to address: ") + addrstr
@@ -269,6 +292,10 @@ def add_host(request):
                     host=request.POST.get("name"))
             except interface.InexistantObjectError:
                 error_404(request)
+            except interface.MissingParameterError:
+                return error_view(request, 400, _("Missing information"),
+                    _("You must at least specify the name of the new property "
+                        "you want to create."))
         return msg_view(request,
             _("Created host %(host)s") % {"host": hoststr}, msg)
     else:
@@ -298,10 +325,11 @@ def host_info(request, host_name):
             category = data.get("category")
             if category:
                 category = [category]
-            alias = data.get("alias").replace(", ", ",")
-            if data.get("clearalias") == "on":
-                alias = []
-            else:
+            alias = data.get("alias")
+            if not alias:
+                alias = ""
+            alias = alias.replace(", ", ",")
+            if alias:
                 alias = alias.split(",")
 
             interface.modify(host=host_name,
@@ -311,7 +339,8 @@ def host_info(request, host_name):
                 alias=alias,
                 serial=data.get("serial"),
                 inventory=data.get("inventory"),
-                nodns=((data.get("nodns") == "on") != host.nodns))
+                nodns=((data.get("nodns") == "on") != host.nodns),
+                clearalias=data.get("clearalias") == "on")
             if data.get("owner"):
                 interface.set_prop("owner", data.get("owner"), host=host)
         except interface.MissingParameterError:

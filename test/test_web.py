@@ -58,20 +58,11 @@ def run_request(method, url, data=None):
 
 def status_request(method, url, data=None, status=200):
     req = request(url, method, data)
-    if req.code != status:
-        f = open("/tmp/test.err", "w")
-        f.write(req.read())
-        f.close()
     assert req.code == status
 
 
 def get_request(url):
     req = request(url, "GET")
-    if req.code != 200:
-        f = open("/tmp/err.html", "w")
-        f.write(req.read())
-        f.close()
-        sys.exit(1)
     assert req.code == 200
     res = json.loads(req.read())
     return res

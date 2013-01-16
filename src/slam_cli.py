@@ -332,9 +332,8 @@ def _create_host(args, pool):
             else:
                 print("Assigned " + addrres + " to host " + hostres)
         except (models.AddressNotInPoolError,
-                models.AddressNotAvailableError) as exc:
-            logging.warn(str(exc))
-        except (models.FullPoolError,
+                models.AddressNotAvailableError,
+                models.FullPoolError,
                 interface.DuplicateObjectError) as exc:
             logging.error(str(exc))
             sys.exit(1)
