@@ -56,10 +56,10 @@
         {% endblocktrans %}</h3>
     <table class="table table-striped table-bordered table-hover table-condensed">
         <tr>
-            <th>{% trans "Address" %}</th>
-            <th>{% trans "Host name" %}</th>
-            <th>{% trans "Mac address" %}</th>
-            <th>{% trans "Aliases" %}</th>
+            <th>{% trans "Address" %} <a href="?sort=addr"><i class="icon-chevron-down"></a></th>
+            <th>{% trans "Host name" %} <a href="?sort=name"><i class="icon-chevron-down"></a></th>
+            <th>{% trans "Mac address" %} <a href="?sort=mac"><i class="icon-chevron-down"></a></th>
+            <th>{% trans "Aliases" %} <a href="?sort=alias"><i class="icon-chevron-down"></a></th>
         </tr>
         {% for addr in addrs %}{% if addr.addr %}<tr>
             <td><a href="/address/{{ addr.addr }}">{{ addr.addr }}</a></td>

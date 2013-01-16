@@ -193,8 +193,16 @@ def pool_info(request, pool_name):
     else:
         addr_used = models.Address.objects.filter(pool=poolobj).count()
         addr_avail = poolobj.len()
-        addrs = list(models.Address.objects.filter(pool=poolobj))
-        addrs = interface.sort_addresses(addrs)
+        addrs = models.Address.objects.filter(pool=poolobj)
+        if request.GET.get("sort") == "name":
+            addrs = addrs.order_by("host__name")
+        elif request.GET.get("sort") == "alias":
+            addrs = addrs.order_by("host__alias__name")
+        elif request.GET.get("sort") == "mac":
+            addrs = addrs.order_by("macaddr")
+        else:
+            addrs = list(addrs)
+            addrs = interface.sort_addresses(addrs)
         templ_values = {"request": request,
             "pool": poolobj,
             "addr_used": addr_used,
@@ -238,7 +246,16 @@ def pool_map(request, pool_name):
 @login_required
 def list_hosts(request):
     """List all host objects in the database."""
-    hosts = models.Host.objects.all().order_by("name")
+    if request.GET.get("sort") == "addr":
+        hosts = models.Host.objects.all().order_by("address__addr")
+    elif request.GET.get("sort") == "alias":
+        hosts = models.Host.objects.all().order_by(
+            "alias__name").distinct("name")
+    elif request.GET.get("sort") == "mac":
+        hosts = models.Host.objects.all().order_by("address__macaddr")
+    else:
+        hosts = models.Host.objects.all().order_by("name")
+
     host_list = []
     for host in hosts:
         addrs = models.Address.objects.filter(host=host).order_by("addr")
@@ -261,7 +278,7 @@ def add_host(request):
             return error_404(request)
         alias = request.POST.get("alias")
         if alias:
-            alias.replace(", ", ",").split(",")
+            alias = alias.replace(", ", ",").split(",")
         else:
             alias = []
         if (request.POST.get("mac") and models.Address.objects.filter(
