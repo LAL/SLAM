@@ -1,6 +1,6 @@
 """Webinterface view functions."""
 
-import os, subprocess, sys
+import os, subprocess, sys, re
 
 from django.shortcuts import render_to_response, render, redirect
 from django.shortcuts import get_object_or_404#, get_list_or_404
@@ -287,12 +287,20 @@ def add_host(request):
                     "already belongs to host %(host)s.")
                     % {"host": models.Address.objects.filter(
                             macaddr=request.POST.get("mac"))[0].host.name})
+
+        mac = request.POST.get("mac")
+        if mac:
+            mac = mac.lower()
+            if not re.match("^[a-f0-9]{2}(:[a-f0-9]{2}){5}$", mac):
+                return error_view(request, 400, _("Invalid MAC"),
+                    _("The format of the given MAC address is invalid :"
+                        " %(mac)s.") % {"mac": mac})
         try:
             hoststr, addrstr = interface.create_host(
                 host=request.POST.get("name"),
                 pool=pool,
                 address=request.POST.get("address"),
-                mac=request.POST.get("mac").lower(),
+                mac=mac,
                 random=request.POST.get("random"),
                 alias=alias,
                 serial=request.POST.get("serial"),
@@ -369,6 +377,13 @@ def host_info(request, host_name):
             alias = alias.replace(", ", ",")
             if alias:
                 alias = alias.split(",")
+            mac = data.get("macaddr")
+            if mac:
+                mac = mac.lower()
+                if not re.match("^[a-f0-9]{2}(:[a-f0-9]{2}){5}$", mac):
+                    return error_view(request, 400, _("Invalid MAC"),
+                        _("The format of the given MAC address is invalid :"
+                            " %(mac)s.") % {"mac": mac})
 
             interface.modify(host=host_name,
                 mac=data.get("macaddr"),
@@ -395,6 +410,31 @@ def host_info(request, host_name):
             _("Host \"%(host)s\" has been modified") % {"host": host_name},
             _("The host \"%(host)s\" has been correctly modified.")
                     % {"host": host_name}, referer=referer)
+    elif request.method == "POST" and request.POST.get("allocate"):
+        poolobj = None
+        if request.POST.get("pool_name"):
+            poolobj = interface.get_pool(request.POST.get("pool_name"))
+        try:
+            addr = interface.allocate_address(
+                pool=poolobj,
+                host=host, address=request.POST.get("address"),
+                category=host.category)
+        except interface.MissingParameterError:
+            return error_view(request, 400, _("Missing information"),
+                _("Host probably does not have a category, please add one to "
+                    " it or specify a pool or an address in the previous form."))
+        except models.AddressNotInPoolError:
+            return error_view(request, 412, _("Address not in the given pool"),
+                _("The address you provided (%(addr)s) does not belong to the "
+                    "given pool."))
+        except models.AddressNotAvailableError:
+            return error_view(request, 412, _("Address not available."),
+                _("The address you provided is already allocated. Impossible "
+                    "to reallocate it to this host."))
+
+        return msg_view(request, _("Allocated %(addr)s") % {"addr": addr.addr},
+            _("The address %(addr)s has correctly been allocated to host "
+                "%(host)s.") % {"addr": addr.addr, "host": host.name})
     else:
         addrs = models.Address.objects.filter(host=host).order_by("addr")
         if request.method == "DELETE":
@@ -412,6 +452,7 @@ def host_info(request, host_name):
                         % {"host": host_name}, referer="/host")
         else:
             tmp_val = {"request": request, "host": host, "addrs": addrs,
+                "pools": models.Pool.objects.all(),
                 "mac": ", ".join([addr.macaddr for addr in addrs]),
                 "props": models.Property.objects.filter(host=host)}
             if models.Property.objects.filter(name="owner", host=host):
@@ -490,7 +531,7 @@ def property_(request):
 def reload(request):
     """Generate all configuration files."""
     if request.method == "POST":
-        if RELOAD_SCRIPT and os.access(RELOAD_SCRIPT, os.R_OK):
+        if RELOAD_SCRIPT and os.access(RELOAD_SCRIPT, os.X_OK):
             proc = subprocess.Popen(["/bin/sh", RELOAD_SCRIPT],
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout = proc.stdout.read()

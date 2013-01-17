@@ -53,6 +53,10 @@ def setup():
 
 def run_request(method, url, data=None):
     req = request(url, method, data)
+    if req.code != 200:
+        f = open("/tmp/err.html", "w")
+        f.write(req.read())
+        f.close()
     assert req.code == 200
 
 
@@ -90,7 +94,7 @@ def test_hostlist():
     assert len(res) == 0
 
     run_request("POST", "/addhost", {"name": "host1",
-        "pool_name": "poollist1", "mac": "macaddr1"})
+        "pool_name": "poollist1", "mac": "00:23:fe:09:19:09"})
     run_request("POST", "/addhost", {"name": "host2",
         "pool_name": "poollist1"})
 
@@ -145,7 +149,8 @@ def test_host():
     run_request("POST", "/addhost",
         {"name": "host4", "pool_name": "pooltest3"})
     run_request("POST", "/addhost", {"name": "host5",
-        "category": "testcat3", "address": "172.31.42.42", "mac": "mac42"})
+        "category": "testcat3", "address": "172.31.42.42",
+        "mac": "42:42:42:42:42:42"})
 
     res = get_request("/host/host4?format=json")
     assert res["name"] == "host4"
@@ -156,14 +161,14 @@ def test_host():
     assert res["name"] == "host5"
     assert res["addresses"][0]["address"] == "172.31.42.42"
     assert res["addresses"][0]["pool"] == "pooltest3"
-    assert res["addresses"][0]["mac"] == "mac42"
+    assert res["addresses"][0]["mac"] == "42:42:42:42:42:42"
 
     run_request("PUT", "/host/host5",
-        {"newname": "host6", "macaddr": "mac1337"})
+        {"newname": "host6", "macaddr": "ff:20:0b:c0:12:0a"})
     res = get_request("/host/host6?format=json")
     assert res["name"] == "host6"
     assert res["addresses"][0]["address"] == "172.31.42.42"
-    assert res["addresses"][0]["mac"] == "mac1337"
+    assert res["addresses"][0]["mac"] == "ff:20:0b:c0:12:0a"
 
     run_request("DELETE", "/host/host6")
     status_request("GET", "/pool/host6", status=404)

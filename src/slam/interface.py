@@ -343,6 +343,7 @@ def allocate_address(pool, host=None, address=None, random=False,
                     pool = poolobj
                     break
         elif category:
+            print("foo")
             pool = get_pool(None, category)
         else:
             raise MissingParameterError("Could not find a pool for the given"

@@ -123,6 +123,31 @@
     </form>
 
     <hr>
+    <h3>{% trans "Allocate a new address" %}</h3>
+    <form method="POST">
+        <fieldset>
+            <div class="row">
+                <div class="span3">
+                    <label>{% trans "Pool name" %}</label>
+                    <select name="pool_name">
+                        <option value=""></option>
+                        {% for pool in pools %}
+                            <option value="{{ pool.name }}">{{ pool.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="span3">
+                    <label>{% trans "<strong>and/or</strong> address" %}</label>
+                    <input type="text" name="address">
+                </div>
+            </div>
+        </fieldset>
+        <input type="hidden" name="allocate" value="1">
+        <button type="submit" class="btn">{% trans "Allocate" %}</button>
+    </form>
+
+    <hr>
     <h3>{{ delete_trans }}</h3>
     <form method="DELETE">
         <input type="hidden" name="confirm" value="1">
