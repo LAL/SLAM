@@ -4,105 +4,106 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-15 17:38+0100\n"
+"POT-Creation-Date: 2013-01-17 14:46+0100\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: views.py:39
+#: views.py:44
 msgid "Not found"
 msgstr "Page introuvable"
 
-#: views.py:40
+#: views.py:45
 #, python-format
 msgid "Could not found the resource %(res)s."
 msgstr "La ressource %(res)s est introuvable."
 
-#: views.py:45
+#: views.py:50
 msgid "Forbidden"
 msgstr "Accès interdit"
 
-#: views.py:46
+#: views.py:51
 #, python-format
 msgid "You are not allowed to acces to the resource %(res)s."
 msgstr "Vous n'avez pas le droit d'accéder à la ressource %(res)s."
 
-#: views.py:52
+#: views.py:57
 msgid "Internal Error"
 msgstr "Erreur interne"
 
-#: views.py:53
+#: views.py:58
 #, python-format
 msgid "An internal error occured while generating the page for %(res)s."
 msgstr ""
 "Une erreur interne s'est produite pendant la génération de la page pour "
 "%(res)s."
 
-#: views.py:73
+#: views.py:78
 msgid "Disconnected"
 msgstr "Déconnecté"
 
-#: views.py:74
+#: views.py:79
 msgid "You have successfully been disconnected from SLAM."
 msgstr "Vous avez bien été déconnecté de SLAM."
 
-#: views.py:84
+#: views.py:89
 msgid "Logged in"
 msgstr "Connecté"
 
-#: views.py:85
+#: views.py:90
 msgid "You can now manage your addresses!"
 msgstr "Vous pouvez maintenant gérer vos adresses !"
 
-#: views.py:88
+#: views.py:93
 msgid "Invalid login or password."
 msgstr "Nom d'utilisateur ou mot de passe incorrecte."
 
-#: views.py:127
+#: views.py:132
 msgid "Pool already exists"
 msgstr "Le pool existe déjà"
 
-#: views.py:128
+#: views.py:133
 msgid ""
 "A pool with the same name or the same category already exists in the "
 "database."
 msgstr ""
 "Un pool du même nom ou de même catégorie existe déjà dans la base de données"
 
-#: views.py:131 views.py:263 views.py:294 views.py:343 views.py:429
+#: views.py:136 views.py:310 views.py:341 views.py:400 views.py:423
+#: views.py:516
 msgid "Missing information"
 msgstr "Information manquante"
 
-#: views.py:132
+#: views.py:137
 msgid "You must specify at least a name and a definition to create a new pool."
 msgstr ""
 "Vous devez au moins préciser un nom et une définition pour créer un nouveau "
 "pool"
 
-#: views.py:135
+#: views.py:140
 msgid "Invalid address range"
 msgstr "Plage d'adresse invalide"
 
-#: views.py:136
+#: views.py:141
 msgid "The address range you provided is invalid."
 msgstr "La plage d’adresse fournie n'est pas valide."
 
-#: views.py:138
+#: views.py:143
 #, python-format
 msgid "Created pool %(pool)s"
 msgstr "Pool %(pool)s créé"
 
-#: views.py:139
+#: views.py:144
 #, python-format
 msgid "The pool \"%(pool)s\" have been created: %(poolstr)s."
 msgstr "Le pool \"%(pool)s\" a été créé : %(poolstr)s."
 
-#: views.py:159
+#: views.py:165
 msgid "Bad Request"
 msgstr "Requête invalide"
 
-#: views.py:160
+#: views.py:166
 #, python-format
 msgid ""
 "Your request is invalid, please verify it is correct. Internal reason: "
@@ -111,71 +112,93 @@ msgstr ""
 "Votre requête est invalide, veuillez vérifier les informations fournies."
 "Raison interne : %(exc)s."
 
-#: views.py:166
+#: views.py:176
 #, python-format
 msgid "Pool \"%(pool)s\" has been modified"
 msgstr "Pool \"%(pool)s\" a été modifié"
 
-#: views.py:167
+#: views.py:177
 #, python-format
 msgid "The pool \"%(pool)s\" has been correctly modified."
 msgstr "Le pool \"%(pool)s\" a correctement été modifié."
 
-#: views.py:177
+#: views.py:187
 msgid "Address not allocated"
 msgstr "Adresse déjà libre"
 
-#: views.py:178
+#: views.py:188
 msgid "The address you provided is already unallocated."
 msgstr "L'adresse fournie est déjà libre."
 
-#: views.py:180
+#: views.py:190
 #, python-format
 msgid "%(name)s has been removed"
 msgstr "%(name)s a été supprimé"
 
-#: views.py:181
+#: views.py:191
 #, python-format
 msgid "The pool \"%(name)s\" (%(def)s) has been removed."
 msgstr "Le pool \"%(name)s\" (%(def)s) a été supprimé."
 
-#: views.py:264
+#: views.py:285
+msgid "MAC adress taken"
+msgstr "Adresses MAC déjà utilisée"
+
+#: views.py:286
+#, python-format
+msgid ""
+"The MAC adresse of the host you are trying to create already belongs to host "
+"%(host)s."
+msgstr ""
+"L'adresse MAC de l’hôte que vous êtes en train de créer appartient déjà à "
+"l’hôte %(host)s."
+
+#: views.py:295 views.py:384
+msgid "Invalid MAC"
+msgstr "Adresse MAC invalid"
+
+#: views.py:296 views.py:385
+#, python-format
+msgid "The format of the given MAC address is invalid : %(mac)s."
+msgstr "Le format de l'adresse MAC %(mac)s n'est pas valide."
+
+#: views.py:311
 msgid "You must at least specify a name to create a new host."
 msgstr "Vous devez au moins spécifier le nom du nouvel hôte à créer."
 
-#: views.py:266
+#: views.py:313
 msgid "Host already exists"
 msgstr "L'hôte existe déjà"
 
-#: views.py:267
+#: views.py:314
 #, python-format
 msgid "Could not create host %(host)s because it already exists."
 msgstr "Impossible de créer l'hôte %(host)s car il existe déjà."
 
-#: views.py:270
+#: views.py:317
 msgid "Address not in pool"
 msgstr "Adresse étrangère au pool"
 
-#: views.py:271
+#: views.py:318
 #, python-format
 msgid "The address you provided (%(addr)s) is not in the pool %(pool)s."
 msgstr ""
 "L'adresse que vous avez fourni (%(addr)s) n'appartient pas au pool %(pool)s."
 
-#: views.py:276
+#: views.py:323
 msgid "Address not available"
 msgstr "Adresse indisponible"
 
-#: views.py:277
+#: views.py:324
 #, python-format
 msgid "The address you asked for (%(addr)s) is not available."
 msgstr "L'adresse demandée ((%(addr)s) n'est pas libre."
 
-#: views.py:280
+#: views.py:327
 msgid "Pool is full"
 msgstr "Pool plein"
 
-#: views.py:281
+#: views.py:328
 #, python-format
 msgid ""
 "The destination address pool (%(pool)s) is full. Impossible to allocate "
@@ -184,58 +207,96 @@ msgstr ""
 "Le pool d'adresse demandé (%(pool)s) est plein. Impossible d'effectuer "
 "l'allocation."
 
-#: views.py:284
+#: views.py:331
 #, python-format
 msgid "The host \"%(host)s\" have been created"
 msgstr "L’hôte \"%(host)s\" a été créé"
 
-#: views.py:286
+#: views.py:333
 msgid " and was assigned to address: "
 msgstr " et a reçu l’adresse : "
 
-#: views.py:295
+#: views.py:342
 msgid ""
 "You must at least specify the name of the new property you want to create."
 msgstr "Vous devez au moins spécifier le nom du nouvel attribut à créer."
 
-#: views.py:298
+#: views.py:345
 #, python-format
 msgid "Created host %(host)s"
 msgstr "L’hôte %(host)s a été créé"
 
-#: views.py:344
+#: views.py:401
 msgid "You must specify the new values to modify an object."
 msgstr "Vous devez indiquer de nouvelles information pour modifier cet objet."
 
-#: views.py:349
+#: views.py:410
 #, python-format
 msgid "Host \"%(host)s\" has been modified"
 msgstr "L’hôte \"%(host)s\" a bien été modifié"
 
-#: views.py:350
+#: views.py:411
 #, python-format
 msgid "The host \"%(host)s\" has been correctly modified."
 msgstr "L’hôte \"%(host)s\" a bien été modifié."
 
-#: views.py:364
+#: views.py:424
+msgid ""
+"Host probably does not have a category, please add one to  it or specify a "
+"pool or an address in the previous form."
+msgstr "Cet hôte n’a probablement pas de catégorie, veuillez lui en affecter "
+"une ou spécifier le Pool ou une adresse sur la page précédente."
+
+#: views.py:427
+msgid "Address not in the given pool"
+msgstr "Adresse étrangère au pool donné"
+
+#: views.py:428
+#, python-format
+msgid "The address you provided (%(addr)s) does not belong to the given pool."
+msgstr ""
+"L'adresse que vous avez fourni (%(addr)s) n'appartient pas au pool donné."
+
+#: views.py:431
+msgid "Address not available."
+msgstr "Adresse indisponible"
+
+#: views.py:432
+msgid ""
+"The address you provided is already allocated. Impossible to reallocate it "
+"to this host."
+msgstr "L'adresse fournie est déjà attribuée. Impossible de la réallouer à cet"
+" hôte."
+
+#: views.py:435
+#, python-format
+msgid "Allocated %(addr)s"
+msgstr "%(addr)s allouée"
+
+#: views.py:436
+#, python-format
+msgid "The address %(addr)s has correctly been allocated to host %(host)s."
+msgstr "L’address \"%(addr)s\" a bien été alloué à l'hôte %(host)s."
+
+#: views.py:450
 msgid " has been removed"
 msgstr " a été supprimé"
 
-#: views.py:365
+#: views.py:451
 #, python-format
 msgid "The host \"%(host)s\" has correctly been removed."
 msgstr "L’hôte \"%(host)s\" a bien été supprimé."
 
-#: views.py:394
+#: views.py:481
 msgid "Address deleted"
 msgstr "Adresse supprimée"
 
-#: views.py:395
+#: views.py:482
 #, python-format
 msgid "The address \"%(addr)s\" has been correctly removed."
 msgstr "L’address \"%(addr)s\" a bien été supprimée."
 
-#: views.py:430
+#: views.py:517
 msgid ""
 "You must at least specify a pool or a host and the name of property to "
 "create, edit or delete a property."
@@ -243,11 +304,11 @@ msgstr ""
 "Vous devez au moins spécifier le nom d'un pool ou d'un host et le nom de "
 "l'information que vous souhaitez créer, modifier ou supprimer."
 
-#: views.py:457
+#: views.py:544
 msgid "Could not generate files"
 msgstr "Impossible de générer les fichiers"
 
-#: views.py:458
+#: views.py:545
 msgid ""
 "Impossible to generate configuration files, the RELOAD_SCRIPT variable is "
 "not defined in the SLAM's configuration file."
@@ -484,6 +545,22 @@ msgstr "Alias (séparés par virgule)"
 msgid "Clear alias list"
 msgstr "Supprimer tous les alias"
 
+#: templates/host.html:126
+msgid "Allocate a new address"
+msgstr ""
+
+#: templates/host.html:131 templates/pool_list.html:10
+msgid "Pool name"
+msgstr "Nom du pool"
+
+#: templates/host.html:141
+msgid "<strong>and/or</strong> address"
+msgstr "<strong>et/ou</strong> adresse"
+
+#: templates/host.html:147
+msgid "Allocate"
+msgstr "Allouer"
+
 #: templates/host_list.html:11 templates/pool.html:60
 #: templates/pool_map.html:27
 msgid "Host name"
@@ -538,10 +615,6 @@ msgstr ""
 #: templates/pool.html:59 templates/pool_map.html:26
 msgid "Address"
 msgstr "Adresse"
-
-#: templates/pool_list.html:10
-msgid "Pool name"
-msgstr "Nom du pool"
 
 #: templates/pool_map.html:4 templates/pool_map.html.py:7
 msgid "Map of"
