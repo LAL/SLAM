@@ -30,7 +30,7 @@
             <th>{% trans "Host" %}</th>
             <td><a href="/host/{{ addr.host.name }}">{{ addr.host.name }}</a></td>
         </tr>{% endif %}
-        {% if addr.host %}<tr>
+        {% if addr.duration %}<tr>
             <th>{% trans "Expiration (remaining)" %}</th>
             <td>{{ addr.duration|date }} ({{ addr.duration|timeuntil }})</td>
         </tr>{% endif %}
