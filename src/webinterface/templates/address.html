@@ -21,20 +21,41 @@
 
     <h1>{% trans "Address: " %}{{ addr.addr }}</h1>
 
-    <ul>
-        {% if addr.pool %}
-            <li>{% trans "Pool: " %}
-                <a href="/pool/{{ addr.pool.name}}">{{ addr.pool.name }}</a>
-            </li>
-        {% endif %}
-        {% if addr.host %}
-            <li>{% trans "Host: " %}
-                <a href="/host/{{ addr.host.name }}">{{ addr.host.name }}</a>
-            </li>
-        {% endif %}
-    </ul>
+    <table class="table" style="width:auto">
+        {% if addr.pool %}<tr>
+            <th>{% trans "Pool" %}</th>
+            <td><a href="/pool/{{ addr.pool.name}}">{{ addr.pool.name }}</a></td>
+        </tr>{% endif %}
+        {% if addr.host %}<tr>
+            <th>{% trans "Host" %}</th>
+            <td><a href="/host/{{ addr.host.name }}">{{ addr.host.name }}</a></td>
+        </tr>{% endif %}
+        {% if addr.host %}<tr>
+            <th>{% trans "Expiration (remaining)" %}</th>
+            <td>{{ addr.duration|date }} ({{ addr.duration|timeuntil }})</td>
+        </tr>{% endif %}
+        {% if addr.comment %}<tr>
+            <th>{% trans "Comment" %}</th>
+            <td><pre>{{ addr.comment }}</pre></td>
+        </tr>{% endif %}
+    </table>
 
-    <h2>{{ delete_trans }}</h2>
+    <hr>
+    <h3>{% trans "Modify" %}</h3>
+
+    <form method="POST">
+        <fieldset>
+            <label>{% trans "Comment" %}</label>
+            <textarea name="comment">{{ addr.commnt }}</textarea>
+
+            <label>{% trans "Duration in days (for temporary allocations)" %}</label>
+            <input type="text" name="duration">
+        </fieldset>
+
+        <button type="submit" class="btn">{% trans "Modify" %}</button>
+    </form>
+
+    <h3>{{ delete_trans }}</h3>
     <form method="DELETE">
         <input type="hidden" name="confirm" value="1">
         <button class="btn btn-danger" type="submit">{{ delete_trans }}</button>

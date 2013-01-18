@@ -678,6 +678,12 @@ def set_log_author(author):
     DBLOGHANDLER.author = author
 
 
+def delete_logs(days=0):
+    """Delete log entries older than *date*."""
+    if days != 0:
+        models.LogEntry.objects.filter(date__lt=datetime.datetime.now()
+            - datetime.timedelta(days=days)).delete()
+
 def export(cmd):
     """Export SLAM's command allowing to recreate the current database from
     scratch."""

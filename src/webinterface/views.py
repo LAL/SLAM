@@ -239,7 +239,8 @@ def pool_map(request, pool_name):
         "addrs": addrs,
         "addr_used": addr_used,
         "addr_avail": addr_avail,
-        "addr_perc": addr_used * 100 / addr_avail}
+        "addr_perc": addr_used * 100 / addr_avail,
+        "overflow": addr_avail > POOL_MAP_LIMIT}
     return render_to_response("pool_map.html", templ_values)
 
 
@@ -502,6 +503,18 @@ def host_info(request, host_name):
 def address_info(request, address):
     """Get information about an address or disallocate it."""
     addr = get_object_or_404(models.Address, addr=address)
+    if request.method == "POST":
+        try:
+            interface.modify(address=address,
+                comment=request.POST.get("comment"),
+                duration=int(request.POST.get("duration")))
+        except interface.InexistantObjectError:
+            return error_view(request, 400, _("Missing information"),
+                _("You must specify at least the comment or duration to "
+                    "modify."))
+        return msg_view(request, _("Address modified"),
+            _("The address \"%(addr)s\" has been correctly modified.")
+                % {"addr": address}, referer="/")
     if request.method == "DELETE":
         data = request_data(request)
         if data.get("confirm"):
@@ -527,6 +540,10 @@ def address_info(request, address):
 @login_required
 def list_logs(request):
     """List all log for the service."""
+    data = request_data(request)
+    if request.method == "DELETE" and data.get("days"):
+        interface.delete_logs(days=int(data.get("days")))
+
     msgs = [str(entry) for entry
         in models.LogEntry.objects.all().order_by("date")]
 

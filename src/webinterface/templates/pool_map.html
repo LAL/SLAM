@@ -43,6 +43,10 @@
                     {{ addr.duration|date }} ({{ addr.duration|timeuntil }})
                 {% endif %}</td>
             </tr>
-        {% endif %}{% endfor %}</body
+        {% endif %}{% endfor %}</tbody>
     </table>
+
+    {% if overflow %}<p>{% blocktrans %}
+        This map has been truncated because the pool is to large to list.
+    {% endblocktrans %}</p>{% endif %}
 {% endblock %}

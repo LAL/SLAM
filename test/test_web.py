@@ -53,10 +53,6 @@ def setup():
 
 def run_request(method, url, data=None):
     req = request(url, method, data)
-    if req.code != 200:
-        f = open("/tmp/err.html", "w")
-        f.write(req.read())
-        f.close()
     assert req.code == 200
 
 
