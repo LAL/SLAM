@@ -117,3 +117,74 @@ Tests are stored in their own files in the **/test** directory, regrouped by
 tested python modules. They are executed on an independant database. Tests that
 need to compare output use *StringIO* and test that need to provide an input
 stream uses a simple pipe.
+
+Evolution
+---------
+
+New category model
+^^^^^^^^^^^^^^^^^^
+
+A new category model is in progress on the branch *new_category_model*. The
+idea is to remove the concept of category and to replace it by *HostType* and
+*AddrType*.
+
+The aimed model is that a pool can be linked to several *AddrType* which
+defines the way addresses will be generated (it embeds several attributes such
+as the way aliases are handled, DNS TTL, DNS zone, etc.). Each *Host* has a
+*HostType* which defines its category (pc, laptop, server...). The *HostType*
+has a list of *AddrTypes* that will be automatically allocated at the host's
+creation and which is represented by a custom relation (*HostTypeAddrType*).
+This relation allow to specify that a given *HostType* will have automatically
+at its creation.
+
+**HostType**:
+
+    * name,
+    * name_format: would be a special formatted string to allow a host name to
+      be automatically generated from their IP, category, etc.
+
+**AddrType**:
+
+    * name,
+    * dns_zone: the domain of which this host is a sub-domain,
+    * dns_alias: describes how the alias are treated when dns records are
+      generated. Aliases could be ignore, or generated as CNAME, or as
+      alternative A records,
+    * dhcp_alias: describes how the alias are treated when dhcp records are
+      generated.
+    * dns_timeout: the TTL for the generated DNS records.
+
+**HostTypeAddrType**:
+
+    * hosttype,
+    * addrtype: *AddrType* to automatically allocate when the host is created,
+    * count: number of this *AddrType* to allocate to the host.
+
+Still todo on the new_category_model branch
+"""""""""""""""""""""""""""""""""""""""""""
+
+The models are finished, common interface to add and modify HostType and
+AddrType is done in slam/interface.py. It needs to be integrated in the CLI
+interface and the web interface.
+
+The three interfaces (common, CLI and Web) need to be modified to integrate the
+new types, and to allocate automatically addresses related to the types, write
+a new interface to list objects from the two new classes, and so on.
+Generators also need to be heavily modified to integrate this new model and
+generate different things depending on the new attributes.
+
+All the documentation and tests need to be written.
+
+Interface with the DHCP server
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The CLI interface has the option **--lastuse**, it can be used to record the
+last query seen by the DHCP server for a particular host and address.
+An interface could easily made by parsing the DHCP log files to track the
+unused addresses.
+
+Improvements to the CLI interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The whole CLI interface is quite terrible, with to much options and a lot of
+implicit behaviors. It should be remade from scratch.

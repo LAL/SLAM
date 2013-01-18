@@ -14,7 +14,7 @@ Usage
 
     $ ./slam_cli.py
         [-h]
-        -a {list|create|get|delete|modify|setprop|rmprop|createconf|upconf|export}
+        -a {list|create|get|delete|modify|setprop|rmprop|createconf|upconf|log|export}
         [-pn POOL_NAME]
         [-p POOL]
         [-A ADDRESS]
@@ -164,11 +164,22 @@ List all addresses allocated to the host *pc-42*::
 
     $ ./slam_cli.py -a list -H pc-42
 
+List all hosts in the database::
+
+    $ ./slam_cli.py -a list -H ""
+
 Show which host the address *192.168.10.3* is allocated to and to which pool
 it belongs::
 
     $ ./slam_cli.py -a list -A 192.168.10.3
 
+Show information about a generator::
+
+    $ ./slam_cli.py -a list -g my_dhcp
+
+List all generators in the database::
+
+    $ ./slam_ci.py -a list -g ""
 
 Create
 """"""

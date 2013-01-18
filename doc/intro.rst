@@ -16,6 +16,7 @@ Requirements
 * python2 (≥ 2.6)
 * django (*python-django* ≥ 1.4)
 * a database supported by django
+* gettext
 
 Optionally:
 

@@ -45,6 +45,10 @@ Usage
         [--footer FTR]
         [-o OUTFILE]
         [--checkfile CHECK]
+        [--serial SERIAL]
+        [--inventory INVENTORY]
+        [--duration DAYS]
+        [--lastuse LAST]
         [ARG...]
 
 arguments:
@@ -73,6 +77,13 @@ arguments:
                           configuration files.
     --output OUTFILE      The file to write the configuration to or - to output
                           on the stdout.
+    --serial SERIAL       Specify the serial number of a host.
+    --inventory INVENTORY Specify the inventory number of a host.
+    --comment COMMENT     Add a comment to this address.
+    --duration DAYS       Allocate the new address for a temporary duration of
+                          DAYS of days.
+    --lastuse LAST        Specify that this host and address has been seen on
+                          the network for the last time at timestamp LAST.
     ARG...                Extra arguments required by specific actions
                           (ie: modify, setprop)
 

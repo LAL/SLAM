@@ -99,6 +99,13 @@ For *Nginx*, the configuration could be::
 Other configuration
 -------------------
 
+You can either keep the *configuration.py* file in **src/configuration.py** or
+create a new directory **/etc/slam** and store it there. The file in
+**/etc/slam** has the priority over the one stored locally.
+
+Parameters in configuration.py
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 The *DEBUG* variable should be set to *False* in a production environnment.
 
 You can the name and email address of the administrator of this application in
@@ -111,3 +118,18 @@ The *SECRET_KEY* variable must be set to a random and private value. You can
 generate a proper one with the following command::
 
     echo "`</dev/urandom tr -dc '[:graph:]' | head -c50`"
+
+The *ROOT_DIR* variable is the root of the SLAM's directory, which contains
+src/.
+
+The *RELOAD_SCRIPT* is the path to a script that will be launched when you go
+to the generate page on the Web interface. In this script you can create or
+overwrite the configuration files with SLAM and restart all the network daemons
+affected.
+
+/etc/slam/users
+^^^^^^^^^^^^^^^
+
+This file can be created and must contain one UNIX login per line. A really
+basic check is made in the CLI interface of SLAM and login that are not in this
+file cannot do any action.
