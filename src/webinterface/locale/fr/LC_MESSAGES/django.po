@@ -690,7 +690,9 @@ msgid ""
 "\n"
 "        This map has been truncated because the pool is to large to list.\n"
 "    "
-msgstr "Cette carte est tronquée car le pool est trop grand pour pouvoir "
+msgstr ""
+"\n"
+"Cette carte est tronquée car le pool est trop grand pour pouvoir "
 "apparaître entièrement."
 
 #: templates/reload.html:4 templates/reload.html.py:31
