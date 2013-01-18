@@ -514,7 +514,7 @@ def address_info(request, address):
                     "modify."))
         return msg_view(request, _("Address modified"),
             _("The address \"%(addr)s\" has been correctly modified.")
-                % {"addr": address}, referer="/")
+                % {"addr": address}, referer="/address/" + address)
     if request.method == "DELETE":
         data = request_data(request)
         if data.get("confirm"):
