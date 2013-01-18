@@ -410,7 +410,7 @@ installed::
 Documentation
 -------------
 
-To generate the documentation, you need *python-spinx*, then, from the *doc*
+To generate the documentation, you need *python-sphinx*, then, from the *doc*
 directory you can run this command to see all the available output formats::
 
     make help

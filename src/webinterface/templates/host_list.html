@@ -8,10 +8,14 @@
     {% if host_list %}
         <table class="table table-hover table-striped table-bordered table-condensed" style="vertical-align: middle">
         <tr>
-            <th>{% trans "Host name" %} <a href="?sort=name"><i class="icon-chevron-down"></a></th>
-            <th style="max-width: 50px">{% trans "Aliases" %} <a href="?sort=alias"><i class="icon-chevron-down"></a></th>
-            <th>{% trans "Addresses" %} <a href="?sort=addr"><i class="icon-chevron-down"></a></th>
-            <th>{% trans "MAC addresses" %} <a href="?sort=mac"><i class="icon-chevron-down"></a></th>
+            <th>{% trans "Host name" %}{% if not search %}
+                <a href="?sort=name"><i class="icon-chevron-down"></a>{% endif %}</th>
+            <th style="max-width: 50px">{% trans "Aliases" %}{% if not search %}
+                <a href="?sort=alias"><i class="icon-chevron-down"></a>{% endif %}</th>
+            <th>{% trans "Addresses" %}{% if not search %}
+                <a href="?sort=addr"><i class="icon-chevron-down"></a>{% endif %}</th>
+            <th>{% trans "MAC addresses" %}{% if not search %}
+                <a href="?sort=mac"><i class="icon-chevron-down"></a>{% endif %}</th>
         </tr>
         {% for host, addrs in host_list %}
             <tr>

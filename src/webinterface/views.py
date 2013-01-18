@@ -246,24 +246,58 @@ def pool_map(request, pool_name):
 @login_required
 def list_hosts(request):
     """List all host objects in the database."""
-    if request.GET.get("sort") == "addr":
-        hosts = models.Host.objects.all().order_by("address__addr")
-    elif request.GET.get("sort") == "alias":
-        hosts = models.Host.objects.all().order_by( "alias__name")
-    elif request.GET.get("sort") == "mac":
-        hosts = models.Host.objects.all().order_by("address__macaddr")
+    search = False
+
+    if request.method == "POST":
+        search = True
+        hosts = models.Host.objects.all()
+        if request.POST.get("name"):
+            hosts = hosts.filter(name__icontains=request.POST.get("name"))
+        if request.POST.get("addr"):
+            hosts = hosts.filter(
+                address__addr__icontains=request.POST.get("addr"))
+        if request.POST.get("macaddr"):
+            hosts = hosts.filter(
+                address__macaddr__icontains=request.POST.get("macaddr"))
+        if request.POST.get("alias"):
+            hosts = hosts.filter(
+                alias__name__icontains=request.POST.get("alias"))
+        if request.POST.get("inventory"):
+            hosts = hosts.filter(
+                inventory__icontains=request.POST.get("inventory"))
+        if request.POST.get("serial"):
+            hosts = hosts.filter(serial__icontains=request.POST.get("serial"))
+        if request.POST.get("owner"):
+            hosts = hosts.filter(
+                property__value__icontains=request.POST.get("owner"))
     else:
-        hosts = models.Host.objects.all().order_by("name")
+        hosts = models.Host.objects.all()
+        if request.GET.get("sort") == "addr":
+            hosts = hosts.order_by("address__addr")
+        elif request.GET.get("sort") == "alias":
+            hosts = hosts.order_by( "alias__name")
+        elif request.GET.get("sort") == "mac":
+            hosts = hosts.order_by("address__macaddr")
+        else:
+            hosts = hosts.order_by("name")
 
     host_list = []
     for host in hosts:
         addrs = models.Address.objects.filter(host=host).order_by("addr")
         host_list.append((host, addrs))
-    context_values = {"request": request, "host_list": host_list}
+
+    context_values = {"request": request, "host_list": host_list,
+        "search": search}
     if request.GET.get("format") == "json":
         return render_to_response("host_list.json", context_values)
     else:
         return render_to_response("host_list.html", context_values)
+
+
+@login_required
+def search_hosts(request):
+    """Allow to search the host list for a specific host."""
+    return render_to_response("host_search.html", {"request": request})
 
 
 @login_required

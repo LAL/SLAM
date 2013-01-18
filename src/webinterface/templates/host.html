@@ -88,7 +88,7 @@
             <label>{% trans "Name" %}</label>
             <input type="text" name="newname" placeholder="{{ host.name }}">
 
-            <label>{% trans "Mac address" %}</label>
+            <label>{% trans "MAC address" %}</label>
             {% with firstaddr=addrs|first %}
                 <input type="text" name="macaddr" placeholder="{{ firstaddr.macaddr }}">
             {% endwith %}
