@@ -95,13 +95,14 @@
 
             <div class="row">
                 <div class="span3">
-                    <label>{% trans "Alias (comma-separated)" %}</label>
+                    <label>{% trans "New alias (comma-separated)" %}</label>
                     <input type="text" name="alias" placeholder="{{ host.alias_set.all|join:"," }}">
                 </div>
 
                 <div class="span3">
                     <label><input type="checkbox" name="clearalias" >
                     {% trans "Clear alias list" %}</label>
+                    {% trans "Prefix a name by - to delete it." %}
                 </div>
             </div>
 

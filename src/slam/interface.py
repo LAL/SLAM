@@ -577,16 +577,26 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
             models.Alias.objects.filter(host=hostobj).delete()
             LOGGER.info("Cleared all aliases for host " + host)
         elif alias:
-            models.Alias.objects.filter(host=hostobj).delete()
             for alia in alias:
-                LOGGER.info("New alias " + alia + " for host " + host)
-                if models.Alias.objects.filter(name=alia):
-                    LOGGER.warn("Alias " + str(alia)
-                        + " already exists and refers to "
-                        + models.Alias.objects.get(name=alia).host.name)
+                # % was introduced because of argparse, which think some
+                # argument beginning by - is an option...
+                # http://bugs.python.org/issue9334
+                if alia[0] == '-' or alia[0] == '%':
+                    alia = alia[1:]
+                    if models.Alias.objects.filter(name=alia, host=hostobj):
+                        models.Alias.objects.filter(name=alia,
+                            host=hostobj).delete()
+                        LOGGER.info("Deleted alias \"" + alia + "\" for host "
+                            + host)
                 else:
-                    aliasobj = models.Alias(name=alia, host=hostobj)
-                    aliasobj.save()
+                    if models.Alias.objects.filter(name=alia):
+                        LOGGER.warn("Alias " + str(alia)
+                            + " already exists and refers to "
+                            + models.Alias.objects.get(name=alia).host.name)
+                    else:
+                        LOGGER.info("New alias " + alia + " for host " + host)
+                        aliasobj = models.Alias(name=alia, host=hostobj)
+                        aliasobj.save()
     elif pools and poolobjs:
         poolobj = poolobjs[0]
         if not category and not newname:

@@ -85,6 +85,12 @@ def parse_args(argparser, argv):
     if args.lastuse:
         args.lastuse = int(args.lastuse)
 
+    if args.alias:
+        realalias = []
+        for alia in args.alias:
+            realalias.extend(alia.split(","))
+        args.alias = realalias
+
     return args
 
 
@@ -453,10 +459,12 @@ def modify(args):
                 args.output, args.header, args.footer, args.checkfile,
                 args.timeout, args.domain, args.pool_name)
         else:
+            clearalias = (args.alias and len(args.alias) == 1
+                and len(args.alias[0]) == 0)
             interface.modify(args.pool_name, args.host[0], args.category,
                 args.address[0], args.mac[0], args.extra[0], args.alias,
                 args.serial, args.inventory, args.duration, args.lastuse,
-                args.nodns, args.comment)
+                args.nodns, args.comment, clearalias=clearalias)
     except (interface.InexistantObjectError,
             interface.MissingParameterError) as exc:
         logging.error(str(exc))

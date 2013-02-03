@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-18 15:40+0100\n"
+"POT-Creation-Date: 2013-02-03 17:09+0100\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -373,7 +373,7 @@ msgid "Random allocation"
 msgstr "Allocation aléatoire"
 
 #: templates/add_host.html:48 templates/host.html:42
-#: templates/host.html.py:119
+#: templates/host.html.py:120
 msgid "Do not generate DNS records for this host"
 msgstr "Ne pas générer d'enregistrements DNS pour cet hôte"
 
@@ -382,17 +382,17 @@ msgid "Optional information"
 msgstr "Informations optionnelles"
 
 #: templates/add_host.html:53 templates/host.html:30
-#: templates/host.html.py:111 templates/host_search.html:16
+#: templates/host.html.py:112 templates/host_search.html:16
 msgid "Serial number"
 msgstr "Numéro de série"
 
 #: templates/add_host.html:56 templates/host.html:33
-#: templates/host.html.py:108 templates/host_search.html:15
+#: templates/host.html.py:109 templates/host_search.html:15
 msgid "Inventory number"
 msgstr "Numéro d’inventaire"
 
 #: templates/add_host.html:59 templates/host.html:36
-#: templates/host.html.py:114 templates/host_search.html:17
+#: templates/host.html.py:115 templates/host_search.html:17
 msgid "Owner"
 msgstr "Propriétaire"
 
@@ -566,26 +566,30 @@ msgid "MAC address"
 msgstr "Adresses MAC"
 
 #: templates/host.html:98
-msgid "Alias (comma-separated)"
-msgstr "Alias (séparés par virgule)"
+msgid "New alias (comma-separated)"
+msgstr "Nouveaux alias (séparés par virgule)"
 
 #: templates/host.html:104
 msgid "Clear alias list"
 msgstr "Supprimer tous les alias"
 
-#: templates/host.html:126
+#: templates/host.html:105
+msgid "Prefix a name by - to delete it."
+msgstr "Précédez un alias de - pour le supprimer."
+
+#: templates/host.html:127
 msgid "Allocate a new address"
 msgstr "Allouer une nouvelle adresse"
 
-#: templates/host.html:131 templates/pool_list.html:10
+#: templates/host.html:132 templates/pool_list.html:10
 msgid "Pool name"
 msgstr "Nom du pool"
 
-#: templates/host.html:141
+#: templates/host.html:142
 msgid "<strong>and/or</strong> address"
 msgstr "<strong>et/ou</strong> adresse"
 
-#: templates/host.html:147
+#: templates/host.html:148
 msgid "Allocate"
 msgstr "Allouer"
 
@@ -692,8 +696,8 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"Cette carte est tronquée car le pool est trop grand pour pouvoir "
-"apparaître entièrement."
+"Cette carte est tronquée car le pool est trop grand pour pouvoir apparaître "
+"entièrement."
 
 #: templates/reload.html:4 templates/reload.html.py:31
 msgid "Generate configuration"

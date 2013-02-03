@@ -371,6 +371,26 @@ List all pool and host that have a *buidling* property of value *200*::
     $ ./slam_cli.py -a list building=200
 
 
+Alias
+"""""
+
+Add one or more alias::
+
+    $ ./slam_cli.py -a modify -H myhost --alias alias1,alias2,alias3
+
+or::
+
+    $ ./slam_cli.py -a modify -H myhost --alias alias1 --alias  alias2 --alias alias3
+
+To remove an alias from a host, prefix it with %::
+
+    $ ./slam_cli.py -a modify -H myhost --alias %alias2
+
+To clear all alias of a host, pass it one empty alias::
+
+    $ ./slam_cli.py -a modify -H myhost --alias ""
+
+
 Other
 """""
 
