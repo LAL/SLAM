@@ -35,7 +35,7 @@
         {% endblocktrans %}</p>
 
         <form method="POST">
-            <button type="submit" class="btn">{% trans "Generate" %}</button>
+            <button type="submit" class="btn" onclick="this.disabled=true; this.form.submit();">{% trans "Generate" %}</button>
         </form>
     {% endif %}
 {% endblock %}
