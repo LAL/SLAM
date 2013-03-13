@@ -50,5 +50,5 @@ class LoginRecordMiddleware:
         if request.user and request.user.username:
             interface.set_log_author(request.user.username)
         else:
-            interface.set_log_author("root")
+            interface.set_log_author("rootEnDur")
         return None

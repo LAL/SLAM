@@ -21,7 +21,7 @@ class DbLogHandler(logging.Handler):
     """Log handler that store log records in database."""
 
     author = None
-
+    
     def emit(self, record):
         """Store a new log record in database."""
         if not self.author:
@@ -29,6 +29,8 @@ class DbLogHandler(logging.Handler):
                 self.author = os.getenv("SUDO_USER")
             elif os.getenv("USER"):
                 self.author = os.getenv("USER")
+            else:   #pour tester anomalie, on garantie le author ne pas être null
+                self.author = "userfictif"
 
         newrec = LogEntry(author=self.author, msg=record.msg)
         newrec.save()
