@@ -29,7 +29,7 @@ class DbLogHandler(logging.Handler):
                 self.author = os.getenv("SUDO_USER")
             elif os.getenv("USER"):
                 self.author = os.getenv("USER")
-            else:   #pour tester anomalie, on garantie le author ne pas être null
+            else:   #pour tester anomalie, on garantie le author non null
                 self.author = "userfictif"
 
         newrec = LogEntry(author=self.author, msg=record.msg)
