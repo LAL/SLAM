@@ -344,10 +344,10 @@ def add_host(request):
         except interface.MissingParameterError:
             return error_view(request, 400, _("Missing information"),
                 _("You must at least specify a name to create a new host."))
-        except interface.DuplicateObjectError:
-            return error_view(request, 409, _("Host already exists"),
-                _("Could not create host %(host)s because it already exists.")
-                    % {"host": str(request.POST.get("name"))})
+        #anomalie9
+        except interface.DuplicateObjectError, e:
+            return error_view(request, 409, _("Could not create host"), e.args[0])
+        #fin anomalie9
         except models.AddressNotInPoolError:
             return error_view(request, 412, _("Address not in pool"),
                 _("The address you provided (%(addr)s) is not in the pool "
@@ -402,17 +402,17 @@ def host_info(request, host_name):
         return error_404(request)
 
     if request.method == "PUT":
+        category = data.get("category")
+        if category:
+            category = [category]
+        alias = data.get("alias")
+        if not alias:
+            alias = ""
+        alias = alias.replace(", ", ",")
+        if alias:
+            alias = alias.split(",")
+        mac = data.get("macaddr")
         try:
-            category = data.get("category")
-            if category:
-                category = [category]
-            alias = data.get("alias")
-            if not alias:
-                alias = ""
-            alias = alias.replace(", ", ",")
-            if alias:
-                alias = alias.split(",")
-            mac = data.get("macaddr")
             if mac:
                 mac = mac.lower()
                 if not re.match("^[a-f0-9]{2}(:[a-f0-9]{2}){5}$", mac):
@@ -434,8 +434,11 @@ def host_info(request, host_name):
         except interface.MissingParameterError:
             return error_view(request, 400, _("Missing information"),
                 _("You must specify the new values to modify an object."))
-        except (interface.InexistantObjectError,
-                interface.DuplicateObjectError):
+        #anomalie9
+        except interface.DuplicateObjectError, e:
+            return error_view(request, 409, _("Host or alias already exists"), e.args[0])
+        #fin anomalie9
+        except interface.InexistantObjectError:
             return error_404(request)
         if data.get("newname"):
             referer = "/host/" + str(data.get("newname"))

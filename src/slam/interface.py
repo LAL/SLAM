@@ -25,6 +25,15 @@ class InexistantObjectError(Exception):
 
 class DuplicateObjectError(Exception):
     """Exception raised when trying to create an object that already exists."""
+    #def _get_message(self): 
+    #    return self._message
+    #def _set_message(self, message): 
+    #    self._message = message
+    #message = property(_get_message, _set_message)
+    #def __init__(self, message):
+
+        # Call the base class constructor with the parameters it needs
+        #Exception.__init__(self, message)
     pass
 
 
@@ -405,18 +414,30 @@ def create_host(host, pool=None, address=None, mac=None, random=False,
     nodns=False):
     """Create a new host and assign it the first element of addesses or
     automatically one from the given pool, eventually random."""
+    #validation
     if not host:
         raise MissingParameterError(
             "You must provide a name for the new host.")
 
+    if models.Host.objects.filter(name=host):
+        raise DuplicateObjectError("Host as the host name [" + host + "] already exists.")
+    #anomalie9
+    if models.Alias.objects.filter(name=host):
+        raise DuplicateObjectError("A alias as the host name [" + host + "] already exists.")
+    if alias:
+        for alia in alias:
+            if models.Alias.objects.filter(name=alia):
+                raise DuplicateObjectError("A alias as alias name [" + str(alia) + "] already exists.")
+            if models.Host.objects.filter(name=alia):
+                raise DuplicateObjectError("A Host as alias name [" + str(alia) + "] already exists.")
+            if host==alia:
+                raise DuplicateObjectError("Host should not be equel to a alias name [" + str(alia) + "].")
+    #fin anomalie9
+    hostobj = models.Host(name=host)
+    
     if not alias:
         alias = []
-
-    if models.Host.objects.filter(name=host):
-        raise DuplicateObjectError("Host \"" + host + "\" already exists.")
-    else:
-        hostobj = models.Host(name=host)
-
+    
     logmac = ""
     if mac:
         logmac = " (mac: " + str(mac) + ")"
@@ -559,8 +580,23 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
                 + ": new inventory number: " + inventory)
             hostobj.save()
         if newname:
-            LOGGER.info("Changed name of host " + hostobj.name + " to "
-                + newname)
+            #anomalie9
+            #verifier si le new hostname a le meme alias dans les nouveaux alias et ancienne liste de alias.
+            #la nouvelle liste
+            if alias:
+                for alia in alias:
+                    if alia[0] != '-' and alia[0] != '%':
+                        if (alia == newname):
+                            raise DuplicateObjectError("Host [" + newname + "] is the same as the new alias.")
+                        
+            #le nouveau hostname ne faut pas existe dans la liste de tous les alias de tous les host
+            if models.Alias.objects.filter(name=newname):
+                raise DuplicateObjectError("Host [" + newname + "] already exists in the list of alias.")
+            #le nouveau hostname ne faut pas existe dans la liste tous les host    
+            if models.Host.objects.filter(name=newname):
+                raise DuplicateObjectError("Host [" + newname + "] already exists.")
+            #fin anomalie9
+            LOGGER.info("Changed name of host " + hostobj.name + " to " + newname)
             hostobj.name = newname
             hostobj.save()
         if category:
@@ -589,10 +625,17 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
                         LOGGER.info("Deleted alias \"" + alia + "\" for host "
                             + host)
                 else:
+                    #le nouveau alias exist pas dans la liste de alias 
                     if models.Alias.objects.filter(name=alia):
-                        LOGGER.warn("Alias " + str(alia)
-                            + " already exists and refers to "
-                            + models.Alias.objects.get(name=alia).host.name)
+                        raise DuplicateObjectError("Alias [" + alia + "] already exists.")
+                    #anomalie9
+                    #le nouveau alias exist pas dans la liste de host
+                    elif models.Host.objects.filter(name=alia):
+                        raise DuplicateObjectError("Host already exists as alias ["  + alia + "]")
+                    #le nouveau alias n'est pas identique que le nouveau hostname
+                    elif newname and (alia == newname):
+                        raise DuplicateObjectError("The new alias [" + alia + "] is the same as the new host name.")
+                    #fin anomalie9
                     else:
                         LOGGER.info("New alias " + alia + " for host " + host)
                         aliasobj = models.Alias(name=alia, host=hostobj)
