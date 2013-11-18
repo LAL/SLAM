@@ -1,7 +1,7 @@
 """Helper to execute actions on the database independantly from the interface
 and output format."""
 
-import logging, datetime, sys
+import logging, datetime, sys, re
 from slam import generator, models
 from slam.log import DbLogHandler
 
@@ -52,6 +52,10 @@ class PropertyFormatError(Exception):
     """Exception raised if the property format is invalid."""
     pass
 
+def isValidHostname(hostname):
+    disallowed = re.compile("[^a-zA-Z\d\-]")
+    #return all(map(lambda x: len(x) and not disallowed.search(x), hostname.split("."))) //pour chaque x dans split array(),appliquer les functions len(x) and not disallowed.search(x)
+    return len(hostname) and not disallowed.search(hostname)
 
 def get_host(host_name=None):
     """Retrieve a host object from the database."""
@@ -418,7 +422,10 @@ def create_host(host, pool=None, address=None, mac=None, random=False,
     if not host:
         raise MissingParameterError(
             "You must provide a name for the new host.")
-
+    if not isValidHostname(hostname=host):
+        raise PropertyFormatError(
+            "You must provide a valid name (without space, special character) for the new host.")
+        
     if models.Host.objects.filter(name=host):
         raise DuplicateObjectError("Host as the host name [" + host + "] already exists.")
     #anomalie9
@@ -426,6 +433,8 @@ def create_host(host, pool=None, address=None, mac=None, random=False,
         raise DuplicateObjectError("A alias as the host name [" + host + "] already exists.")
     if alias:
         for alia in alias:
+            if not isValidHostname(hostname=alia):
+                raise PropertyFormatError("You must provide a valid alias name (without space, special character) for the new host.")
             if models.Alias.objects.filter(name=alia):
                 raise DuplicateObjectError("A alias as alias name [" + str(alia) + "] already exists.")
             if models.Host.objects.filter(name=alia):
@@ -530,6 +539,7 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
         lastuse=None, nodns=False, comment="", clearalias=False):
     """Modify the name of an object in the database."""
     poolobjs = []
+        
     if not alias:
         alias = []
 
@@ -580,6 +590,11 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
                 + ": new inventory number: " + inventory)
             hostobj.save()
         if newname:
+            #anomalie de hostname avec espace
+            if not isValidHostname(hostname=newname):
+                raise PropertyFormatError(
+                                          "You must provide a valid name (without space, special character) for the new host.")
+        
             #anomalie9
             #verifier si le new hostname a le meme alias dans les nouveaux alias et ancienne liste de alias.
             #la nouvelle liste
@@ -625,6 +640,9 @@ def modify(pools=None, host=None, category=None, address=None, mac=None,
                         LOGGER.info("Deleted alias \"" + alia + "\" for host "
                             + host)
                 else:
+                    if not isValidHostname(hostname=alia):
+                        raise PropertyFormatError(
+                                          "You must provide a valid name (without space, special character) for the new host.")
                     #le nouveau alias exist pas dans la liste de alias 
                     if models.Alias.objects.filter(name=alia):
                         raise DuplicateObjectError("Alias [" + alia + "] already exists.")

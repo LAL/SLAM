@@ -344,6 +344,10 @@ def add_host(request):
         except interface.MissingParameterError:
             return error_view(request, 400, _("Missing information"),
                 _("You must at least specify a name to create a new host."))
+        #annomalie espace dans le name host
+        except interface.PropertyFormatError:
+            return error_view(request, 400, _("Format invalid"),
+                _("You must specify a valid host name or alias without space, special character etc."))
         #anomalie9
         except interface.DuplicateObjectError, e:
             return error_view(request, 409, _("Could not create host"), e.args[0])
@@ -434,6 +438,10 @@ def host_info(request, host_name):
         except interface.MissingParameterError:
             return error_view(request, 400, _("Missing information"),
                 _("You must specify the new values to modify an object."))
+        #annomalie espace dans le name host
+        except interface.PropertyFormatError:
+            return error_view(request, 400, _("Format invalid"),
+                _("You must specify a valid host name or alias without space, special character etc."))
         #anomalie9
         except interface.DuplicateObjectError, e:
             return error_view(request, 409, _("Host or alias already exists"), e.args[0])
