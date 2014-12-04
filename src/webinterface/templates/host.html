@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Host" %} {{ host.name }}{% endblock %}
+
+{% block content %}
+    {% trans "Modify" as modify_trans %}
+    {% trans "Delete" as delete_trans %}
+
+    {% if confirm_delete %}<div class="alert alert-block">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h2>{% trans "Confirm deletion" %}</h2>
+        {% blocktrans with hostname=host.name %}
+            This will delete permanently delete host {{ hostname }} and all
+            related information. Do you really want to delete it ?
+        {% endblocktrans %}
+
+        <form method="DELETE">
+            <button class="btn btn-danger" type="submit">{{ delete_trans }}</button>
+        </form>
+    </div>{% endif %}
+
+    <h1>{% trans "Host" %} {{ host.name }}</h1>
+
+    <table class="table" style="width:auto">
+        {% if mac %}
+            <tr><th>{% trans "MAC addresses" %}</th><td>{{ mac }}</td></tr>
+        {% endif %}
+        {% if host.serial %}
+            <tr><th>{% trans "Serial number" %}</th><td>{{ host.serial }}</td></tr>
+        {% endif %}
+        {% if host.inventory %}
+            <tr><th>{% trans "Inventory number" %}</th><td>{{ host.inventory }}</td></tr>
+        {% endif %}
+        {% if owner %}
+            <tr><th>{% trans "Owner" %}</th><td>{{ owner }}</td></tr>
+        {% endif %}
+        {% if host.alias_set.all %}
+            <tr><th>{% trans "Aliases" %}</th><td>{{ host.alias_set.all|join:", " }}</td></tr>
+        {% endif %}
+        {% if host.nodns %}
+            <tr><td colspan=2>{% trans "Do not generate DNS records for this host" %}</td></tr>
+        {% endif %}
+    </table>
+
+    <table class="table" style="width:auto">
+        <legend>{% trans "Additional information" %}</legend>
+        {% for prop in props %}{% if prop.name != "owner" %}<tr><form method="DELETE" action="/property">
+            <th>{{ prop.name }}</th>
+            <td>{{ prop.value }}</td>
+            <td><button class="close" type="submit">&times;</button></td>
+            <input type="hidden" name="host" value="{{ host.name }}">
+            <input type="hidden" name="name" value="{{ prop.name }}">
+        </form></tr>{% endif %}{% endfor %}
+
+        <tr><form method="POST" action="/property">
+            <td><input type="text" name="name" placeholder="{% trans "Name" %}"></td>
+            <td><input type="text" name="value" placeholder="{% trans "Value" %}"></td>
+            <td><button class="btn" type="submit">{% trans "Add" %}</button></td>
+            <input type="hidden" name="host" value="{{ host.name }}">
+        </form></tr>
+    </table>
+
+    {% if addrs %}
+        <hr>
+        <h4>{% blocktrans with hname=host.name %}
+            Addresses allocated to {{ hname }}{% endblocktrans %}</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{% trans "Name" %}</th>
+                    <th>{% trans "Pool" %}</th>
+                    <th>{% trans "MAC address" %}</th>
+                </tr>
+            </thead>
+            {% for addr in addrs %}{% if addr.addr %}<tr>
+                <td><a href="/address/{{ addr.addr }}">{{ addr.addr }}</a></td>
+                <td>{% if addr.pool %}<a href="/pool/{{ addr.pool.name }}">{{ addr.pool.name }}</a>{% endif %}</td>
+                <td>{% if addr.macaddr %}{{ addr.macaddr }}{% endif %}</td>
+            </tr>{% endif %}{% endfor %}
+        </table>
+    {% endif %}
+
+    <hr>
+    <h3>{{ modify_trans }}</h3>
+    <form method="PUT">
+        <fieldset>
+            <label>{% trans "Name" %}</label>
+            <input type="text" name="newname" placeholder="{{ host.name }}">
+
+            <label>{% trans "MAC address" %}</label>
+            {% with firstaddr=addrs|first %}
+                <input type="text" name="macaddr" placeholder="{{ firstaddr.macaddr }}">
+            {% endwith %}
+
+            <div class="row">
+                <div class="span3">
+                    <label>{% trans "New alias (comma-separated)" %}</label>
+                    <input type="text" name="alias" placeholder="{{ host.alias_set.all|join:"," }}">
+                </div>
+
+                <div class="span3">
+                    <label><input type="checkbox" name="clearalias" >
+                    {% trans "Clear alias list" %}</label>
+                    {% trans "Prefix a name by - to delete it." %}
+                </div>
+            </div>
+
+            <label>{% trans "Inventory number" %}</label>
+            <input type="text" name="inventory" placeholder="{{ host.inventory }}">
+
+            <label>{% trans "Serial number" %}</label>
+            <input type="text" name="serial" placeholder="{{ host.serial }}">
+
+            <label>{% trans "Owner" %}</label>
+            <input type="text" name="owner" placeholder="{{ owner }}">
+
+            <label><input type="checkbox" name="nodns"
+                {% if host.nodns %}checked="checked"{% endif %}>
+            {% trans "Do not generate DNS records for this host" %}</label>
+        </fieldset>
+
+        <button type="submit" class="btn">{{ modify_trans }}</button>
+    </form>
+
+    <hr>
+    <h3>{% trans "Allocate a new address" %}</h3>
+    <form method="POST">
+        <fieldset>
+            <div class="row">
+                <div class="span3">
+                    <label>{% trans "Pool name" %}</label>
+                    <select name="pool_name">
+                        <option value=""></option>
+                        {% for pool in pools %}
+                            <option value="{{ pool.name }}">{{ pool.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="span3">
+                    <label>{% trans "<strong>and/or</strong> address" %}</label>
+                    <input type="text" name="address">
+                </div>
+            </div>
+        </fieldset>
+        <input type="hidden" name="allocate" value="1">
+        <button type="submit" class="btn">{% trans "Allocate" %}</button>
+    </form>
+
+    <hr>
+    <h3>{{ delete_trans }}</h3>
+    <form method="DELETE">
+        <input type="hidden" name="confirm" value="1">
+        <button class="btn btn-danger" type="submit">{{ delete_trans }}</button>
+    </form>
+{% endblock %}

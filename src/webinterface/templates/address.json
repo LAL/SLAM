@@ -1,0 +1,5 @@
+{
+    "address": "{{ addr.addr }}",
+    "pool": {% if addr.pool %}"{{ addr.pool.name }}"{% else %}null{% endif %},
+    "host": {% if addr.host %}"{{ addr.host.name }}"{% else %}null{% endif %}
+}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Host list" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Host list" %}</h1>
+    {% if host_list %}
+        <table class="table table-hover table-striped table-bordered table-condensed" style="vertical-align: middle">
+        <tr>
+            <th>{% trans "Host name" %}{% if not search %}
+                <a href="?sort=name"><i class="icon-chevron-down"></a>{% endif %}</th>
+            <th style="max-width: 50px">{% trans "Aliases" %}{% if not search %}
+                <a href="?sort=alias"><i class="icon-chevron-down"></a>{% endif %}</th>
+            <th>{% trans "Addresses" %}{% if not search %}
+                <a href="?sort=addr"><i class="icon-chevron-down"></a>{% endif %}</th>
+            <th>{% trans "MAC addresses" %}{% if not search %}
+                <a href="?sort=mac"><i class="icon-chevron-down"></a>{% endif %}</th>
+        </tr>
+        {% for host, addrs in host_list %}
+            <tr>
+                <td><a href="/host/{{ host.name }}">{{ host.name }}</a></td>
+                <td>{{ host.alias_set.all|join:"<br>" }}</td>
+                <td>
+                    {% for addr in addrs %}
+                        {% if not forloop.first %}<br>{% endif %}
+                        <a href="/address/{{ addr.addr }}">{{ addr.addr }}</a>
+                        {% if addr.pool %}
+                            (pool: <a href="/pool/{{ addr.pool.name }}">{{ addr.pool.name }}</a>)
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for addr in addrs %}
+                        {% if not forloop.first %}<br>{% endif %}{{ addr.macaddr }}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% endif %}
+{% endblock %}

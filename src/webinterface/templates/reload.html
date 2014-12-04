@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Generate configuration" %}{% endblock %}
+
+{% block content %}
+    {% if executed %}
+        <h1>{% trans "Generation's result" %}</h1>
+
+        {% if error %}<div class="alert alert-error">
+            {% blocktrans %}An error occured during the generation of config
+            files. Please look at the error output to solve this problem.
+            {% endblocktrans %}
+        {% else %}<div class="alert alert-success">
+            {% blocktrans %}The generation of configuration files was
+            successful.{% endblocktrans %}
+        {% endif %}</div>
+
+        {% if stderr %}
+            <hr>
+            <h3>{% trans "Error output" %}</h3>
+            <pre>{{ stderr }}</pre>
+        {% endif %}
+
+        {% if stdout %}
+            <hr>
+            <h3>{% trans "Standard output" %}</h3>
+            <pre>{{ stdout }}</pre>
+        {% endif %}
+    {% else %}
+        <h1>{% trans "Generate configuration" %}</h1>
+        <p>{% blocktrans %}
+            This page allow you to regenerate the configuration files for the
+            various network services with the data from the database.
+        {% endblocktrans %}</p>
+
+        <form method="POST">
+            <button type="submit" class="btn" onclick="this.disabled=true; this.form.submit();">{% trans "Generate" %}</button>
+        </form>
+    {% endif %}
+{% endblock %}

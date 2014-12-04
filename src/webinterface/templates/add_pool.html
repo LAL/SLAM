@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Pool list" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Create a new pool" %}</h1>
+    <form method="POST">
+        <fieldset>
+            <label>{% trans "Name" %}</label>
+            <input type="text" name="name"><br>
+
+            <label>{% trans "Range definition" %}</label>
+            <input type="text" name="definition">
+        </fieldset>
+        <button class="btn btn-primary" type="submit">{% trans "Create" %}</button>
+    </form>
+{% endblock %}

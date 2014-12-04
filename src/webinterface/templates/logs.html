@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Log journal" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Log journal" %}</h1>
+
+    <h3>{% trans "Delete logs" %}</h3>
+    <form method="DELETE">
+        <fieldset>
+            <label>{% trans "Delete all messages older than X days ago" %}</label>
+            <input type="text" name="days">
+        </fieldset>
+
+        <button type="submit" class="btn">{% trans "Delete" %}</button>
+    </form>
+
+    {% if msgs %}
+        <pre>
+{% for msg in msgs %}{{ msg }}
+{% endfor %}
+        </pre>
+    {% endif %}
+{% endblock %}

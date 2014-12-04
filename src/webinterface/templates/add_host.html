@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Host list" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Create a new host" %}</h1>
+    <form method="POST">
+        <fieldset>
+            <label>{% trans "Name" %}</label>
+            <input type="text" name="name">
+
+            <label>{% trans "Alias" %}</label>
+            <input type="text" name="alias">
+
+            <label>{% trans "Category" %}</label>
+            <select name="category">
+                <option value=""></option>
+                {% for cat in categories %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                {% endfor %}
+            </select>
+
+            <div class="row">
+                <div class="span3">
+                    <label>{% trans "Pool name (optional)" %}</label>
+                    <select name="pool_name">
+                        <option value=""></option>
+                        {% for pool in pools %}
+                            <option value="{{ pool }}">{{ pool }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="span3">
+                    <label>{% trans "<strong>and/or</strong> address (optional)" %}</label>
+                    <input type="text" name="address">
+                </div>
+            </div>
+
+            <label>{% trans "Mac address" %}</label>
+            <input type="text" name="mac"><br>
+
+            <label><input type="checkbox" name="random">
+            {% trans "Random allocation" %}</label>
+
+            <label><input type="checkbox" name="nodns">
+            {% trans "Do not generate DNS records for this host" %}</label>
+        </fieldset>
+
+        <fieldset>
+            <legend>{% trans "Optional information" %}</legend>
+            <label>{% trans "Serial number" %}</label>
+            <input type="text" name="serial">
+
+            <label>{% trans "Inventory number" %}</label>
+            <input type="text" name="inventory">
+
+            <label>{% trans "Owner" %}</label>
+            <input type="text" name="owner">
+        </fieldset>
+        <button class="btn btn-primary" type="submit">{% trans "Create" %}</button>
+    </form>
+{% endblock %}

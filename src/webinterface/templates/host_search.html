@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Host Search" %} {{ host.name }}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Host Search" %}</h1>
+
+    <form method="POST" action="/host">
+        <fieldset>
+            <label>{% trans "Name" %}</label> <input type="text" name="name">
+            <label>{% trans "Address" %}</label> <input type="text" name="addr">
+            <label>{% trans "MAC address" %}</label> <input type="text" name="macaddr">
+            <label>{% trans "Alias" %}</label> <input type="text" name="alias">
+            <label>{% trans "Inventory number" %}</label> <input type="text" name="inventory">
+            <label>{% trans "Serial number" %}</label> <input type="text" name="serial">
+            <label>{% trans "Owner" %}</label> <input type="text" name="owner">
+        </fieldset>
+
+        <button type="submit" class="btn">{% trans "Search" %}</button>
+    </form>
+{% endblock %}

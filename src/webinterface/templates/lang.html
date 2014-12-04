@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Change language" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Change language" %}</h1>
+    <form action="/i18n/setlang/" method="post">
+        <input name="next" type="hidden" value="{{ referer }}" />
+        {% trans "Language" %}: <select name="language">
+        {% get_language_info_list for avail_lang as langs %}
+        {% for language in langs %}
+        <option value="{{ language.code }}">
+            {{ language.name_local }} ({{ language.code }})
+        </option>
+        {% endfor %}
+        </select>
+        <button class="btn btn-primary" type="submit">{% trans "Change" %}</button>
+    </form>
+{% endblock %}

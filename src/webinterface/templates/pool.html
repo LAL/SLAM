@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Pool" %} {{ pool.name }}{% endblock %}
+
+{% block content %}
+    {% trans "Modify" as modify_trans %}
+    {% trans "Delete" as delete_trans %}
+
+    <h1>{% trans "Pool" %} {{ pool.name }}</h1>
+
+    <table class="table" style="width:auto">
+        {% if pool.category %}
+            <tr><th>{% trans "Category" %}</th><td>{{ pool.category }}</td></tr>
+        {% endif %}
+        <tr><th>{% trans "Range" %}</th><td>{{ pool.addr_range_str }}</tr>
+        <tr><th>{% trans "Usage" %}</th><td>{{ addr_used }}/{{ addr_avail }} ({{ addr_perc }}%)</td></tr>
+    </table>
+
+    <p><a href="/pool/{{ pool.name }}/map">{% trans "View usage map" %}</a></p>
+
+    <table class="table" style="width:auto">
+        <legend>{% trans "Additional information" %}</legend>
+        {% for prop in props %}<tr><form method="DELETE" action="/property">
+            <th>{{ prop.name }}</th>
+            <td>{{ prop.value }}</td>
+            <td><button class="close" type="submit">&times;</button></td>
+            <input type="hidden" name="pool" value="{{ pool.name }}">
+            <input type="hidden" name="name" value="{{ prop.name }}">
+        </form></tr>{% endfor %}
+
+        <tr><form method="POST" action="/property">
+            <td><input type="text" name="name" placeholder="{% trans "Name" %}"></td>
+            <td><input type="text" name="value" placeholder="{% trans "Value" %}"></td>
+            <td><button class="btn" type="submit">{% trans "Add" %}</button></td>
+            <input type="hidden" name="pool" value="{{ pool.name }}"><br>
+        </form></tr>
+    </table>
+
+    <hr>
+    <h3>{{ modify_trans }}</h3>
+    <form method="PUT">
+        <fieldset>
+            <label>{% trans "Name" %}</label>
+            <input type="text" name="newname">
+
+            <label>{% trans "Category" %}</label>
+            <input type="text" name="category">
+        </fieldset>
+
+        <button class="btn" type="submit">{{ modify_trans }}</button>
+    </form>
+
+    <hr>
+    <h3>{% blocktrans with pname=pool.name %}Addresses in {{ pname }}
+        {% endblocktrans %}</h3>
+    <table class="table table-striped table-bordered table-hover table-condensed">
+        <tr>
+            <th>{% trans "Address" %} <a href="?sort=addr"><i class="icon-chevron-down"></a></th>
+            <th>{% trans "Host name" %} <a href="?sort=name"><i class="icon-chevron-down"></a></th>
+            <th>{% trans "Mac address" %} <a href="?sort=mac"><i class="icon-chevron-down"></a></th>
+            <th>{% trans "Aliases" %} <a href="?sort=alias"><i class="icon-chevron-down"></a></th>
+        </tr>
+        {% for addr in addrs %}{% if addr.addr %}<tr>
+            <td><a href="/address/{{ addr.addr }}">{{ addr.addr }}</a></td>
+            <td>
+                {% if addr.host %}<a href="/host/{{ addr.host.name }}">
+                        {{ addr.host.name }}</a>{% endif %}
+            </td>
+            <td>{{ addr.macaddr }}</td>
+            <td>{{ addr.host.alias_set.all|join:", " }}</td>
+        </tr>{% endif %}{% endfor %}
+    </table>
+{% endblock %}

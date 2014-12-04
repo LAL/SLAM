@@ -1,0 +1,6 @@
+[{% for pool, _, _, _ in pool_list %}
+    {
+        "name": "{{ pool.name }}",
+        "definition": "{{ pool.addr_range_str }}"
+    }{% if not forloop.last %},{% endif %}
+{% endfor %}]
