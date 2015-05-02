@@ -7,6 +7,7 @@ setup(
     packages=['slam', 'slam.webinterface', 'slam.slam'],
     include_package_data=True,
     scripts=['slam/slam_cli.py'],
+    install_requires=['django'],
     license='BSD License',  # example license
     description='A Django app to manage IP Address.',
     long_description='',
