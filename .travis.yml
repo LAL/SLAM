@@ -6,6 +6,8 @@ addons:
     organization: "lal"
     token:
       secure: "TjIwiBogN6R8A/Ptj8fPxBxkm0uitjfxPtj/p5Kd9g4w1f7w2DmhkO2U/TdNzRSs5YQAU35Y4DQcQD+CTxTI08H5Ixy5hByRmmjoTe7iQxxAH/5BIltkJplpelB5N0Fq+nCKRFKTu9UIV1QbUrsm2IhkGjFsdl52oYdE/QjAeEU="
+    branches:
+      - master
 
 script:
   - sonar-scanner
