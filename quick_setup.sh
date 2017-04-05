@@ -6,7 +6,7 @@ if [ ! -d src ]; then
     exit 1
 fi
 
-cd src
+cd slam
 
 # create the django database
 echo 'Creation and initialization of the database...'

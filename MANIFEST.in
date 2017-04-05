@@ -1,0 +1,2 @@
+recursive-include slam/webinterface/static *
+recursive-include slam/webinterface/templates *
