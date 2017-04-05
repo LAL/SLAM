@@ -9,8 +9,8 @@ ADMINS = (
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'db.sqlite3',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -31,11 +31,8 @@ LANGUAGE_CODE = 'fr-FR'
 # Make this unique, and don't share it with anybody.
 # You can run this command in a shell and paste its result :
 #   echo "`</dev/urandom tr -dc '[:graph:]' | head -c50`"
-SECRET_KEY = r""""""
+SECRET_KEY = "Must_be_modified"
 
 # A script that handle generated files and that will be launched from the web
 # interface when a user ask to regenerate configuration files.
 RELOAD_SCRIPT = ""
-
-# The absolute path to the slam directory
-ROOT_DIR = ""

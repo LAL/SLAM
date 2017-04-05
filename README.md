@@ -12,17 +12,16 @@ Install
 -------
 
  1. Extract archive or clone the repository
- 2. Configure and setup the database, you can use one of these methods :
-    * Use the quick and easy method: juste run
-        $ ./quick_setup.sh
-    * Configure SLAM options and create the database:
-        * Edit *src/configuration.py* and fill at least the database section
-        * Run this command to create the database:
-            $ python ./src/manage.py syncdb
-        * Run these commands to compile translation files:
-            $ cd ./src/webinterface
-            $ python ../manage.py compilemessages
- 3. Use any of the two avaible interfaces: CLI or Web.
+    * git clone git@github.com:LAL/SLAM.git
+ 2. Prepare and run server
+    * ./quick_setup.sh
+    * python src/manage.py createsuperuser
+    * python src/manage.py runserver
+ 3. Use any of the two available interfaces
+    * CLI
+    * Web (see django documentation for django webserver integration)
+        * Apache/mod_wsgi: https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/modwsgi/
+        * nginx/uWSGI: https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/uwsgi/
 
 
 Usage
