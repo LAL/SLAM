@@ -499,10 +499,23 @@ def list_logs(args):
 
 
 def authenticate():
-    """Check the system user list for authorized users."""
+    """
+    Check the system user list for authorized users.
+    Look for site configuration first in the conf/ directory at the same level
+    as the src/ directory, then, if not found, in /etc/slam.
+    """
+    root_dir = os.path.abspath(__file__)
+    for i in range(2):
+        root_dir = os.path.dirname(root_dir)
+    site_users = os.path.join(root_dir,'conf/users')
     allowed = []
-    if os.access("/etc/slam/users", os.R_OK):
-        accessf = open("/etc/slam/users")
+    if not os.access(site_users, os.R_OK):
+        if os.access("/etc/slam/users", os.R_OK):
+            site_users = "/etc/slam/users"
+        else:
+            site_users = None
+    if site_users:
+        accessf = open(site_users)
         allowed = accessf.read().split("\n")
         accessf.close()
     if not allowed:
