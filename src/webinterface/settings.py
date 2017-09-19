@@ -1,7 +1,13 @@
 import sys
+import os
 
-# system's configuration is the default
+# Look for site configuration first in the conf/ directory at the same level
+# as the src/ directory, then, if not found, in /etc/slam.
+root_dir = os.path.abspath(__file__)
+for i in range(3):
+    root_dir = os.path.dirname(root_dir)
 sys.path.insert(0, "/etc/slam")
+sys.path.insert(0, os.path.join(root_dir,'conf'))
 from configuration import *
 
 """
