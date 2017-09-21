@@ -1,0 +1,93 @@
+#!/bin/bash
+#
+# Script that deploys changes to DNS and CHCP, based on SLAM DB contents
+
+this_script_dir=$(dirname $0)
+# SLAM root directory is normally the parent directory of this script directory (scripts/)
+slam_root_dir=$(dirname $(cd ${this_script_dir}; pwd))
+slam_cli=${slam_root_dir}/src/slam_cli.py
+# lock_file must be in a directory writable by the UWSGI account used for SLAM
+lock_file=${slam_root_dir}/run/$(basename $0).lock
+rebuild_host="root@nis-server01"
+rebuild_ssh_key=/pdisk/slam/conf/ssh/rebuild_rsa
+dns_rebuild_cmd="cd /var/named/ && make"
+dhcp_rebuild_cmd="cd /mgt/dhcp/scripts/ && ./dhcp_rebuild_db"
+ssh_config_file=/pdisk/slam/conf/ssh/config
+ssh_cmd="/usr/bin/ssh -F ${ssh_config_file}"
+exit_code_default=1
+
+
+# Function to exit after restoring stdout
+Clean_Exit () {
+    if (( $# == 1 ))
+    then
+        exit_code=$1
+    else
+        echo "Internal error: no status code passed to The_end(), assuming failure"
+        exit_code=${exit_code_default}
+    fi
+
+    # Restore original stdout
+    exec 1>&3
+
+    exit ${exit_code}
+}
+
+# Function to exit after removing the lock file
+The_End () {
+    # Remove lock file
+    rm -f ${lock_file}
+
+    Clean_Exit $*
+}
+
+
+# Redirect stdout to stderr
+exec 3>&1
+exec 1>&2
+
+
+if [ -f ${lock_file} ]
+then
+    echo 'Une génération des fichiers de configuration par SLAM est en cours. Réessayer ultérieurement...'
+    Clean_Exit 1
+else
+    # Activate virtualenv
+    . ${slam_root_dir}/.venv/bin/activate
+
+    # Create a lock file to ensure that only one rebuild operation occurs at a time
+    touch ${lock_file}
+
+    # Check that SSH key exists
+    if [ ! -e ${rebuild_ssh_key} ]
+    then
+        echo "SSH key not found (${rebuild_ssh_key})"
+        The_End 10
+    fi
+
+    # Generate DNS and DHCP source files from SLAM DB
+    ${slam_cli} -a createconf
+    if [ $? -ne 0  ]
+    then
+        echo 'Problème lors de la génération des fichiers de configuration par SLAM.'
+        The_End 11
+    fi
+
+    # DNS regeneration
+    ${ssh_cmd} ${rebuild_host} -t "$dns_rebuild_cmd"
+    if [ $? -ne 0 ]
+    then
+        The_End 12
+    fi
+
+    # DHCP regeneration
+    ${ssh_cmd} ${rebuild_host} -t "${dhcp_rebuild_cmd}"
+    if [ $? -ne 0 ]
+    then
+        echo 'Erreur pendant la reconstruction de la base DHCP.'
+        The_End 13
+    fi
+
+fi
+
+The_End 0
