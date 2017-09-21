@@ -2,9 +2,18 @@
 
 """Command-line interface for SLAM."""
 
-import os, pwd, sys, argparse, logging, signal
+import os
+import sys
+import pwd
+import argparse
+import logging
+import signal
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "webinterface.settings"
+# FIXME - MJ 21/9/2017
+# For some reasons, in Django 1.5, settings is not found if in a submodule, like
+# webinterface.settings. This hacks work around the problem.
+sys.path.insert(0, '{}/webinterface'.format(os.path.dirname(os.path.abspath(__file__))))
+os.environ["DJANGO_SETTINGS_MODULE"] = "settings"
 
 from slam import models, interface, addrrange, generator
 
