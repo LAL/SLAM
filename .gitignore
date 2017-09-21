@@ -10,6 +10,7 @@ django_slam.egg-info
 # Ignore virtualenv directory if present
 .venv/
 
-# conf/ directory is considered site-specific
+# conf/ and run/ directory are considered site-specific
 conf/
+run/
 
