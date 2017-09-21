@@ -14,7 +14,21 @@ dns_rebuild_cmd="cd /var/named/ && make"
 dhcp_rebuild_cmd="cd /mgt/dhcp/scripts/ && ./dhcp_rebuild_db"
 ssh_config_file=/pdisk/slam/conf/ssh/config
 ssh_cmd="/usr/bin/ssh -F ${ssh_config_file}"
+scp_cmd="/usr/bin/scp -F ${ssh_config_file}"
 exit_code_default=1
+# As SLAM is renaming existing createconf output files, keep them for easier debugging of problems
+remove_src_files_enabled=0
+
+
+# Patterns matching file produced by slam_cli.py -a createconf
+createconf_output_dir=${slam_root_dir}/run
+createconf_dns_pattern=lal.slam
+createconf_dhcp_pattern="dhcpd.conf.slam-*"
+
+# Source file directories on $rebuild_host
+dest_dir_dns=/mgt/named/src
+dest_dir_dhcp=/mgt/dhcp/conf
+
 
 
 # Function to exit after restoring stdout
@@ -41,6 +55,49 @@ The_End () {
     Clean_Exit $*
 }
 
+# Function to copy files produced by slam_cli -a createconf to the server where
+# DNS and DHCP files are rebuilt
+push_src_files () {
+    if (( $# != 2 ))
+    then
+        echo "Internal error: push_src_file() argument missing"
+        The_End 20
+    fi
+
+    echo "Pushing $1 to ${rebuild_host}:$2"
+    ${scp_cmd} ${createconf_output_dir}/$1 ${rebuild_host}:$2
+    if [ $? -ne 0 ]
+    then
+        echo "Error copying files ${createconf_output_dir}/$1 to ${rebuild_host}:$2"
+        The_End 20
+    fi
+}
+
+
+# Function to remove files produced by slam_cli -a createconf
+# Actual removal can be disabled with remove_src_files_enabled=0
+remove_src_files () {
+    if (( $# != 1 ))
+    then
+        echo "Internal error: remove_src_file() argument missing"
+        The_End 21
+    fi
+
+    if [ ${remove_src_files_enabled} -ne 0 ]
+    then
+        find ${createconf_output_dir} -name $1 -exec rm -f {} \;
+        if [ $? -ne 0 ]
+        then
+            echo "Error removing $1 from ${createconf_output_dir}"
+            The_End 21
+        fi
+    fi
+}
+
+
+#############
+# Main code #
+#############
 
 # Redirect stdout to stderr
 exec 3>&1
@@ -65,6 +122,10 @@ else
         The_End 10
     fi
 
+    # Remove previous createconf output files if any
+    remove_src_files ${createconf_dns_pattern}
+    remove_src_files ${createconf_dhcp_pattern}
+
     # Generate DNS and DHCP source files from SLAM DB
     ${slam_cli} -a createconf
     if [ $? -ne 0  ]
@@ -74,19 +135,25 @@ else
     fi
 
     # DNS regeneration
+    # First remove files if any left over, to avoid pushing the wrong file contents
+    push_src_files ${createconf_dns_pattern} ${dest_dir_dns}
     ${ssh_cmd} ${rebuild_host} -t "$dns_rebuild_cmd"
     if [ $? -ne 0 ]
     then
         The_End 12
     fi
+    remove_src_files ${createconf_dns_pattern}
 
     # DHCP regeneration
+    # First remove files if any left over, to avoid pushing the wrong file contents
+    push_src_files ${createconf_dhcp_pattern} ${dest_dir_dhcp}
     ${ssh_cmd} ${rebuild_host} -t "${dhcp_rebuild_cmd}"
     if [ $? -ne 0 ]
     then
         echo 'Erreur pendant la reconstruction de la base DHCP.'
         The_End 13
     fi
+    remove_src_files ${createconf_dhcp_pattern}
 
 fi
 
