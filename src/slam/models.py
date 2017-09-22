@@ -24,10 +24,19 @@ class AddressNotAvailableError(Exception):
     """The given address is already allocated."""
     pass
 
+class SLAMBaseModel(models.Model):
+    """Abstract class inherited by actual model classes"""
+
+    class Meta:
+        abstract=True      # specify this model as an Abstract Model
+        app_label = 'slam'
+
+
 from slam.generator import Config
 from slam.log import LogEntry
 
-class Host(models.Model):
+
+class Host(SLAMBaseModel):
     """Represent a computer or device connectable to the network and that can
     have one or several network addresses.
     """
@@ -42,7 +51,7 @@ class Host(models.Model):
         return self.name
 
 
-class Alias(models.Model):
+class Alias(SLAMBaseModel):
     """An alias name for another host. The type is used to differentiate
     whether the alias points to the host's name or the host's address."""
 
@@ -60,7 +69,7 @@ class Alias(models.Model):
         return self.name
 
 
-class Pool(models.Model):
+class Pool(SLAMBaseModel):
     """Define a pool of addresses, keeping track of which addresses are in
     use."""
 
@@ -211,7 +220,7 @@ class Pool(models.Model):
         return self.name + " (range: " + str(self.addr_range) + ")"
 
 
-class Address(models.Model):
+class Address(SLAMBaseModel):
     """Represent a network address."""
 
     addr = models.CharField(max_length=40, blank=True)
@@ -228,7 +237,7 @@ class Address(models.Model):
         return self.addr
 
 
-class Property(models.Model):
+class Property(SLAMBaseModel):
     """Represent a property of an object."""
 
     name = models.CharField(max_length=20)

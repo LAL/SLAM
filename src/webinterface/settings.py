@@ -37,7 +37,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['slam.lal.in2p3.fr',
+                 'slam-dev.lal.in2p3.fr',
+                 'slam-vm2.lal.in2p3.fr']
 
 
 # Application definition
@@ -127,22 +129,16 @@ STATIC_URL = '/static/'
 
 LOGGING = {'version': 1,
            'disable_existing_loggers': False,
-           'filters': {
-               'require_debug_false': {
-                   '()': 'django.utils.log.RequireDebugFalse'
-               }
-           },
            'handlers': {
-               'mail_admins': {
-                   'level': 'ERROR',
-                   'filters': ['require_debug_false'],
-                   'class': 'django.utils.log.AdminEmailHandler'
+               'file': {
+                   'level': 'DEBUG',
+                   'class': 'logging.StreamHandler',
                }
            },
            'loggers': {
                'django.request': {
-                   'handlers': ['mail_admins'],
-                   'level': 'ERROR',
+                   'handlers': ['file'],
+                   'level': 'DEBUG',
                    'propagate': True,
                    },
                }
@@ -150,3 +146,4 @@ LOGGING = {'version': 1,
 
 # Login redirection
 LOGIN_URL = '/login'
+

@@ -3,9 +3,9 @@
 import logging
 import os
 from django.db import models
+from slam.models import SLAMBaseModel
 
-
-class LogEntry(models.Model):
+class LogEntry(SLAMBaseModel):
     """Represent an entry in the database for a log record."""
 
     date = models.DateTimeField(auto_now_add=True)

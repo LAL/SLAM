@@ -12,8 +12,16 @@ import signal
 # FIXME - MJ 21/9/2017
 # For some reasons, in Django 1.5, settings is not found if in a submodule, like
 # webinterface.settings. This hacks work around the problem.
-sys.path.insert(0, '{}/webinterface'.format(os.path.dirname(os.path.abspath(__file__))))
+settings_path = '{}/webinterface'.format(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, settings_path)
 os.environ["DJANGO_SETTINGS_MODULE"] = "settings"
+
+# Required for non-web Django applications
+import django
+django.setup()
+
+# Remove path added previously to load settings
+sys.path.remove(settings_path)
 
 from slam import models, interface, addrrange, generator
 

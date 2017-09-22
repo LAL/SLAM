@@ -23,7 +23,7 @@ to match your site configuration.*
     ```bash
     yum -y install python-virtualenv
     ```
-1. Install UWSGI
+1. Install uWSGI
     ```bash
     yum install uwsgi-plugin-python
     # If using Apache
@@ -42,8 +42,8 @@ to match your site configuration.*
     pip install django_auth_ldap
     # Package mariadb-devel (or mysql-devel depending on what you use) must be installed before installing MySQL-python
     pip install MySQL-python
-    # Currently, Django versions > 1.8 don't work with SLAM
-    pip install 'Django==1.8'
+    # Django 1.11 or later required
+    pip install Django
     ```
 1. Initialize the server and its database (first time only)
     ```bash
@@ -161,7 +161,7 @@ Examples:
 
 ## Web interface Configuration
 
-The SLAM web application is run with UWSGI. UWSGI can be used with Apache or Nginx, according to your preference.
+The SLAM web application is run with uWSGI. uWSGI can be used with Apache or Nginx, according to your preference.
 
 ### Apache Configuration
 
@@ -171,7 +171,7 @@ Apache virtual host configuration used for SLAM must typically contain the follo
 ```
 Alias "/static" "/opt/slam/src/webinterface/static"
 
-SetEnv UWSGI_SCHEME https
+SetEnv uWSGI_SCHEME https
 # First ProxyPass should not be needed but Alais is ignored if not specified (/static passed to uwsgi)
 ProxyPass /static !
 ProxyPass / uwsgi://127.0.0.1:8008/
@@ -182,9 +182,9 @@ ProxyPass / uwsgi://127.0.0.1:8008/
 </Directory>
 ``` 
 
-### UWSGI
+### uWSGI
 
-To declare SLAM application to UWSGI, you need to create a file `/etc/uwsgi.d/slam.ini` owned by `uwsgi:uwsgi` with the following
+To declare SLAM application to uWSGI, you need to create a file `/etc/uwsgi.d/slam.ini` owned by `uwsgi:uwsgi` with the following
 contents (adjust paths to your configuration and ensure that directory used for logs, pid and sock exist and are 
 writable by `uwsgi` user):
 
@@ -231,21 +231,21 @@ Connect with https to the machine hosting SLAM.
 
 ### Troubleshooting
 
-Apart from the Apache logs, the most useful log file is the UWSGI SLAM log file,
-`slam.log` under the directory specified by UWSGI configuration option `daemonize`.
-You should also check the status reported by the UWSGI service, in particular the
+Apart from the Apache logs, the most useful log file is the uWSGI SLAM log file,
+`slam.log` under the directory specified by uWSGI configuration option `daemonize`.
+You should also check the status reported by the uWSGI service, in particular the
 existence of the `slam.ini` child, with:
 
 ```bash
 systemctl status uwsgi
 ```
 
-To start a *test* web server on a given _port_ run:
-    $ ./src/manage.py runserver <port>
+In case of an error in the code itself, it is sometimes easier to start a *test* web server,
+using the Django development server, on a given _port_ run (8000 by default):
 
-To start a *production* FastCGI server run:
-    $ ./src/manage.py runfcgi <option>
-
+```bash
+./src/manage.py runserver <port>
+```
 
 ## Full documentation
 

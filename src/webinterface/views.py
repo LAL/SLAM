@@ -67,7 +67,7 @@ def request_data(request):
     if request.method == "GET":
         data = request.GET
     else:
-        data = QueryDict(request.raw_post_data)
+        data = QueryDict(request.body)
     return data
 
 
