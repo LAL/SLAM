@@ -1,15 +1,6 @@
 import sys
 import os
 
-# Look for site configuration first in the conf/ directory at the same level
-# as the src/ directory, then, if not found, in /etc/slam.
-root_dir = os.path.abspath(__file__)
-for i in range(3):
-    root_dir = os.path.dirname(root_dir)
-sys.path.insert(0, "/etc/slam")
-sys.path.insert(0, os.path.join(root_dir,'conf'))
-from configuration import *
-
 """
 Django settings for slam project.
 
@@ -37,9 +28,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['slam.lal.in2p3.fr',
-                 'slam-dev.lal.in2p3.fr',
-                 'slam-vm2.lal.in2p3.fr']
+
+# Hosts allowed to access the application (prevent HTTP header attacks)
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -146,4 +137,18 @@ LOGGING = {'version': 1,
 
 # Login redirection
 LOGIN_URL = '/login'
+
+
+# Site configuration overrides defaults defined here.
+# Look for site configuration first in the conf/ directory at the same level
+# as the src/ directory, then, if not found, in /etc/slam.
+root_dir = os.path.abspath(__file__)
+# CONF_PARENT_DIR_LEVEL_UP is the number of directory level to go up
+# from current module directory to find conf/ parent
+CONF_PARENT_DIR_LEVEL_UP = 2
+for i in range(CONF_PARENT_DIR_LEVEL_UP+1):
+    root_dir = os.path.dirname(root_dir)
+sys.path.insert(0, "/etc/slam")
+sys.path.insert(0, os.path.join(root_dir,'conf'))
+from configuration import *
 
