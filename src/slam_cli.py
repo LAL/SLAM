@@ -9,19 +9,11 @@ import argparse
 import logging
 import signal
 
-# FIXME - MJ 21/9/2017
-# For some reasons, in Django 1.5, settings is not found if in a submodule, like
-# webinterface.settings. This hacks work around the problem.
-settings_path = '{}/webinterface'.format(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, settings_path)
-os.environ["DJANGO_SETTINGS_MODULE"] = "settings"
+os.environ["DJANGO_SETTINGS_MODULE"] = "webinterface.settings"
 
 # Required for non-web Django applications
 import django
 django.setup()
-
-# Remove path added previously to load settings
-sys.path.remove(settings_path)
 
 from slam import models, interface, addrrange, generator
 
@@ -522,7 +514,10 @@ def authenticate():
     as the src/ directory, then, if not found, in /etc/slam.
     """
     root_dir = os.path.abspath(__file__)
-    for i in range(2):
+    # CONF_PARENT_DIR_LEVEL_UP is the number of directory level to go up
+    # from current module directory to find conf/ parent
+    CONF_PARENT_DIR_LEVEL_UP = 1
+    for i in range(CONF_PARENT_DIR_LEVEL_UP+1):
         root_dir = os.path.dirname(root_dir)
     site_users = os.path.join(root_dir,'conf/users')
     allowed = []
