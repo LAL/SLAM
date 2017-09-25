@@ -59,7 +59,7 @@ to match your site configuration.*
 typically done with:*
 
 ```bash
-. /opt/slam/venv/bin/activate
+. /opt/slam/.venv/bin/activate
 ```
 
 SLAM CLI is `src/slam_cli.py`. Available options are:
@@ -171,7 +171,7 @@ Apache virtual host configuration used for SLAM must typically contain the follo
 ```
 Alias "/static" "/opt/slam/src/webinterface/static"
 
-SetEnv uWSGI_SCHEME https
+SetEnv UWSGI_SCHEME https
 # First ProxyPass should not be needed but Alais is ignored if not specified (/static passed to uwsgi)
 ProxyPass /static !
 ProxyPass / uwsgi://127.0.0.1:8008/
@@ -222,7 +222,7 @@ script provided in the repository can be used as a template. The name of the scr
 specified as the value of `RELOAD_SCRIPT` in `configure.py`.
 
 Additionally, if you reuse the LAL deployment script, it requires a `run` directory at the same level as
-the `scripts` directory. This directory must be owned by writable by the USWGI account used
+the `scripts` directory. This directory must be owned and writable by the uWSGI account used
 to run SLAM (typically `uwsgi`).
 
 ### Utilisation
