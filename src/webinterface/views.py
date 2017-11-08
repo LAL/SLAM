@@ -104,8 +104,12 @@ def list_pools(request):
     for poolobj in poolobjs:
         addr_used = models.Address.objects.filter(pool=poolobj).count()
         addr_avail = poolobj.len()
-        pools.append((poolobj,
-            addr_used, addr_avail, addr_used * 100 / addr_avail))
+        try:
+            pools.append((poolobj,
+                addr_used, addr_avail, addr_used * 100 / addr_avail))
+        except ZeroDivisionError:
+            pools.append((poolobj,
+                addr_used, addr_avail, 100))
 
     if request.GET.get("format") == "json":
         return render_to_response("pool_list.json",
@@ -193,6 +197,8 @@ def pool_info(request, pool_name):
     else:
         addr_used = models.Address.objects.filter(pool=poolobj).count()
         addr_avail = poolobj.len()
+        if addr_avail == 0:
+            addr_avail = 1
         addrs = models.Address.objects.filter(pool=poolobj)
         if request.GET.get("sort") == "name":
             addrs = addrs.order_by("host__name")
@@ -224,6 +230,8 @@ def pool_map(request, pool_name):
     poolobj._update()
     addr_used = models.Address.objects.filter(pool=poolobj).count()
     addr_avail = poolobj.len()
+    if addr_avail == 0:
+        addr_avail = 1
     pool_addrs = models.Address.objects.filter(pool=poolobj)
     i = POOL_MAP_LIMIT
     for addr in poolobj.addr_range:

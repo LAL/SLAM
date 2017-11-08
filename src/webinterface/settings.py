@@ -1,8 +1,5 @@
 import sys
-
-# system's configuration is the default
-sys.path.insert(0, "/etc/slam")
-from configuration import *
+import os
 
 """
 Django settings for slam project.
@@ -31,6 +28,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
+# Hosts allowed to access the application (prevent HTTP header attacks)
 ALLOWED_HOSTS = []
 
 
@@ -121,22 +120,16 @@ STATIC_URL = '/static/'
 
 LOGGING = {'version': 1,
            'disable_existing_loggers': False,
-           'filters': {
-               'require_debug_false': {
-                   '()': 'django.utils.log.RequireDebugFalse'
-               }
-           },
            'handlers': {
-               'mail_admins': {
-                   'level': 'ERROR',
-                   'filters': ['require_debug_false'],
-                   'class': 'django.utils.log.AdminEmailHandler'
+               'file': {
+                   'level': 'DEBUG',
+                   'class': 'logging.StreamHandler',
                }
            },
            'loggers': {
                'django.request': {
-                   'handlers': ['mail_admins'],
-                   'level': 'ERROR',
+                   'handlers': ['file'],
+                   'level': 'DEBUG',
                    'propagate': True,
                    },
                }
@@ -144,3 +137,18 @@ LOGGING = {'version': 1,
 
 # Login redirection
 LOGIN_URL = '/login'
+
+
+# Site configuration overrides defaults defined here.
+# Look for site configuration first in the conf/ directory at the same level
+# as the src/ directory, then, if not found, in /etc/slam.
+root_dir = os.path.abspath(__file__)
+# CONF_PARENT_DIR_LEVEL_UP is the number of directory level to go up
+# from current module directory to find conf/ parent
+CONF_PARENT_DIR_LEVEL_UP = 2
+for i in range(CONF_PARENT_DIR_LEVEL_UP+1):
+    root_dir = os.path.dirname(root_dir)
+sys.path.insert(0, "/etc/slam")
+sys.path.insert(0, os.path.join(root_dir,'conf'))
+from configuration import *
+

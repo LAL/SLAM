@@ -4,6 +4,7 @@ generation.
 
 import sys, os, re, datetime, shutil
 from django.db import models
+from slam.models import SLAMBaseModel
 
 
 class DuplicateRecordError(Exception):
@@ -11,7 +12,7 @@ class DuplicateRecordError(Exception):
     pass
 
 
-class Config(models.Model):
+class Config(SLAMBaseModel):
     """Default behaviors for generator classes."""
 
     CONFIG_TYPE = (
@@ -299,7 +300,7 @@ class BindConfig(Config):
     comment = ";"
     type_ = "bind"
 
-    class Meta:
+    class Meta(SLAMBaseModel.Meta):
         """BindConfig is a proxy of Config."""
         proxy = True
 
@@ -350,7 +351,7 @@ class RevBindConfig(Config):
     comment = ";"
     type_ = "rbind"
 
-    class Meta:
+    class Meta(SLAMBaseModel.Meta):
         """RevBindConfig is a proxy of Config."""
         proxy = True
 
@@ -403,7 +404,7 @@ class QuattorConfig(Config):
 
     type_ = "quatt"
 
-    class Meta:
+    class Meta(SLAMBaseModel.Meta):
         """QuattorConfig is a proxy of Config."""
         proxy = True
 
@@ -428,8 +429,8 @@ class DhcpdConfig(Config):
 
     type_ = "dhcp"
 
-    class Meta:
-        """QuattorConfig is a proxy of Config."""
+    class Meta(SLAMBaseModel.Meta):
+        """DhcpdConfig is a proxy of Config."""
         proxy = True
 
     def _unique_host(self, line, host, addr):
@@ -474,7 +475,7 @@ class LalDnsConfig(Config):
 
     type_ = "laldns"
 
-    class Meta:
+    class Meta(SLAMBaseModel.Meta):
         """LalDns is a proxy of Config."""
         proxy = True
 

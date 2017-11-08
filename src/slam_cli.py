@@ -2,9 +2,18 @@
 
 """Command-line interface for SLAM."""
 
-import os, pwd, sys, argparse, logging, signal
+import os
+import sys
+import pwd
+import argparse
+import logging
+import signal
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "webinterface.settings"
+
+# Required for non-web Django applications
+import django
+django.setup()
 
 from slam import models, interface, addrrange, generator
 
@@ -499,10 +508,26 @@ def list_logs(args):
 
 
 def authenticate():
-    """Check the system user list for authorized users."""
+    """
+    Check the system user list for authorized users.
+    Look for site configuration first in the conf/ directory at the same level
+    as the src/ directory, then, if not found, in /etc/slam.
+    """
+    root_dir = os.path.abspath(__file__)
+    # CONF_PARENT_DIR_LEVEL_UP is the number of directory level to go up
+    # from current module directory to find conf/ parent
+    CONF_PARENT_DIR_LEVEL_UP = 1
+    for i in range(CONF_PARENT_DIR_LEVEL_UP+1):
+        root_dir = os.path.dirname(root_dir)
+    site_users = os.path.join(root_dir,'conf/users')
     allowed = []
-    if os.access("/etc/slam/users", os.R_OK):
-        accessf = open("/etc/slam/users")
+    if not os.access(site_users, os.R_OK):
+        if os.access("/etc/slam/users", os.R_OK):
+            site_users = "/etc/slam/users"
+        else:
+            site_users = None
+    if site_users:
+        accessf = open(site_users)
         allowed = accessf.read().split("\n")
         accessf.close()
     if not allowed:

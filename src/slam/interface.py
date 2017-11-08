@@ -53,7 +53,7 @@ class PropertyFormatError(Exception):
     pass
 
 def isValidHostname(hostname):
-    disallowed = re.compile("[^a-zA-Z\d\-]")
+    disallowed = re.compile("[^a-zA-Z\d\-\.]")
     #return all(map(lambda x: len(x) and not disallowed.search(x), hostname.split("."))) //pour chaque x dans split array(),appliquer les functions len(x) and not disallowed.search(x)
     return len(hostname) and not disallowed.search(hostname)
 
@@ -695,7 +695,11 @@ def set_prop(name=None, value=None, pool=None, host=None, del_=False):
     hostobj = None
     poolobj = None
 
-    if host is not None:
+    if not name:
+        raise MissingParameterError(
+            "You must specify a name for the property to set or delete.")
+
+    if host:
         hostobj = get_host(host)
         if del_:
             LOGGER.info("Deleted property " + name + " of host " + str(host))
@@ -713,10 +717,13 @@ def set_prop(name=None, value=None, pool=None, host=None, del_=False):
         raise MissingParameterError(
             "You must specify a pool or a host name to set the property of.")
 
-    if poolobj is None:
+    if poolobj:
+        props = models.Property.objects.filter(pool=poolobj)
+    elif hostobj:
         props = models.Property.objects.filter(host=hostobj)
     else:
-        props = models.Property.objects.filter(pool=poolobj)
+        raise MissingParameterError(
+            "You must specify a pool or a host name to set the property of.")
 
     if del_:
         if props.filter(name=name):

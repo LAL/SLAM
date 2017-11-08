@@ -1,6 +1,16 @@
-# Created by .ignore support plugin (hsz.mobi)
 .idea
 db.sqlite3
 *.pyc
 dist
 django_slam.egg-info
+
+*.tar*
+*.tgz
+
+# Ignore virtualenv directory if present
+.venv/
+
+# conf/ and run/ directory are considered site-specific
+conf/
+run/
+
